@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Application.Dto
 {
-    public class Message
+    public class MessageDto
     {
         public int Id { get; set; }
-        public User Sender { get; set; }
-        public User Reciever { get; set; }
+        public UserDto Sender { get; set; }
+        public UserDto Reciever { get; set; }
         public string Text { get; set; }
         public DateTime DateTime { get; set; }
     }

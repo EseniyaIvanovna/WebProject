@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dto
+namespace Domain.Enums
 {
-    internal class MessadeDto
+    public enum ReactionType
     {
+        like,
+        dislike,
+        laugh,
+        heart
     }
 }

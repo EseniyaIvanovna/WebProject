@@ -7,10 +7,13 @@ using Domain;
 
 namespace Infrastructure.Repositories
 {
-    public interface IUserRepositori
+    public interface IUserRepository
     {
-        public Task<User> ReadById(int Id);
+        public Task<User> GetById(int Id);
+        public Task<IEnumerable<User>> GetAll();
         public Task Create(User user);
         public Task<bool> Update(User user);
+        public Task<bool> Delete(int id);
+       
     }
 }

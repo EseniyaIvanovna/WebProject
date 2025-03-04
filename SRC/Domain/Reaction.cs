@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class Interaction
+    public class Reaction
     {
         public int Id { get; set; }
-        public User User1 { get; set; }
-        public User User2 { get; set; }
-        public Status Status { get; set; } 
+        public User User { get; set; }
+        public Post Post { get; set; }
+        public ReactionType Type { get; set; }
     }
 }

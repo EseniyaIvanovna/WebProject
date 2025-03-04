@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Application.Dto
 {
-    public class Interaction
+    public class InteractionDto
     {
         public int Id { get; set; }
-        public User User1 { get; set; }
-        public User User2 { get; set; }
-        public Status Status { get; set; } 
+        public UserDto User1 { get; set; }
+        public UserDto User2 { get; set; }
+        public Status Status { get; set; }
     }
 }
