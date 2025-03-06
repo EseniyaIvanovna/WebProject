@@ -8,9 +8,9 @@ namespace Domain.Enums
 {
     public enum ReactionType
     {
-        like,
-        dislike,
-        laugh,
-        heart
+        Like,
+        Dislike,
+        Laugh,
+        Heart
     }
 }

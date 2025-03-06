@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
             existingComment.Content = comment.Content;
             existingComment.User = comment.User;
             existingComment.Post = comment.Post;
-            existingComment.DateTime = comment.DateTime;
+            existingComment.CreatedAt = comment.CreatedAt;
 
             return Task.FromResult(true);
         }

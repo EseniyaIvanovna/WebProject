@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
 
         public Task<IEnumerable<Message>> GetByUserId(int userId)
         {
-            var messages = _messages.Where(m => m.Sender.Id == userId || m.Reciever.Id == userId).AsEnumerable();
+            var messages = _messages.Where(m => m.Sender.Id == userId || m.Receiver.Id == userId).AsEnumerable();
             return Task.FromResult(messages);
         }
 
@@ -49,9 +49,9 @@ namespace Infrastructure.Repositories
             if (existingMessage == null) return Task.FromResult(false);
             
             existingMessage.Sender = message.Sender;
-            existingMessage.Reciever = message.Reciever;
+            existingMessage.Receiver = message.Receiver;
             existingMessage.Text = message.Text;
-            existingMessage.DateTime = message.DateTime;
+            existingMessage.CreatedAt = message.CreatedAt;
 
             return Task.FromResult(true);
         }

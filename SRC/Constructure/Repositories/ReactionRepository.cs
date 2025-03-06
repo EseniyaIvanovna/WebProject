@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
             return Task.FromResult(reaction);
         }
 
-        public Task<IEnumerable<Reaction>> GetByPosId(int postId)
+        public Task<IEnumerable<Reaction>> GetByPostId(int postId)
         {
             var reactions = _reactions.Where(r => r.Post.Id == postId).AsEnumerable();
             return Task.FromResult(reactions);

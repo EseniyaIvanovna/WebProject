@@ -8,8 +8,8 @@ namespace Domain.Enums
 {
     public enum Status
     {
-        subscriber,
-        friend,
-        lover
+        Subscriber,
+        Friend,
+        Lover
     }
 }

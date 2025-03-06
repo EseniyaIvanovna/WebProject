@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             
             existingPost.Text = post.Text;
             existingPost.User = post.User;
-            existingPost.dateTime = post.dateTime;
+            existingPost.CreatedAt = post.CreatedAt;
             // Обновите другие свойства, если они есть
 
             return Task.FromResult(true);
