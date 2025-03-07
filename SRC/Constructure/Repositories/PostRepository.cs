@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +11,21 @@ namespace Infrastructure.Repositories
     public class PostRepository : IPostRepository
     {
         private readonly List<Post> _posts = new List<Post>();
-        public Task Create(Post post)
+        public Task<int> Create(Post post)
         {
-            if(post == null) throw new ArgumentNullException(nameof(post));            
+            if(post == null) 
+                throw new ArgumentNullException(nameof(post));            
 
             _posts.Add(post);
-            return Task.CompletedTask;
+            return Task.FromResult(post.Id); 
         }
 
         public Task<bool> Delete(int id)
         {
             var post = _posts.FirstOrDefault(p => p.Id == id);
 
-            if (post == null) return Task.FromResult(false);            
+            if (post == null) 
+                return Task.FromResult(false);            
 
             _posts.Remove(post);
             return Task.FromResult(true);
@@ -41,17 +44,18 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(Post post)
         {
-            if(post == null) throw new ArgumentNullException(nameof(post));
+            if(post == null) 
+                throw new ArgumentNullException(nameof(post));
             
             var existingPost = _posts.FirstOrDefault(p => p.Id == post.Id);
 
-            if (existingPost == null) return Task.FromResult(false);
+            if (existingPost == null) 
+                return Task.FromResult(false);
             
             
             existingPost.Text = post.Text;
-            existingPost.User = post.User;
+            existingPost.UserId = post.UserId;
             existingPost.CreatedAt = post.CreatedAt;
-            // Обновите другие свойства, если они есть
 
             return Task.FromResult(true);
         }

@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
     {
         public Task<Message> GetById(int Id);
         public Task<IEnumerable<Message>> GetByUserId(int Id);
-        public Task Create(Message message);
+        public Task<int> Create(Message message);
         public Task<bool> Update(Message message);
         public Task<bool> Delete(int id);
     }

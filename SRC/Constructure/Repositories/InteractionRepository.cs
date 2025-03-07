@@ -11,19 +11,21 @@ namespace Infrastructure.Repositories
     public class InteractionRepository : IInteractionRepository
     {
         private readonly List<Interaction> _interactions = new List<Interaction>();
-        public Task Create(Interaction interaction)
+        public Task<int> Create(Interaction interaction)
         {
-            if (interaction == null) throw new ArgumentNullException(nameof(interaction));
+            if (interaction == null)
+                throw new ArgumentNullException(nameof(interaction));
             
             _interactions.Add(interaction);
-            return Task.CompletedTask;
+            return Task.FromResult(interaction.Id); 
         }
 
         public Task<bool> Delete(int id)
         {
             var interaction = _interactions.FirstOrDefault(i => i.Id == id);
 
-            if (interaction == null) return Task.FromResult(false);
+            if (interaction == null) 
+                return Task.FromResult(false);
             
             _interactions.Remove(interaction);
             return Task.FromResult(true);
@@ -37,22 +39,24 @@ namespace Infrastructure.Repositories
 
         public Task<IEnumerable<Interaction>> GetByStatus(Status status)
         {
-            var interactions = _interactions.Where(i => i.Status == status).AsEnumerable();
+            var interactions = _interactions.Where(i => i.Status == status);
             return Task.FromResult(interactions);
         }
 
         public Task<bool> Update(Interaction interaction)
         {
-            if (interaction == null) throw new ArgumentNullException(nameof(interaction));
+            if (interaction == null) 
+                throw new ArgumentNullException(nameof(interaction));
            
             var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
 
-            if (existingInteraction == null) return Task.FromResult(false);
+            if (existingInteraction == null) 
+                return Task.FromResult(false);
             
            
             existingInteraction.Status = interaction.Status;
-            existingInteraction.User1 = interaction.User1;
-            existingInteraction.User2 = interaction.User2;
+            existingInteraction.User1Id = interaction.User1Id;
+            existingInteraction.User2Id = interaction.User2Id;
            
             return Task.FromResult(true);
         }

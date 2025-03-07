@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,21 @@ namespace Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>(); 
-        public Task Create(User user)
+        public Task<int> Create(User user)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (user == null) 
+                throw new ArgumentNullException(nameof(user));
 
             _users.Add(user);
-            return Task.CompletedTask;
+            return Task.FromResult(user.Id);
         }
 
         public Task<bool> Delete(int id)
         {
             var user = _users.FirstOrDefault(u => u.Id == id);
 
-            if (user == null) return Task.FromResult(false);
+            if (user == null) 
+                return Task.FromResult(false);
             
             _users.Remove(user);
             return Task.FromResult(true);
@@ -42,11 +45,13 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(User user)
         {
-            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (user == null) 
+                throw new ArgumentNullException(nameof(user));
            
             var existingUser = _users.FirstOrDefault(u => u.Id == user.Id);
 
-            if (existingUser == null) return Task.FromResult(false);
+            if (existingUser == null) 
+                return Task.FromResult(false);
             
             existingUser.Name = user.Name;
             existingUser.LastName = user.LastName;
