@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,8 @@ namespace Domain
     public class Interaction
     {
         public int Id { get; set; }
-        public User User1 { get; set; }
-        public User User2 { get; set; }
-        public string Status { get; set; } //  выбор из вариантов ответа
+        public int User1Id { get; set; }
+        public int User2Id { get; set; }
+        public Status Status { get; set; } 
     }
 }

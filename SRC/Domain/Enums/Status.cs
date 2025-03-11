@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Dto
+namespace Domain.Enums
 {
-    internal class MessadeDto
+    public enum Status
     {
+        Subscriber,
+        Friend,
+        Lover
     }
 }
