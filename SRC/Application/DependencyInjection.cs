@@ -15,6 +15,11 @@ namespace Application
         {
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IPostService, PostService>();
+            services.AddTransient<IReactionService, ReactionService>();
+            services.AddTransient<IInteractionService, InteractionService>();
+            services.AddTransient<IMessageService, MessageService>();
 
             return services;
         }

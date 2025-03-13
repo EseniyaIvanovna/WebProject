@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
+using Domain;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,39 +15,60 @@ namespace Application.Service
         private IReactionRepository reactRepository;
         private IMapper mapper;
 
-        public ReactionService(IReactionRepository reactRepository, IMapper mapper)
+        public ReactionService(IReactionRepository ReactRepository, IMapper Mapper)
         {
-            this.reactRepository = reactRepository;
-            this.mapper = mapper;
-        }
-        public Task Create(ReactionDto reaction)
-        {
-            throw new NotImplementedException();
+            reactRepository = ReactRepository;
+            mapper = Mapper;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<int> Create(ReactionDto reaction)
         {
-            throw new NotImplementedException();
+            var mappedReaction = mapper.Map<Reaction>(reaction);
+            int reactionId = await reactRepository.Create(mappedReaction);
+            return reactionId;
         }
 
-        public Task<ReactionDto> GetById(int Id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await reactRepository.Delete(id);
+            return result;
         }
 
-        public Task<IEnumerable<ReactionDto>> GetByPosId(int Id)
+        public async Task<ReactionDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var reaction = await reactRepository.GetById(id);
+            return mapper.Map<ReactionDto>(reaction);
         }
 
-        public Task<IEnumerable<ReactionDto>> GetByUserId(int Id)
+        public async Task<IEnumerable<ReactionDto>> GetByPostId(int postId)
         {
-            throw new NotImplementedException();
+            var reactions = await reactRepository.GetByPostId(postId);
+            return mapper.Map<IEnumerable<ReactionDto>>(reactions);
         }
 
-        public Task<bool> Update(ReactionDto reaction)
+        public async Task<IEnumerable<ReactionDto>> GetByUserId(int userId)
         {
-            throw new NotImplementedException();
+            var reactions = await reactRepository.GetByUserId(userId);
+            return mapper.Map<IEnumerable<ReactionDto>>(reactions);
+        }
+
+        public async Task<bool> Update(ReactionDto reaction)
+        {
+            var existingReaction = await reactRepository.GetById(reaction.Id);
+            if (existingReaction == null)
+            {
+                return false;
+            }
+
+            mapper.Map(reaction, existingReaction);
+            await reactRepository.Update(existingReaction);
+            return true;
+        }
+
+        public async Task<IEnumerable<ReactionDto>> GetAll()
+        {
+            var reactions = await reactRepository.GetAll();
+            return mapper.Map<IEnumerable<ReactionDto>>(reactions);
         }
     }
 }

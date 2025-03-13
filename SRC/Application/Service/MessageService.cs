@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
+using Domain;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,34 +15,53 @@ namespace Application.Service
         private IMessageRepository messRepository;
         private IMapper mapper;
 
-        public MessageService(IMessageRepository messRepository, IMapper mapper)
+        public MessageService(IMessageRepository MessRepository, IMapper Mapper)
         {
-            this.messRepository = messRepository;
-            this.mapper = mapper;
-        }
-        Task IMessageService.Create(MessageDto message)
-        {
-            throw new NotImplementedException();
+            messRepository = MessRepository;
+            mapper = Mapper;
         }
 
-        Task<bool> IMessageService.Delete(int id)
+        public async Task<int> Create(MessageDto message)
         {
-            throw new NotImplementedException();
+            var mappedMessage = mapper.Map<Message>(message);
+            int messageId = await messRepository.Create(mappedMessage);
+            return messageId;
         }
 
-        Task<MessageDto> IMessageService.GetById(int Id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await messRepository.Delete(id);
+            return result;
         }
 
-        Task<IEnumerable<MessageDto>> IMessageService.GetByUserId(int Id)
+        public async Task<MessageDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var message = await messRepository.GetById(id);
+            return mapper.Map<MessageDto>(message);
+        }
+        public async Task<IEnumerable<MessageDto>> GetAll()
+        {
+            var messages = await messRepository.GetAll();
+            return mapper.Map<IEnumerable<MessageDto>>(messages);
         }
 
-        Task<bool> IMessageService.Update(MessageDto message)
+        public async Task<IEnumerable<MessageDto>> GetByUserId(int userId)
         {
-            throw new NotImplementedException();
+            var messages = await messRepository.GetByUserId(userId);
+            return mapper.Map<IEnumerable<MessageDto>>(messages);
+        }
+
+        public async Task<bool> Update(MessageDto message)
+        {
+            var existingMessage = await messRepository.GetById(message.Id);
+            if (existingMessage == null)
+            {
+                return false;
+            }
+
+            mapper.Map(message, existingMessage);
+            await messRepository.Update(existingMessage);
+            return true;
         }
     }
 }

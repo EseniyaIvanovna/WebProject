@@ -11,11 +11,22 @@ namespace Infrastructure.Repositories
     public class CommentRepository : ICommentRepository
     {
         private readonly List<Comment> _comments = new List<Comment>();
+        public CommentRepository()
+        {
+            // тестовые данные 
+            _comments.Add(new Comment { Id = 1, Content = "Great post!", UserId = 1, PostId = 1 });
+            _comments.Add(new Comment { Id = 2, Content = "Nice work!", UserId = 2, PostId = 1 });
+            _comments.Add(new Comment { Id = 3, Content = "Interesting read.", UserId = 1, PostId = 2 });
+        }
         public Task<int> Create(Comment comment)
         {
             if (comment == null) 
                 throw new ArgumentNullException(nameof(comment));
-            
+            var existingComment = _comments.FirstOrDefault(c => c.Id == comment.Id);
+            if (existingComment != null)
+            {
+                throw new InvalidOperationException("A comment with the same ID already exists.");
+            }
             _comments.Add(comment);
             return Task.FromResult(comment.Id); 
         }
@@ -60,6 +71,11 @@ namespace Infrastructure.Repositories
             existingComment.CreatedAt = comment.CreatedAt;
 
             return Task.FromResult(true);
+        }
+
+        public Task<IEnumerable<Comment>> GetAll()
+        {
+            return Task.FromResult<IEnumerable<Comment>>(_comments.AsEnumerable());
         }
     }
 }

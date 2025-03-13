@@ -11,11 +11,23 @@ namespace Infrastructure.Repositories
     public class MessageRepository : IMessageRepository
     {
         private readonly List<Message> _messages = new List<Message>();
+        public MessageRepository()
+        {
+            // тестовые данные
+            _messages.Add(new Message { Id = 1, Text = "Hello!", SenderId = 1, ReceiverId = 2 });
+            _messages.Add(new Message { Id = 2, Text = "How are you?", SenderId = 2, ReceiverId = 1 });
+            _messages.Add(new Message { Id = 3, Text = "I'm fine, thanks!", SenderId = 1, ReceiverId = 2 });
+        }
+
         public Task<int> Create(Message message)
         {
             if(message == null) 
                 throw new ArgumentNullException(nameof(message));
-            
+            var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
+            if (existingMessage != null)
+            {
+                throw new InvalidOperationException("A message with the same ID already exists.");
+            }
             _messages.Add(message);
             return Task.FromResult(message.Id) ;
         }
@@ -59,6 +71,10 @@ namespace Infrastructure.Repositories
             existingMessage.CreatedAt = message.CreatedAt;
 
             return Task.FromResult(true);
+        }
+        public Task<IEnumerable<Message>> GetAll()
+        {
+            return Task.FromResult(_messages.AsEnumerable());
         }
     }
 }

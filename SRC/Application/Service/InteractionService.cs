@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
+using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories;
 using System;
@@ -15,34 +16,50 @@ namespace Application.Service
         private IInteractionRepository interactionRepository;
         private IMapper mapper;
 
-        public InteractionService(IInteractionRepository interactionRepository, IMapper mapper)
+        public InteractionService(IInteractionRepository InteractionRepository, IMapper Mapper)
         {
-            this.interactionRepository = interactionRepository;
-            this.mapper = mapper;
+            interactionRepository = InteractionRepository;
+            mapper = Mapper;
         }
-        public Task Create(InteractionDto interaction)
+        public async Task<int> Create(InteractionDto interaction)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
+            var mappedInteraction = mapper.Map<Interaction>(interaction);
+            int interactionId = await interactionRepository.Create(mappedInteraction);
+            return interactionId;
         }
 
-        public Task<InteractionDto> GetById(int Id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await interactionRepository.Delete(id);
+            return result;
         }
 
-        public Task<IEnumerable<InteractionDto>> GetByStatus(Status status)
+        public async Task<InteractionDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var interaction = await interactionRepository.GetById(id);
+            return mapper.Map<InteractionDto>(interaction);
         }
-
-        public Task<bool> Update(InteractionDto interaction)
+        public async Task<IEnumerable<InteractionDto>> GetAll()
         {
-            throw new NotImplementedException();
+            var interactions = await interactionRepository.GetAll();
+            return mapper.Map<IEnumerable<InteractionDto>>(interactions);
+        }
+        public async Task<IEnumerable<InteractionDto>> GetByStatus(Status status)
+        {
+            var interactions = await interactionRepository.GetByStatus(status);
+            return mapper.Map<IEnumerable<InteractionDto>>(interactions);
+        }
+        public async Task<bool> Update(InteractionDto interaction)
+        {
+            var existingInteraction = await interactionRepository.GetById(interaction.Id);
+            if (existingInteraction == null)
+            {
+                return false;
+            }
+
+            mapper.Map(interaction, existingInteraction);
+            await interactionRepository.Update(existingInteraction);
+            return true;
         }
     }
 }

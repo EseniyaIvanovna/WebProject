@@ -15,16 +15,17 @@ namespace Application.Service
         private IUserRepository userRepository;
         private IMapper mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository UserRepository, IMapper Mapper)
         {
-            this.userRepository = userRepository;
-            this.mapper = mapper;
+            userRepository = UserRepository;
+            mapper = Mapper;
         }
 
-        public async Task Add(UserDto user)
+        public async Task<int> Add(UserDto user)
         {
             var mappedUser = mapper.Map<User>(user);
-            await userRepository.Create(mappedUser);
+            int userId = await userRepository.Create(mappedUser);
+            return userId;
         }
 
         public async Task<bool> Delete(int id)
@@ -33,19 +34,28 @@ namespace Application.Service
             return result;
         }
 
-        Task<IEnumerable<UserDto>> IUserService.GetAll()
+        public async Task<IEnumerable<UserDto>> GetAll()
         {
-            throw new NotImplementedException();
+            var users = await userRepository.GetAll();
+            return mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        Task<UserDto> IUserService.GetById(int Id)
+        public async Task<UserDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var user = await userRepository.GetById(id);
+            return mapper.Map<UserDto>(user);
         }
-
-        Task<bool> IUserService.Update(UserDto user)
+        public async Task<bool> Update(UserDto user)
         {
-            throw new NotImplementedException();
+            var existingUser = await userRepository.GetById(user.Id);
+            if (existingUser == null)
+            {
+                return false;
+            }
+
+            mapper.Map(user, existingUser);
+            await userRepository.Update(existingUser);
+            return true;
         }
     }
 }

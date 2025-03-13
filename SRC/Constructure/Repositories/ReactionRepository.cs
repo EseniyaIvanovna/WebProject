@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Enums;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,22 @@ namespace Infrastructure.Repositories
     public class ReactionRepository : IReactionRepository
     {
         private readonly List<Reaction> _reactions = new List<Reaction>();
+        public ReactionRepository()
+        {
+            // тестовые данные
+            _reactions.Add(new Reaction { Id = 1, Type = ReactionType.Like, UserId = 1, PostId = 1 });
+            _reactions.Add(new Reaction { Id = 2, Type = ReactionType.Heart, UserId = 2, PostId = 1 });
+            _reactions.Add(new Reaction { Id = 3, Type = ReactionType.Dislike, UserId = 1, PostId = 2 });
+        }
         public Task<int> Create(Reaction reaction)
         {
             if (reaction == null) 
                 throw new ArgumentNullException(nameof(reaction));
-            
+            var existingReaction = _reactions.FirstOrDefault(m => m.Id == reaction.Id);
+            if (existingReaction != null)
+            {
+                throw new InvalidOperationException("A reaction with the same ID already exists.");
+            }
             _reactions.Add(reaction);
             return Task.FromResult(reaction.Id);
         }
@@ -64,6 +76,11 @@ namespace Infrastructure.Repositories
             existingReaction.UserId = reaction.UserId;
 
             return Task.FromResult(true);
+        }
+
+        public Task<IEnumerable<Reaction>> GetAll()
+        {
+            return Task.FromResult(_reactions.AsEnumerable());
         }
     }
 }

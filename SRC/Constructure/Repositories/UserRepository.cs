@@ -11,12 +11,23 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly List<User> _users = new List<User>(); 
+        private readonly List<User> _users = new List<User>();
+        public UserRepository()
+        {
+            // тестовые данные 
+            _users.Add(new User { Id = 1,Name="John", Age=20, Info= "john_doe", Email= "john@example.com", LastName="Doe"});
+            _users.Add(new User { Id = 2,Name="Alice", Age=19, Info= "Sporty", Email= "kitty@example.com", LastName="Swan"});
+            _users.Add(new User { Id = 3,Name="Bob", Age=25, Info= "artist", Email= "bob2000@example.com", LastName="Brown"});            
+        }
         public Task<int> Create(User user)
         {
             if (user == null) 
                 throw new ArgumentNullException(nameof(user));
-
+            var existingUser = _users.FirstOrDefault(m => m.Id == user.Id);
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("A user with the same ID already exists.");
+            }
             _users.Add(user);
             return Task.FromResult(user.Id);
         }

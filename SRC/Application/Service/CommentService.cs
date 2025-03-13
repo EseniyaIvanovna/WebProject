@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
+using Domain;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,34 +15,53 @@ namespace Application.Service
         private ICommentRepository commentRepository;
         private IMapper mapper;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper)
+        public CommentService(ICommentRepository CommentRepository, IMapper Mapper)
         {
-            this.commentRepository = commentRepository;
-            this.mapper = mapper;
+            commentRepository = CommentRepository;
+            mapper = Mapper;
         }
-        public Task Create(CommentDto comment)
+        public async Task<int> Create(CommentDto comment)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
+            var mappedComment = mapper.Map<Comment>(comment);
+            int commentId = await commentRepository.Create(mappedComment);
+            return commentId;
         }
 
-        public Task<CommentDto> GetById(int Id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await commentRepository.Delete(id);
+            return result;
         }
 
-        public Task<IEnumerable<CommentDto>> GetByUserId(int id)
+        public async Task<CommentDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var comment = await commentRepository.GetById(id);
+            return mapper.Map<CommentDto>(comment);
         }
 
-        public Task<bool> Update(CommentDto comment)
+        public async Task<IEnumerable<CommentDto>> GetByUserId(int userId)
         {
-            throw new NotImplementedException();
+            var comments = await commentRepository.GetByUserId(userId);
+            return mapper.Map<IEnumerable<CommentDto>>(comments);
         }
+
+        public async Task<bool> Update(CommentDto comment)
+        {
+            var existingComment = await commentRepository.GetById(comment.Id);
+            if (existingComment == null)
+            {
+                return false;
+            }
+
+            mapper.Map(comment, existingComment);
+            await commentRepository.Update(existingComment);
+            return true;
+        }
+        public async Task<IEnumerable<CommentDto>> GetAll()
+        {
+            var comments = await commentRepository.GetAll();
+            return mapper.Map<IEnumerable<CommentDto>>(comments);
+        }
+
     }
 }

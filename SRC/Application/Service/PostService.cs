@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using AutoMapper;
+using Domain;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,34 +15,48 @@ namespace Application.Service
         private IPostRepository postRepository;
         private IMapper mapper;
 
-        public PostService(IPostRepository postRepository, IMapper mapper)
+        public PostService(IPostRepository PostRepository, IMapper Mapper)
         {
-            this.postRepository = postRepository;
-            this.mapper = mapper;
-        }
-        public Task Create(PostDto post)
-        {
-            throw new NotImplementedException();
+            postRepository = PostRepository;
+            mapper = Mapper;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<int> Create(PostDto post)
         {
-            throw new NotImplementedException();
+            var mappedPost = mapper.Map<Post>(post);
+            int postId = await postRepository.Create(mappedPost);
+            return postId;
         }
 
-        public Task<IEnumerable<PostDto>> GetAll()
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await postRepository.Delete(id);
+            return result;
         }
 
-        public Task<PostDto> GetById(int Id)
+        public async Task<IEnumerable<PostDto>> GetAll()
         {
-            throw new NotImplementedException();
+            var posts = await postRepository.GetAll();
+            return mapper.Map<IEnumerable<PostDto>>(posts);
         }
 
-        public Task<bool> Update(PostDto post)
+        public async Task<PostDto> GetById(int id)
         {
-            throw new NotImplementedException();
+            var post = await postRepository.GetById(id);
+            return mapper.Map<PostDto>(post);
+        }
+
+        public async Task<bool> Update(PostDto post)
+        {
+            var existingPost = await postRepository.GetById(post.Id);
+            if (existingPost == null)
+            {
+                return false;
+            }
+
+            mapper.Map(post, existingPost);
+            await postRepository.Update(existingPost);
+            return true;
         }
     }
 }
