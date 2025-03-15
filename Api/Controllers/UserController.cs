@@ -1,5 +1,6 @@
 using Application.Dto;
 using Application.Service;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -9,40 +10,106 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private IUserService userService;
+    private readonly IUserService _userService;
+
     public UserController(IUserService userService)
     {
-        this.userService = userService;
+        _userService = userService;
     }
-    //usercontroller 
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromQuery]int Id)
+    public async Task<IActionResult> GetUserById(int id)
     {
-        var user = await userService.GetById(Id);
+        if (id < 0)
+        {
+            return BadRequest("ID must be a positive integer.");
+        }
+
+        var user = await _userService.GetById(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
         return Ok(user);
     }
+   
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllUsers()
     {
-        var users = await userService.GetAll();
+        var users = await _userService.GetAll();
         return Ok(users);
     }
+    
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] UserDto user)
+    public async Task<IActionResult> CreateUser([FromBody] UserDto user)
     {
-        await userService.Add(user);
-        return Created();
+        if (user == null)
+        {
+            return BadRequest("User data is required.");
+        }
+        try
+        {
+            var userId = await _userService.Add(user);
+            return CreatedAtAction(nameof(GetUserById), new { id = userId }, user); // 201 Created
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message); // 409 Conflict, если пользователь уже существует
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(ex.Message); // 400 Bad Request, если данные невалидны
+        }
     }
+    
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UserDto user)
+    public async Task<IActionResult> UpdateUser([FromBody] UserDto user)
     {
-        var result = await userService.Update(user);
-        return Ok(result);
+        if (user == null)
+        {
+            return BadRequest("User data is required.");
+        }
+
+        try
+        {
+            var result = await _userService.Update(user);
+            if (!result)
+            {
+                return NotFound(); 
+            }
+            return Ok(result); 
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message); 
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(ex.Message); 
+        }
     }
+    
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] int Id)
+    public async Task<IActionResult> DeleteUser(int id)
     {
-        var result = await userService.Delete(Id);
-        return Ok(result);
+        if (id < 0)
+        {
+            return BadRequest("ID must be a positive integer.");
+        }
+
+        try
+        {
+            var result = await _userService.Delete(id);
+            if (!result)
+            {
+                return NotFound(); 
+            }
+            return NoContent(); 
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message); 
+        }
     }
 }

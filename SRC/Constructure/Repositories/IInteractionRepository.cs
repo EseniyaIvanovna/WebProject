@@ -15,5 +15,6 @@ namespace Infrastructure.Repositories
         public Task<int> Create(Interaction interaction);
         public Task<bool> Update(Interaction interaction);
         public Task<bool> Delete(int id);
+        public Task<IEnumerable<Interaction>> GetAll();
     }
 }

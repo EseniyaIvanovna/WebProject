@@ -11,8 +11,9 @@ namespace Application.Service
     {
         public Task<MessageDto> GetById(int Id);
         public Task<IEnumerable<MessageDto>> GetByUserId(int Id);
-        public Task Create(MessageDto message);
+        public Task<int> Create(MessageDto message);
         public Task<bool> Update(MessageDto message);
         public Task<bool> Delete(int id);
+        public Task<IEnumerable<MessageDto>> GetAll();
     }
 }

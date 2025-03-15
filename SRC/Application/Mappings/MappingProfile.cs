@@ -18,9 +18,7 @@ namespace Application.Mappings
             CreateMap<Message, MessageDto>().ReverseMap();
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Reaction, ReactionDto>().ReverseMap();
-            CreateMap<Interaction, InteractionDto>().ReverseMap();
-            
-
+            CreateMap<Interaction, InteractionDto>().ReverseMap();           
         }
     }
 }
