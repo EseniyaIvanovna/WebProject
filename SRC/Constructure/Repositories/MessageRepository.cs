@@ -11,6 +11,7 @@ namespace Infrastructure.Repositories
     public class MessageRepository : IMessageRepository
     {
         private readonly List<Message> _messages = new List<Message>();
+
         public MessageRepository()
         {
             // тестовые данные
@@ -21,8 +22,6 @@ namespace Infrastructure.Repositories
 
         public Task<int> Create(Message message)
         {
-            if(message == null) 
-                throw new ArgumentNullException(nameof(message));
             var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
             if (existingMessage != null)
             {
@@ -35,10 +34,11 @@ namespace Infrastructure.Repositories
         public Task<bool> Delete(int id)
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
+            if (message == null)
+            {
+                throw new InvalidOperationException("Message not found.");
+            }
 
-            if (message == null) 
-                return Task.FromResult(false);
-            
             _messages.Remove(message);
             return Task.FromResult(true);
         }
@@ -57,14 +57,12 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(Message message)
         {
-            if (message == null) 
-                throw new ArgumentNullException(nameof(message));
-            
             var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
+            if (existingMessage == null)
+            {
+                throw new InvalidOperationException("Message not found.");
+            }
 
-            if (existingMessage == null) 
-                return Task.FromResult(false);
-            
             existingMessage.SenderId = message.SenderId;
             existingMessage.ReceiverId = message.ReceiverId;
             existingMessage.Text = message.Text;
@@ -72,6 +70,7 @@ namespace Infrastructure.Repositories
 
             return Task.FromResult(true);
         }
+
         public Task<IEnumerable<Message>> GetAll()
         {
             return Task.FromResult(_messages.AsEnumerable());

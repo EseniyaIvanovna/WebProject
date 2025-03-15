@@ -11,7 +11,9 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
+
         private readonly List<User> _users = new List<User>();
+        
         public UserRepository()
         {
             // тестовые данные 
@@ -19,10 +21,9 @@ namespace Infrastructure.Repositories
             _users.Add(new User { Id = 2,Name="Alice", Age=19, Info= "Sporty", Email= "kitty@example.com", LastName="Swan"});
             _users.Add(new User { Id = 3,Name="Bob", Age=25, Info= "artist", Email= "bob2000@example.com", LastName="Brown"});            
         }
+        
         public Task<int> Create(User user)
         {
-            if (user == null) 
-                throw new ArgumentNullException(nameof(user));
             var existingUser = _users.FirstOrDefault(m => m.Id == user.Id);
             if (existingUser != null)
             {
@@ -35,10 +36,11 @@ namespace Infrastructure.Repositories
         public Task<bool> Delete(int id)
         {
             var user = _users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
 
-            if (user == null) 
-                return Task.FromResult(false);
-            
             _users.Remove(user);
             return Task.FromResult(true);
         }
@@ -56,21 +58,19 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(User user)
         {
-            if (user == null) 
-                throw new ArgumentNullException(nameof(user));
-           
             var existingUser = _users.FirstOrDefault(u => u.Id == user.Id);
+            if (existingUser == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
 
-            if (existingUser == null) 
-                return Task.FromResult(false);
-            
             existingUser.Name = user.Name;
             existingUser.LastName = user.LastName;
             existingUser.Email = user.Email;
             existingUser.Age = user.Age;
             existingUser.Info = user.Info;
-            
-            return Task.FromResult(true); 
+
+            return Task.FromResult(true);
         }
     }
 }

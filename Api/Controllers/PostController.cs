@@ -11,12 +11,11 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class PostController : ControllerBase
 {
-    private IPostService postService;
-    public PostController(IPostService PostService)
+    private IPostService _postService;
+    public PostController(IPostService postService)
     {
-        postService = PostService;
+        _postService = postService;
     }
-
 
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromBody] PostDto post)
@@ -26,31 +25,34 @@ public class PostController : ControllerBase
             return BadRequest("Post data is required.");
         }
 
-        var postId = await postService.Create(post);
-        return Ok(postId);
+        var postId = await _postService.Create(post);
+        return CreatedAtAction(nameof(GetPostById), new { id = postId }, post);
     }
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetPostById([FromQuery] int id)
+    public async Task<IActionResult> GetPostById( int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var post = await postService.GetById(id);
+        var post = await _postService.GetById(id);
         if (post == null)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(post);
     }
+
     [HttpGet]
     public async Task<IActionResult> GetAllPosts()
     {
-        var posts = await postService.GetAll();
+        var posts = await _postService.GetAll();
         return Ok(posts);
     }
+
     [HttpPut]
     public async Task<IActionResult> UpdatePost([FromBody] PostDto post)
     {
@@ -59,26 +61,27 @@ public class PostController : ControllerBase
             return BadRequest("Post data is required.");
         }
 
-        var result = await postService.Update(post);
+        var result = await _postService.Update(post);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePost([FromQuery] int id)
+    public async Task<IActionResult> DeletePost(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await postService.Delete(id);
+        var result = await _postService.Delete(id);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);

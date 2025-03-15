@@ -10,34 +10,36 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private IUserService userService;
-    public UserController(IUserService UserService)
+    private IUserService _userService;
+    public UserController(IUserService userService)
     {
-        userService = UserService;
+        _userService = userService;
     }
-    //usercontroller 
+
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserById([FromQuery]int Id)
+    public async Task<IActionResult> GetUserById(int id)
     {
-        if (Id < 0)
+        if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var user = await userService.GetById(Id);
+        var user = await _userService.GetById(id);
         if (user == null)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(user);
     }
+   
     [HttpGet]
     public async Task<IActionResult> GetAllUsers()
     {
-        var users = await userService.GetAll();
+        var users = await _userService.GetAll();
         return Ok(users);
     }
+    
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] UserDto user)
     {
@@ -45,10 +47,21 @@ public class UserController : ControllerBase
         {
             return BadRequest("User data is required.");
         }
-
-        var userId = await userService.Add(user);
-        return Ok(userId);
+        try
+        {
+            var userId = await _userService.Add(user);
+            return CreatedAtAction(nameof(GetUserById), new { id = userId }, user); // 201 Created
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message); // 409 Conflict, если пользователь уже существует
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(ex.Message); // 400 Bad Request, если данные невалидны
+        }
     }
+    
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UserDto user)
     {
@@ -57,28 +70,45 @@ public class UserController : ControllerBase
             return BadRequest("User data is required.");
         }
 
-        var result = await userService.Update(user);
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await _userService.Update(user);
+            if (!result)
+            {
+                return NoContent(); 
+            }
+            return Ok(result); 
         }
-
-        return Ok(result);
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message); 
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(ex.Message); 
+        }
     }
+    
     [HttpDelete]
-    public async Task<IActionResult> DeleteUser([FromQuery] int Id)
+    public async Task<IActionResult> DeleteUser([FromQuery] int id)
     {
-        if (Id < 0)
+        if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await userService.Delete(Id);
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await _userService.Delete(id);
+            if (!result)
+            {
+                return NoContent(); 
+            }
+            return Ok("User and all related data deleted successfully."); 
         }
-
-        return Ok(result);
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message); 
+        }
     }
 }

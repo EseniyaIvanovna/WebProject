@@ -11,10 +11,11 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class InteractionController : ControllerBase
 {
-    private IInteractionService interactionService;
-    public InteractionController(IInteractionService InteractionService)
+    private IInteractionService _interactionService;
+ 
+    public InteractionController(IInteractionService interactionService)
     {
-        interactionService = InteractionService;
+        _interactionService = interactionService;
     }
 
     [HttpPost]
@@ -25,36 +26,39 @@ public class InteractionController : ControllerBase
             return BadRequest("Interaction data is required.");
         }
 
-        var interactionId = await interactionService.Create(interaction);
-        return Ok(interactionId);
+        var interactionId = await _interactionService.Create(interaction);
+        return CreatedAtAction(nameof(GetInteractionById), new { id = interactionId }, interaction);
     }
+    
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetInteractionById( [FromQuery]int id)
+    public async Task<IActionResult> GetInteractionById( int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var interaction = await interactionService.GetById(id);
+        var interaction = await _interactionService.GetById(id);
         if (interaction == null)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(interaction);
     }
+    
     [HttpGet("ByStatus/{status}")]
-    public async Task<IActionResult> GetInteractionsByStatus([FromQuery]Status status)
+    public async Task<IActionResult> GetInteractionsByStatus(Status status)
     {
         if (!Enum.IsDefined(typeof(Status), status))
         {
             return BadRequest("Invalid status value.");
         }
 
-        var interactions = await interactionService.GetByStatus(status);
+        var interactions = await _interactionService.GetByStatus(status);
         return Ok(interactions);
     }
+    
     [HttpPut]
     public async Task<IActionResult> UpdateInteraction([FromBody] InteractionDto interaction)
     {
@@ -63,36 +67,37 @@ public class InteractionController : ControllerBase
             return BadRequest("Interaction data is required.");
         }
 
-        var result = await interactionService.Update(interaction);
+        var result = await _interactionService.Update(interaction);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteInteraction([FromQuery]int id)
+    public async Task<IActionResult> DeleteInteraction(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await interactionService.Delete(id);
+        var result = await _interactionService.Delete(id);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetAllInteractions()
     {
-        var interactions = await interactionService.GetAll();
+        var interactions = await _interactionService.GetAll();
         return Ok(interactions);
     }
-
 }
 

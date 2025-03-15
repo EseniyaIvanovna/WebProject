@@ -9,12 +9,13 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class MessageController : ControllerBase
 {
-    private IMessageService messageService;
+    private IMessageService _messageService;
 
-    public MessageController(IMessageService MessageService)
+    public MessageController(IMessageService messageService)
     {
-        messageService = MessageService;
+        _messageService = messageService;
     }
+    
     [HttpPost]
     public async Task<IActionResult> CreateMessage([FromBody] MessageDto message)
     {
@@ -23,40 +24,43 @@ public class MessageController : ControllerBase
             return BadRequest("Message data is required.");
         }
 
-        var messId = await messageService.Create(message);
-        return Ok(messId);
+        var messageId = await _messageService.Create(message);
+        return CreatedAtAction(nameof(GetMessageById), new { id = messageId }, message);
     }
+    
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetMessageById([FromQuery] int id)
+    public async Task<IActionResult> GetMessageById(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var message = await messageService.GetById(id);
+        var message = await _messageService.GetById(id);
         if (message == null)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(message);
     }
+    
     [HttpGet("ByUser/{userId}")]
-    public async Task<IActionResult> GetMessagesByUserId([FromQuery] int userId)
+    public async Task<IActionResult> GetMessagesByUserId(int userId)
     {
         if (userId < 0)
         {
             return BadRequest("User ID must be a positive integer.");
         }
 
-        var messages = await messageService.GetByUserId(userId);
+        var messages = await _messageService.GetByUserId(userId);
         return Ok(messages);
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetAllMessages()
     {
-        var messages = await messageService.GetAll();
+        var messages = await _messageService.GetAll();
         return Ok(messages);
     }
 
@@ -68,30 +72,30 @@ public class MessageController : ControllerBase
             return BadRequest("Message data is required.");
         }
 
-        var result = await messageService.Update(message);
+        var result = await _messageService.Update(message);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteMessage([FromQuery] int id)
+    public async Task<IActionResult> DeleteMessage(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await messageService.Delete(id);
+        var result = await _messageService.Delete(id);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
-
 }
 

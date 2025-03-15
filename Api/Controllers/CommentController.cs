@@ -10,10 +10,10 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class CommentController : ControllerBase
 {
-    private ICommentService commentService;
-    public CommentController(ICommentService CommentService)
+    private ICommentService _commentService;
+    public CommentController(ICommentService commentService)
     {
-        commentService = CommentService;
+        _commentService = commentService;
     }
 
     [HttpPost]
@@ -24,9 +24,10 @@ public class CommentController : ControllerBase
             return BadRequest("Comment data is required.");
         }
 
-        var commentId = await commentService.Create(comment);
-        return Ok(commentId);
+        var commentId = await _commentService.Create(comment);
+        return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, comment);
     }
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCommentById([FromQuery] int id)
     {
@@ -35,7 +36,7 @@ public class CommentController : ControllerBase
             return BadRequest("ID must be a positive integer.");
         }
 
-        var comment = await commentService.GetById(id);
+        var comment = await _commentService.GetById(id);
         if (comment == null)
         {
             return NotFound();
@@ -43,18 +44,20 @@ public class CommentController : ControllerBase
 
         return Ok(comment);
     }
+    
     [HttpGet("ByUser/{userId}")]
-    public async Task<IActionResult> GetCommentsByUserId([FromQuery]int userId)
+    public async Task<IActionResult> GetCommentsByUserId(int userId)
     {
         if (userId < 0)
         {
             return BadRequest("User ID must be a positive integer.");
         }
 
-        var comments = await commentService.GetByUserId(userId);
+        var comments = await _commentService.GetByUserId(userId);
         return Ok(comments);
     }
-    [HttpPut("{id}")]
+    
+    [HttpPut]
     public async Task<IActionResult> UpdateComment([FromBody] CommentDto comment)
     {
         if (comment == null)
@@ -62,36 +65,37 @@ public class CommentController : ControllerBase
             return BadRequest("Comment data is required.");
         }
 
-        var result = await commentService.Update(comment);
+        var result = await _commentService.Update(comment);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteComment([FromQuery]int id)
+    public async Task<IActionResult> DeleteComment(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await commentService.Delete(id);
+        var result = await _commentService.Delete(id);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetAllComments()
     {
-        var comments = await commentService.GetAll();
+        var comments = await _commentService.GetAll();
         return Ok(comments);
     }
-
 }
 

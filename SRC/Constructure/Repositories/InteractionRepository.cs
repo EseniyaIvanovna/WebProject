@@ -11,6 +11,7 @@ namespace Infrastructure.Repositories
     public class InteractionRepository : IInteractionRepository
     {
         private readonly List<Interaction> _interactions = new List<Interaction>();
+
         public InteractionRepository()
         {
             // тестовые данные
@@ -18,15 +19,16 @@ namespace Infrastructure.Repositories
             _interactions.Add(new Interaction { Id = 2, Status = Status.Friend, User1Id = 2, User2Id = 1 });
             _interactions.Add(new Interaction { Id = 3, Status = Status.Subscriber, User1Id = 1, User2Id = 3 });
         }
+
         public Task<int> Create(Interaction interaction)
         {
-            if (interaction == null)
-                throw new ArgumentNullException(nameof(interaction));
-            var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
+           var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
+
             if (existingInteraction != null)
             {
                 throw new InvalidOperationException("An interaction with the same ID already exists.");
             }
+
             _interactions.Add(interaction);
             return Task.FromResult(interaction.Id); 
         }
@@ -34,10 +36,11 @@ namespace Infrastructure.Repositories
         public Task<bool> Delete(int id)
         {
             var interaction = _interactions.FirstOrDefault(i => i.Id == id);
+            if (interaction == null)
+            {
+                throw new InvalidOperationException("Interaction not found.");
+            }
 
-            if (interaction == null) 
-                return Task.FromResult(false);
-            
             _interactions.Remove(interaction);
             return Task.FromResult(true);
         }
@@ -56,21 +59,19 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(Interaction interaction)
         {
-            if (interaction == null) 
-                throw new ArgumentNullException(nameof(interaction));
-           
             var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
+            if (existingInteraction == null)
+            {
+                throw new InvalidOperationException("Interaction not found.");
+            }
 
-            if (existingInteraction == null) 
-                return Task.FromResult(false);
-            
-           
             existingInteraction.Status = interaction.Status;
             existingInteraction.User1Id = interaction.User1Id;
             existingInteraction.User2Id = interaction.User2Id;
-           
+
             return Task.FromResult(true);
         }
+
         public Task<IEnumerable<Interaction>> GetAll()
         {
             return Task.FromResult(_interactions.AsEnumerable());

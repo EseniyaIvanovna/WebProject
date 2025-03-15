@@ -16,5 +16,7 @@ namespace Infrastructure.Repositories
         public Task<int> Create(Reaction reaction);
         public Task<bool> Update(Reaction reaction);
         public Task<bool> Delete(int id);
+        public Task DeleteByPostId(int postId);
+        public Task DeleteByUserId(int userId);
     }
 }

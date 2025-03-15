@@ -10,12 +10,13 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class ReactionController:ControllerBase
 {
-    private IReactionService reactionService;
+    private IReactionService _reactionService;
 
-    public ReactionController(IReactionService ReactionService)
+    public ReactionController(IReactionService reactionService)
     {
-        reactionService = ReactionService;
+        _reactionService = reactionService;
     }
+    
     [HttpPost]
     public async Task<IActionResult> CreateReaction([FromBody] ReactionDto reaction)
     {
@@ -24,25 +25,27 @@ public class ReactionController:ControllerBase
             return BadRequest("Reaction data is required.");
         }
 
-        var result = await reactionService.Create(reaction);
-        return Ok(result);
+        var reactionId = await _reactionService.Create(reaction);
+        return CreatedAtAction(nameof(GetReactionById), new { id = reactionId }, reaction);
     }
+    
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetReactionById([FromQuery] int id)
+    public async Task<IActionResult> GetReactionById(int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var reaction = await reactionService.GetById(id);
+        var reaction = await _reactionService.GetById(id);
         if (reaction == null)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(reaction);
     }
+    
     [HttpGet("ByPost/{postId}")]
     public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByPostId([FromQuery] int postId)
     {
@@ -51,9 +54,10 @@ public class ReactionController:ControllerBase
             return BadRequest("Post ID must be a positive integer.");
         }
 
-        var reactions = await reactionService.GetByPostId(postId);
+        var reactions = await _reactionService.GetByPostId(postId);
         return Ok(reactions);
     }
+    
     [HttpGet("ByUser/{userId}")]
     public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByUserId([FromQuery] int userId)
     {
@@ -62,9 +66,10 @@ public class ReactionController:ControllerBase
             return BadRequest("User ID must be a positive integer.");
         }
 
-        var reactions = await reactionService.GetByUserId(userId);
+        var reactions = await _reactionService.GetByUserId(userId);
         return Ok(reactions);
     }
+    
     [HttpPut]
     public async Task<IActionResult> UpdateReaction([FromBody] ReactionDto reaction)
     {
@@ -73,37 +78,37 @@ public class ReactionController:ControllerBase
             return BadRequest("Reaction data is required.");
         }
 
-        var result = await reactionService.Update(reaction);
+        var result = await _reactionService.Update(reaction);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteReaction([FromQuery] int id)
+    public async Task<IActionResult> DeleteReaction( int id)
     {
         if (id < 0)
         {
             return BadRequest("ID must be a positive integer.");
         }
 
-        var result = await reactionService.Delete(id);
+        var result = await _reactionService.Delete(id);
         if (!result)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(result);
     }
+    
     [HttpGet]
     public async Task<IActionResult> GetAllReactions()
     {
-        var reactions = await reactionService.GetAll();
+        var reactions = await _reactionService.GetAll();
         return Ok(reactions);
     }
-
-
 }
 
