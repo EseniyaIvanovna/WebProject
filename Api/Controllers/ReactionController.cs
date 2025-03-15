@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class ReactionController:ControllerBase
 {
-    private IReactionService _reactionService;
+    private readonly IReactionService _reactionService;
 
     public ReactionController(IReactionService reactionService)
     {
@@ -40,14 +40,14 @@ public class ReactionController:ControllerBase
         var reaction = await _reactionService.GetById(id);
         if (reaction == null)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(reaction);
     }
     
     [HttpGet("ByPost/{postId}")]
-    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByPostId([FromQuery] int postId)
+    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByPostId(int postId)
     {
         if (postId < 0)
         {
@@ -59,7 +59,7 @@ public class ReactionController:ControllerBase
     }
     
     [HttpGet("ByUser/{userId}")]
-    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByUserId([FromQuery] int userId)
+    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByUserId(int userId)
     {
         if (userId < 0)
         {
@@ -81,7 +81,7 @@ public class ReactionController:ControllerBase
         var result = await _reactionService.Update(reaction);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(result);
@@ -98,10 +98,10 @@ public class ReactionController:ControllerBase
         var result = await _reactionService.Delete(id);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
-        return Ok(result);
+        return NoContent();
     }
     
     [HttpGet]

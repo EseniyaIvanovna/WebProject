@@ -15,7 +15,5 @@ namespace Application.Service
         public Task<UserDto> GetById(int Id);
         public Task<IEnumerable<UserDto>> GetAll();
         public Task<bool> Update(UserDto user);
-        
-
     }
 }

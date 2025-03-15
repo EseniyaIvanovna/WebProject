@@ -10,7 +10,8 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private IUserService _userService;
+    private readonly IUserService _userService;
+
     public UserController(IUserService userService)
     {
         _userService = userService;
@@ -27,7 +28,7 @@ public class UserController : ControllerBase
         var user = await _userService.GetById(id);
         if (user == null)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(user);
@@ -75,7 +76,7 @@ public class UserController : ControllerBase
             var result = await _userService.Update(user);
             if (!result)
             {
-                return NoContent(); 
+                return NotFound(); 
             }
             return Ok(result); 
         }
@@ -90,7 +91,7 @@ public class UserController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<IActionResult> DeleteUser([FromQuery] int id)
+    public async Task<IActionResult> DeleteUser(int id)
     {
         if (id < 0)
         {
@@ -102,9 +103,9 @@ public class UserController : ControllerBase
             var result = await _userService.Delete(id);
             if (!result)
             {
-                return NoContent(); 
+                return NotFound(); 
             }
-            return Ok("User and all related data deleted successfully."); 
+            return NoContent(); 
         }
         catch (InvalidOperationException ex)
         {

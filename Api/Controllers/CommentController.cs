@@ -10,7 +10,8 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class CommentController : ControllerBase
 {
-    private ICommentService _commentService;
+    private readonly ICommentService _commentService;
+
     public CommentController(ICommentService commentService)
     {
         _commentService = commentService;
@@ -29,7 +30,7 @@ public class CommentController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetCommentById([FromQuery] int id)
+    public async Task<IActionResult> GetCommentById( int id)
     {
         if (id < 0)
         {
@@ -68,7 +69,7 @@ public class CommentController : ControllerBase
         var result = await _commentService.Update(comment);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(result);
@@ -85,10 +86,10 @@ public class CommentController : ControllerBase
         var result = await _commentService.Delete(id);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
-        return Ok(result);
+        return NoContent();
     }
     
     [HttpGet]

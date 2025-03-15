@@ -12,7 +12,6 @@ namespace Application.Service
 {
     public class MessageService : IMessageService
     {
-
         private readonly IMessageRepository _messageRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;

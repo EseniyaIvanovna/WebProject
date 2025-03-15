@@ -11,7 +11,6 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-
         private readonly List<User> _users = new List<User>();
         
         public UserRepository()

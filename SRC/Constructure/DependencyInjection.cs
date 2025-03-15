@@ -12,7 +12,6 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ICommentRepository, CommentRepository>();
             services.AddSingleton<IMessageRepository, MessageRepository>();

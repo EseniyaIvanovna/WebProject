@@ -11,7 +11,8 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class PostController : ControllerBase
 {
-    private IPostService _postService;
+    private readonly IPostService _postService;
+
     public PostController(IPostService postService)
     {
         _postService = postService;
@@ -40,7 +41,7 @@ public class PostController : ControllerBase
         var post = await _postService.GetById(id);
         if (post == null)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(post);
@@ -64,7 +65,7 @@ public class PostController : ControllerBase
         var result = await _postService.Update(post);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(result);
@@ -81,10 +82,10 @@ public class PostController : ControllerBase
         var result = await _postService.Delete(id);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
-        return Ok(result);
+        return NoContent();
     }
 }
 

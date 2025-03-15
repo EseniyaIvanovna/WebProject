@@ -93,6 +93,5 @@ namespace Application.Service
             var comments = await _commentRepository.GetAll();
             return _mapper.Map<IEnumerable<CommentDto>>(comments);
         }
-
     }
 }

@@ -9,7 +9,7 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class MessageController : ControllerBase
 {
-    private IMessageService _messageService;
+    private readonly IMessageService _messageService;
 
     public MessageController(IMessageService messageService)
     {
@@ -39,7 +39,7 @@ public class MessageController : ControllerBase
         var message = await _messageService.GetById(id);
         if (message == null)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(message);
@@ -75,7 +75,7 @@ public class MessageController : ControllerBase
         var result = await _messageService.Update(message);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(result);
@@ -92,10 +92,10 @@ public class MessageController : ControllerBase
         var result = await _messageService.Delete(id);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
-        return Ok(result);
+        return NoContent();
     }
 }
 

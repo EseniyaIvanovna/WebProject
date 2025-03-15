@@ -11,7 +11,7 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class InteractionController : ControllerBase
 {
-    private IInteractionService _interactionService;
+    private readonly IInteractionService _interactionService;
  
     public InteractionController(IInteractionService interactionService)
     {
@@ -41,7 +41,7 @@ public class InteractionController : ControllerBase
         var interaction = await _interactionService.GetById(id);
         if (interaction == null)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(interaction);
@@ -70,7 +70,7 @@ public class InteractionController : ControllerBase
         var result = await _interactionService.Update(interaction);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
         return Ok(result);
@@ -87,10 +87,10 @@ public class InteractionController : ControllerBase
         var result = await _interactionService.Delete(id);
         if (!result)
         {
-            return NoContent();
+            return NotFound();
         }
 
-        return Ok(result);
+        return NoContent();
     }
     
     [HttpGet]

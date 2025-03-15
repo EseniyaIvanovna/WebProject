@@ -10,10 +10,8 @@ namespace Infrastructure.Repositories
 {
     public class PostRepository : IPostRepository
     {
-
         private readonly List<Post> _posts;
 
-        // Конструктор с тестовыми данными
         public PostRepository()
         {
             _posts = new List<Post>

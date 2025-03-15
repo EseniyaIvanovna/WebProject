@@ -11,7 +11,6 @@ namespace Infrastructure.Repositories
 {
     public class ReactionRepository : IReactionRepository
     {
-
         private readonly List<Reaction> _reactions = new List<Reaction>();
         
         public ReactionRepository()

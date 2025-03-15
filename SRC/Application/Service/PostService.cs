@@ -18,8 +18,7 @@ namespace Application.Service
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository,
-            IReactionRepository reactionRepository, IUserRepository userRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IUserRepository userRepository, IMapper mapper)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;

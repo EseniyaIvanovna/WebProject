@@ -13,7 +13,6 @@ namespace Application.Service
 {
     public class InteractionService : IInteractionService
     {
-
         private readonly IInteractionRepository _interactionRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
