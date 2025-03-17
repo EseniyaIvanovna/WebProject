@@ -14,5 +14,6 @@ namespace Infrastructure.Repositories
         public Task<int> Create(Message message);
         public Task<bool> Update(Message message);
         public Task<bool> Delete(int id);
+        public Task<IEnumerable<Message>> GetAll();
     }
 }

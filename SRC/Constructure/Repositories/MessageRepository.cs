@@ -11,11 +11,22 @@ namespace Infrastructure.Repositories
     public class MessageRepository : IMessageRepository
     {
         private readonly List<Message> _messages = new List<Message>();
+
+        public MessageRepository()
+        {
+            // тестовые данные
+            _messages.Add(new Message { Id = 1, Text = "Hello!", SenderId = 1, ReceiverId = 2 });
+            _messages.Add(new Message { Id = 2, Text = "How are you?", SenderId = 2, ReceiverId = 1 });
+            _messages.Add(new Message { Id = 3, Text = "I'm fine, thanks!", SenderId = 1, ReceiverId = 2 });
+        }
+
         public Task<int> Create(Message message)
         {
-            if(message == null) 
-                throw new ArgumentNullException(nameof(message));
-            
+            var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
+            if (existingMessage != null)
+            {
+                throw new InvalidOperationException("A message with the same ID already exists.");
+            }
             _messages.Add(message);
             return Task.FromResult(message.Id) ;
         }
@@ -23,10 +34,11 @@ namespace Infrastructure.Repositories
         public Task<bool> Delete(int id)
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
+            if (message == null)
+            {
+                throw new InvalidOperationException("Message not found.");
+            }
 
-            if (message == null) 
-                return Task.FromResult(false);
-            
             _messages.Remove(message);
             return Task.FromResult(true);
         }
@@ -45,20 +57,23 @@ namespace Infrastructure.Repositories
 
         public Task<bool> Update(Message message)
         {
-            if (message == null) 
-                throw new ArgumentNullException(nameof(message));
-            
             var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
+            if (existingMessage == null)
+            {
+                throw new InvalidOperationException("Message not found.");
+            }
 
-            if (existingMessage == null) 
-                return Task.FromResult(false);
-            
             existingMessage.SenderId = message.SenderId;
             existingMessage.ReceiverId = message.ReceiverId;
             existingMessage.Text = message.Text;
             existingMessage.CreatedAt = message.CreatedAt;
 
             return Task.FromResult(true);
+        }
+
+        public Task<IEnumerable<Message>> GetAll()
+        {
+            return Task.FromResult(_messages.AsEnumerable());
         }
     }
 }
