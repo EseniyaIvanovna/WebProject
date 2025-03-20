@@ -2,8 +2,6 @@
 using Domain;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -50,7 +48,11 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM messages WHERE id = @Id";
+            var sql = @"
+                SELECT id, sender_id, receiver_id, text, created_at
+                FROM messages
+                WHERE id = @Id;
+            ";
             var message = await _connection.QuerySingleOrDefaultAsync<Message>(sql, new { Id = id });
 
             return message;
@@ -60,7 +62,7 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
+            var sql = "SELECT id, sender_id, receiver_id, text, created_at FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
             var messages = await _connection.QueryAsync<Message>(sql, new { UserId = userId });
 
             return messages;
@@ -94,7 +96,11 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM messages";
+            var sql = @"
+                SELECT id, sender_id, receiver_id, text, created_at
+                FROM messages;
+            ";
+
             var messages = await _connection.QueryAsync<Message>(sql);
 
             return messages;

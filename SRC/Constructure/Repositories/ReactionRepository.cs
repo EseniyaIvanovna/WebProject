@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using Domain;
-using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -22,16 +19,16 @@ namespace Infrastructure.Repositories
             await _connection.OpenAsync();
 
             var sql = @"
-                INSERT INTO reactions (type, userid, postid)
-                VALUES (@Type, @UserId, @PostId)
+                INSERT INTO reactions (user_id, post_id, type)
+                VALUES (@UserId, @PostId, @Type)
                 RETURNING id;
             ";
 
             var reactionId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                reaction.Type,
                 reaction.UserId,
-                reaction.PostId
+                reaction.PostId,
+                reaction.Type
             });
 
             return reactionId;
@@ -51,9 +48,13 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM reactions WHERE id = @Id";
-            var reaction = await _connection.QuerySingleOrDefaultAsync<Reaction>(sql, new { Id = id });
+            var sql = @"
+                SELECT id, user_id, post_id, type
+                FROM reactions
+                WHERE id = @Id;
+            ";
 
+            var reaction = await _connection.QuerySingleOrDefaultAsync<Reaction>(sql, new { Id = id });
             return reaction;
         }
 
@@ -61,7 +62,11 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM reactions WHERE postid = @PostId";
+            var sql = @"
+                SELECT id, user_id, post_id, type
+                FROM reactions
+                WHERE post_id = @PostId;
+            ";
             var reactions = await _connection.QueryAsync<Reaction>(sql, new { PostId = postId });
 
             return reactions;
@@ -71,7 +76,11 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM reactions WHERE userid = @UserId";
+            var sql = @"
+                SELECT id, user_id, post_id, type
+                FROM reactions
+                WHERE user_id = @UserId;
+            ";
             var reactions = await _connection.QueryAsync<Reaction>(sql, new { UserId = userId });
 
             return reactions;
@@ -83,17 +92,13 @@ namespace Infrastructure.Repositories
 
             var sql = @"
                 UPDATE reactions
-                SET type = @Type,
-                    userid = @UserId,
-                    postid = @PostId
+                SET type = @Type
                 WHERE id = @Id;
             ";
 
             var affectedRows = await _connection.ExecuteAsync(sql, new
             {
                 reaction.Type,
-                reaction.UserId,
-                reaction.PostId,
                 reaction.Id
             });
 
@@ -104,9 +109,12 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM reactions";
-            var reactions = await _connection.QueryAsync<Reaction>(sql);
+            var sql = @"
+                SELECT id, user_id, post_id, type
+                FROM reactions;
+            ";
 
+            var reactions = await _connection.QueryAsync<Reaction>(sql);
             return reactions;
         }
 
@@ -114,7 +122,7 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "DELETE FROM reactions WHERE postid = @PostId";
+            var sql = "DELETE FROM reactions WHERE post_id = @PostId";
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
@@ -122,7 +130,7 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "DELETE FROM reactions WHERE userid = @UserId";
+            var sql = "DELETE FROM reactions WHERE user_id = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }

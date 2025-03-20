@@ -3,8 +3,6 @@ using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -22,16 +20,16 @@ namespace Infrastructure.Repositories
             await _connection.OpenAsync();
 
             var sql = @"
-                INSERT INTO interactions (status, user1id, user2id)
-                VALUES (@Status, @User1Id, @User2Id)
+                INSERT INTO interactions (user1_id, user2_id, status)
+                VALUES (@User1Id, @User2Id, @Status)
                 RETURNING id;
             ";
 
             var interactionId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                interaction.Status,
                 interaction.User1Id,
-                interaction.User2Id
+                interaction.User2Id,
+                Status = interaction.Status.ToString()
             });
 
             return interactionId;
@@ -51,9 +49,13 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM interactions WHERE id = @Id";
-            var interaction = await _connection.QuerySingleOrDefaultAsync<Interaction>(sql, new { Id = id });
+            var sql = @"
+                SELECT id, user1_id, user2_id, status
+                FROM interactions
+                WHERE id = @Id;
+            ";
 
+            var interaction = await _connection.QuerySingleOrDefaultAsync<Interaction>(sql, new { Id = id });
             return interaction;
         }
 
@@ -61,9 +63,13 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM interactions WHERE status = @Status";
-            var interactions = await _connection.QueryAsync<Interaction>(sql, new { Status = status });
+            var sql = @"
+                SELECT id, user1_id, user2_id, status
+                FROM interactions
+                WHERE status = @Status;
+            ";
 
+            var interactions = await _connection.QueryAsync<Interaction>(sql, new { Status = status.ToString() });
             return interactions;
         }
 
@@ -73,17 +79,17 @@ namespace Infrastructure.Repositories
 
             var sql = @"
                 UPDATE interactions
-                SET status = @Status,
-                    user1id = @User1Id,
-                    user2id = @User2Id
+                SET user1_id = @User1Id,
+                    user2_id = @User2Id,
+                    status = @Status
                 WHERE id = @Id;
             ";
 
             var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                interaction.Status,
                 interaction.User1Id,
                 interaction.User2Id,
+                Status = interaction.Status.ToString(), 
                 interaction.Id
             });
 
@@ -94,9 +100,12 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM interactions";
-            var interactions = await _connection.QueryAsync<Interaction>(sql);
+            var sql = @"
+                SELECT id, user1_id, user2_id, status
+                FROM interactions;
+            ";
 
+            var interactions = await _connection.QueryAsync<Interaction>(sql);
             return interactions;
         }
     }

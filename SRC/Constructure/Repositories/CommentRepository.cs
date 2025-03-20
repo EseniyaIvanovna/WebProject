@@ -2,9 +2,6 @@
 using Domain;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -22,15 +19,16 @@ namespace Infrastructure.Repositories
             await _connection.OpenAsync();
 
             var sql = @"
-                INSERT INTO comments (content, user_id, post_id, created_at)
-                VALUES (@Content, @UserId, @PostId, @CreatedAt)
-                RETURNING id
+                INSERT INTO comments (post_id, user_id, content, created_at)
+                VALUES (@PostId, @UserId, @Content, @CreatedAt)
+                RETURNING id;
             ";
+
             var commentId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                comment.Content,
-                comment.UserId,
                 comment.PostId,
+                comment.UserId,
+                comment.Content,
                 comment.CreatedAt
             });
 
@@ -51,9 +49,13 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM comments WHERE id = @Id";
-            var comment = await _connection.QuerySingleOrDefaultAsync<Comment>(sql, new { Id = id });
+            var sql = @"
+                SELECT id, post_id, user_id, content, created_at
+                FROM comments
+                WHERE id = @Id;
+            ";
 
+            var comment = await _connection.QuerySingleOrDefaultAsync<Comment>(sql, new { Id = id });
             return comment;
         }
 
@@ -61,7 +63,11 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM comments WHERE user_id = @UserId";
+            var sql = @"
+                SELECT id, post_id, user_id, content, created_at
+                FROM comments
+                WHERE user_id = @UserId;
+            ";
             var comments = await _connection.QueryAsync<Comment>(sql, new { UserId = userId });
 
             return comments;
@@ -73,18 +79,13 @@ namespace Infrastructure.Repositories
 
             var sql = @"
                 UPDATE comments
-                SET content = @Content,
-                    user_id = @UserId,
-                    post_id = @PostId,
-                    created_at = @CreatedAt
-                WHERE id = @Id
+                SET content = @Content
+                WHERE id = @Id;
             ";
+
             var affectedRows = await _connection.ExecuteAsync(sql, new
             {
                 comment.Content,
-                comment.UserId,
-                comment.PostId,
-                comment.CreatedAt,
                 comment.Id
             });
 
@@ -95,9 +96,12 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM comments";
-            var comments = await _connection.QueryAsync<Comment>(sql);
+            var sql = @"
+                SELECT id, post_id, user_id, content, created_at
+                FROM comments;
+            ";
 
+            var comments = await _connection.QueryAsync<Comment>(sql);
             return comments;
         }
 

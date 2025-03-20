@@ -2,8 +2,6 @@
 using Domain;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -21,17 +19,18 @@ namespace Infrastructure.Repositories
             await _connection.OpenAsync();
 
             var sql = @"
-                INSERT INTO users (name, lastname, email, age, info)
-                VALUES (@Name, @LastName, @Email, @Age, @Info)
-                RETURNING id
+                INSERT INTO users (name, last_name, age, info, email)
+                VALUES (@Name, @LastName, @Age, @Info, @Email)
+                RETURNING id;
             ";
+
             var userId = await _connection.QuerySingleAsync<int>(sql, new
             {
                 user.Name,
                 user.LastName,
-                user.Email,
                 user.Age,
-                user.Info
+                user.Info,
+                user.Email
             });
 
             return userId;
@@ -51,9 +50,12 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM users";
-            var users = await _connection.QueryAsync<User>(sql);
+            var sql = @"
+                SELECT id, name, last_name, age, info, email
+                FROM users;
+            ";
 
+            var users = await _connection.QueryAsync<User>(sql);
             return users;
         }
 
@@ -61,9 +63,13 @@ namespace Infrastructure.Repositories
         {
             await _connection.OpenAsync();
 
-            var sql = "SELECT * FROM users WHERE id = @Id";
-            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
+            var sql = @"
+                SELECT id, name, last_name, age, info, email
+                FROM users
+                WHERE id = @Id;
+            ";
 
+            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
             return user;
         }
 
@@ -74,19 +80,20 @@ namespace Infrastructure.Repositories
             var sql = @"
                 UPDATE users
                 SET name = @Name,
-                    lastname = @LastName,
-                    email = @Email,
+                    last_name = @LastName,
                     age = @Age,
-                    info = @Info
-                WHERE id = @Id
+                    info = @Info,
+                    email = @Email
+                WHERE id = @Id;
             ";
+
             var affectedRows = await _connection.ExecuteAsync(sql, new
             {
                 user.Name,
                 user.LastName,
-                user.Email,
                 user.Age,
                 user.Info,
+                user.Email,
                 user.Id
             });
 

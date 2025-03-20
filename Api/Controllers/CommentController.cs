@@ -1,8 +1,6 @@
 ﻿using Application.Dto;
 using Application.Service;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Api.Controllers;
 
