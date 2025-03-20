@@ -1,11 +1,16 @@
-﻿using Infrastructure.Repositories;
+﻿using FluentMigrator.Runner;
+using Infrastructure.Repositories;
+using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-   
+
 namespace Infrastructure
 {
     public static class DependencyInjection
@@ -18,6 +23,26 @@ namespace Infrastructure
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IReactionRepository, ReactionRepository>();
             services.AddSingleton<IInteractionRepository, InteractionRepository>();
+
+            services.AddSingleton(sp =>
+            {
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var configurationString = configuration.GetConnectionString("PostgresDB");
+                return new NpgsqlDataSourceBuilder(configurationString).Build();
+            }
+            );
+
+            services.AddScoped(sp =>
+            {
+                var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
+                return dataSource.CreateConnection();
+            }
+            );
+
+            services.AddFluentMigratorCore().ConfigureRunner(
+                rb => rb.AddPostgres().WithGlobalConnectionString("")
+                .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             return services;
         }

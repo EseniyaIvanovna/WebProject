@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain;
 using Domain.Enums;
-using Infrastructure.Repositories;
+using Infrastructure.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

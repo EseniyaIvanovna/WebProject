@@ -1,95 +1,99 @@
-﻿using Domain;
-using Microsoft.VisualBasic;
-using System;
+﻿using Dapper;
+using Domain;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
     public class PostRepository : IPostRepository
     {
-        private readonly List<Post> _posts;
+        private readonly NpgsqlConnection _connection;
 
-        public PostRepository()
+        public PostRepository(NpgsqlConnection connection)
         {
-            _posts = new List<Post>
-            {
-                new Post { Id = 1, UserId = 1, Text = "This is the first post.", CreatedAt = DateTime.UtcNow },
-                new Post { Id = 2, UserId = 2, Text = "This is the second post.", CreatedAt = DateTime.UtcNow },
-                new Post { Id = 3, UserId = 1, Text = "This is the third post.", CreatedAt = DateTime.UtcNow }
-            };
+            _connection = connection;
         }
 
-        public Task<int> Create(Post post)
+        public async Task<int> Create(Post post)
         {
-            if (post == null)
-            {
-                throw new ArgumentNullException(nameof(post));
-            }
+            await _connection.OpenAsync();
 
-            var existingPost = _posts.FirstOrDefault(p => p.Id == post.Id);
-            if (existingPost != null)
+            var sql = @"
+                INSERT INTO posts (user_id, text, created_at)
+                VALUES (@UserId, @Text, @CreatedAt)
+                RETURNING id
+            ";
+            var postId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("A post with the same ID already exists.");
-            }
+                post.UserId,
+                post.Text,
+                post.CreatedAt
+            });
 
-            _posts.Add(post);
-            return Task.FromResult(post.Id);
+            return postId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var post = _posts.FirstOrDefault(p => p.Id == id);
-            if (post == null)
-            {
-                return Task.FromResult(false);
-            }
+            await _connection.OpenAsync();
 
-            _posts.Remove(post);
-            return Task.FromResult(true);
+            var sql = "DELETE FROM posts WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
         }
 
-        public Task DeleteByUserId(int userId)
+        public async Task DeleteByUserId(int userId)
         {
-            var postsToDelete = _posts.Where(p => p.UserId == userId).ToList();
-            foreach (var post in postsToDelete)
-            {
-                _posts.Remove(post);
-            }
-            return Task.CompletedTask;
+            await _connection.OpenAsync();
+
+            var sql = "DELETE FROM posts WHERE user_id = @UserId";
+            await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
 
-        public Task<IEnumerable<Post>> GetAll()
+        public async Task<IEnumerable<Post>> GetAll()
         {
-            return Task.FromResult(_posts.AsEnumerable());
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM posts";
+            var posts = await _connection.QueryAsync<Post>(sql);
+
+            return posts;
         }
 
-        public Task<Post> GetById(int Id)
+        public async Task<Post> GetById(int id)
         {
-            var post = _posts.FirstOrDefault(p => p.Id == Id);
-            return Task.FromResult(post);
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM posts WHERE id = @Id";
+            var post = await _connection.QuerySingleOrDefaultAsync<Post>(sql, new { Id = id });
+
+            return post;
         }
 
-        public Task<bool> Update(Post post)
+        public async Task<bool> Update(Post post)
         {
-            if (post == null)
+            await _connection.OpenAsync();
+
+            var sql = @"
+                UPDATE posts
+                SET text = @Text,
+                    user_id = @UserId,
+                    created_at = @CreatedAt
+                WHERE id = @Id
+            ";
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                throw new ArgumentNullException(nameof(post));
-            }
+                post.Text,
+                post.UserId,
+                post.CreatedAt,
+                post.Id
+            });
 
-            var existingPost = _posts.FirstOrDefault(p => p.Id == post.Id);
-            if (existingPost == null)
-            {
-                return Task.FromResult(false);
-            }
-
-            existingPost.Text = post.Text;
-            existingPost.UserId = post.UserId;
-            existingPost.CreatedAt = post.CreatedAt;
-
-            return Task.FromResult(true);
+            return affectedRows > 0;
         }
     }
 }

@@ -1,101 +1,120 @@
-﻿using Domain;
-using Microsoft.VisualBasic;
-using System;
+﻿using Dapper;
+using Domain;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
     public class CommentRepository : ICommentRepository
     {
-        private readonly List<Comment> _comments = new List<Comment>();
+        private readonly NpgsqlConnection _connection;
 
-        public CommentRepository()
+        public CommentRepository(NpgsqlConnection connection)
         {
-            // тестовые данные 
-            _comments.Add(new Comment { Id = 1, Content = "Great post!", UserId = 1, PostId = 1 });
-            _comments.Add(new Comment { Id = 2, Content = "Nice work!", UserId = 2, PostId = 1 });
-            _comments.Add(new Comment { Id = 3, Content = "Interesting read.", UserId = 1, PostId = 2 });
+            _connection = connection;
         }
 
-        public Task<int> Create(Comment comment)
+        public async Task<int> Create(Comment comment)
         {
-            var existingComment = _comments.FirstOrDefault(c => c.Id == comment.Id);
-            if (existingComment != null)
+            await _connection.OpenAsync();
+
+            var sql = @"
+                INSERT INTO comments (content, user_id, post_id, created_at)
+                VALUES (@Content, @UserId, @PostId, @CreatedAt)
+                RETURNING id
+            ";
+            var commentId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("A comment with the same ID already exists.");
-            }
-            _comments.Add(comment);
-            return Task.FromResult(comment.Id); 
+                comment.Content,
+                comment.UserId,
+                comment.PostId,
+                comment.CreatedAt
+            });
+
+            return commentId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var comment = _comments.FirstOrDefault(c => c.Id == id);
+            await _connection.OpenAsync();
 
-            if (comment == null) 
-                return Task.FromResult(false);
-            
-            _comments.Remove(comment);
-            return Task.FromResult(true);
+            var sql = "DELETE FROM comments WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
         }
 
-        public Task<Comment> GetById(int id)
+        public async Task<Comment> GetById(int id)
         {
-            var comment = _comments.FirstOrDefault(c => c.Id == id);
-           
-            return Task.FromResult(comment);
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM comments WHERE id = @Id";
+            var comment = await _connection.QuerySingleOrDefaultAsync<Comment>(sql, new { Id = id });
+
+            return comment;
         }
 
-        public Task<IEnumerable<Comment>> GetByUserId(int userId)
+        public async Task<IEnumerable<Comment>> GetByUserId(int userId)
         {
-            var comments = _comments.Where(c => c.UserId == userId);
-            return Task.FromResult(comments);
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM comments WHERE user_id = @UserId";
+            var comments = await _connection.QueryAsync<Comment>(sql, new { UserId = userId });
+
+            return comments;
         }
 
-        public Task<bool> Update(Comment comment)
+        public async Task<bool> Update(Comment comment)
         {
-            if (comment == null) 
-                throw new ArgumentNullException(nameof(comment));
-           
-            var existingComment = _comments.FirstOrDefault(c => c.Id == comment.Id);
+            await _connection.OpenAsync();
 
-            if (existingComment == null) 
-                return Task.FromResult(false);            
-            
-            existingComment.Content = comment.Content;
-            existingComment.UserId = comment.UserId;
-            existingComment.PostId = comment.PostId;
-            existingComment.CreatedAt = comment.CreatedAt;
-
-            return Task.FromResult(true);
-        }
-
-        public Task<IEnumerable<Comment>> GetAll()
-        {
-            return Task.FromResult<IEnumerable<Comment>>(_comments.AsEnumerable());
-        }
-
-        public Task DeleteByPostId(int postId)
-        {
-            var commentsToDelete = _comments.Where(c => c.PostId == postId).ToList();
-            foreach (var comment in commentsToDelete)
+            var sql = @"
+                UPDATE comments
+                SET content = @Content,
+                    user_id = @UserId,
+                    post_id = @PostId,
+                    created_at = @CreatedAt
+                WHERE id = @Id
+            ";
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                _comments.Remove(comment);
-            }
-            return Task.CompletedTask;
+                comment.Content,
+                comment.UserId,
+                comment.PostId,
+                comment.CreatedAt,
+                comment.Id
+            });
+
+            return affectedRows > 0;
         }
 
-        public Task DeleteByUserId(int userId)
+        public async Task<IEnumerable<Comment>> GetAll()
         {
-            var commentsToDelete = _comments.Where(c => c.UserId == userId).ToList();
-            foreach (var comment in commentsToDelete)
-            {
-                _comments.Remove(comment);
-            }
-            return Task.CompletedTask;
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM comments";
+            var comments = await _connection.QueryAsync<Comment>(sql);
+
+            return comments;
+        }
+
+        public async Task DeleteByPostId(int postId)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "DELETE FROM comments WHERE post_id = @PostId";
+            await _connection.ExecuteAsync(sql, new { PostId = postId });
+        }
+
+        public async Task DeleteByUserId(int userId)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "DELETE FROM comments WHERE user_id = @UserId";
+            await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }
 }

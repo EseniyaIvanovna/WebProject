@@ -1,80 +1,103 @@
-﻿using Domain;
+﻿using Dapper;
+using Domain;
 using Domain.Enums;
-using System;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
     public class InteractionRepository : IInteractionRepository
     {
-        private readonly List<Interaction> _interactions = new List<Interaction>();
+        private readonly NpgsqlConnection _connection;
 
-        public InteractionRepository()
+        public InteractionRepository(NpgsqlConnection connection)
         {
-            // тестовые данные
-            _interactions.Add(new Interaction { Id = 1, Status = Status.Friend, User1Id = 1, User2Id = 2 });
-            _interactions.Add(new Interaction { Id = 2, Status = Status.Friend, User1Id = 2, User2Id = 1 });
-            _interactions.Add(new Interaction { Id = 3, Status = Status.Subscriber, User1Id = 1, User2Id = 3 });
+            _connection = connection;
         }
 
-        public Task<int> Create(Interaction interaction)
+        public async Task<int> Create(Interaction interaction)
         {
-           var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
+            await _connection.OpenAsync();
 
-            if (existingInteraction != null)
+            var sql = @"
+                INSERT INTO interactions (status, user1id, user2id)
+                VALUES (@Status, @User1Id, @User2Id)
+                RETURNING id;
+            ";
+
+            var interactionId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("An interaction with the same ID already exists.");
-            }
+                interaction.Status,
+                interaction.User1Id,
+                interaction.User2Id
+            });
 
-            _interactions.Add(interaction);
-            return Task.FromResult(interaction.Id); 
+            return interactionId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var interaction = _interactions.FirstOrDefault(i => i.Id == id);
-            if (interaction == null)
+            await _connection.OpenAsync();
+
+            var sql = "DELETE FROM interactions WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
+        }
+
+        public async Task<Interaction> GetById(int id)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM interactions WHERE id = @Id";
+            var interaction = await _connection.QuerySingleOrDefaultAsync<Interaction>(sql, new { Id = id });
+
+            return interaction;
+        }
+
+        public async Task<IEnumerable<Interaction>> GetByStatus(Status status)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM interactions WHERE status = @Status";
+            var interactions = await _connection.QueryAsync<Interaction>(sql, new { Status = status });
+
+            return interactions;
+        }
+
+        public async Task<bool> Update(Interaction interaction)
+        {
+            await _connection.OpenAsync();
+
+            var sql = @"
+                UPDATE interactions
+                SET status = @Status,
+                    user1id = @User1Id,
+                    user2id = @User2Id
+                WHERE id = @Id;
+            ";
+
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                throw new InvalidOperationException("Interaction not found.");
-            }
+                interaction.Status,
+                interaction.User1Id,
+                interaction.User2Id,
+                interaction.Id
+            });
 
-            _interactions.Remove(interaction);
-            return Task.FromResult(true);
+            return affectedRows > 0;
         }
 
-        public Task<Interaction> GetById(int id)
+        public async Task<IEnumerable<Interaction>> GetAll()
         {
-            var interaction = _interactions.FirstOrDefault(i => i.Id == id);
-            return Task.FromResult(interaction);
-        }
+            await _connection.OpenAsync();
 
-        public Task<IEnumerable<Interaction>> GetByStatus(Status status)
-        {
-            var interactions = _interactions.Where(i => i.Status == status);
-            return Task.FromResult(interactions);
-        }
+            var sql = "SELECT * FROM interactions";
+            var interactions = await _connection.QueryAsync<Interaction>(sql);
 
-        public Task<bool> Update(Interaction interaction)
-        {
-            var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
-            if (existingInteraction == null)
-            {
-                throw new InvalidOperationException("Interaction not found.");
-            }
-
-            existingInteraction.Status = interaction.Status;
-            existingInteraction.User1Id = interaction.User1Id;
-            existingInteraction.User2Id = interaction.User2Id;
-
-            return Task.FromResult(true);
-        }
-
-        public Task<IEnumerable<Interaction>> GetAll()
-        {
-            return Task.FromResult(_interactions.AsEnumerable());
+            return interactions;
         }
     }
 }

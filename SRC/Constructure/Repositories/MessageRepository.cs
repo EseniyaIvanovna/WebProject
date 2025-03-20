@@ -1,79 +1,103 @@
-﻿using Domain;
-using Microsoft.VisualBasic;
-using System;
+﻿using Dapper;
+using Domain;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly List<Message> _messages = new List<Message>();
+        private readonly NpgsqlConnection _connection;
 
-        public MessageRepository()
+        public MessageRepository(NpgsqlConnection connection)
         {
-            // тестовые данные
-            _messages.Add(new Message { Id = 1, Text = "Hello!", SenderId = 1, ReceiverId = 2 });
-            _messages.Add(new Message { Id = 2, Text = "How are you?", SenderId = 2, ReceiverId = 1 });
-            _messages.Add(new Message { Id = 3, Text = "I'm fine, thanks!", SenderId = 1, ReceiverId = 2 });
+            _connection = connection;
         }
 
-        public Task<int> Create(Message message)
+        public async Task<int> Create(Message message)
         {
-            var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
-            if (existingMessage != null)
+            await _connection.OpenAsync();
+
+            var sql = @"
+                INSERT INTO messages (sender_id, receiver_id, text, created_at)
+                VALUES (@SenderId, @ReceiverId, @Text, @CreatedAt)
+                RETURNING id
+            ";
+            var messageId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("A message with the same ID already exists.");
-            }
-            _messages.Add(message);
-            return Task.FromResult(message.Id) ;
+                message.SenderId,
+                message.ReceiverId,
+                message.Text,
+                message.CreatedAt
+            });
+
+            return messageId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var message = _messages.FirstOrDefault(m => m.Id == id);
-            if (message == null)
+            await _connection.OpenAsync();
+
+            var sql = "DELETE FROM messages WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
+        }
+
+        public async Task<Message> GetById(int id)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM messages WHERE id = @Id";
+            var message = await _connection.QuerySingleOrDefaultAsync<Message>(sql, new { Id = id });
+
+            return message;
+        }
+
+        public async Task<IEnumerable<Message>> GetByUserId(int userId)
+        {
+            await _connection.OpenAsync();
+
+            var sql = "SELECT * FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
+            var messages = await _connection.QueryAsync<Message>(sql, new { UserId = userId });
+
+            return messages;
+        }
+
+        public async Task<bool> Update(Message message)
+        {
+            await _connection.OpenAsync();
+
+            var sql = @"
+                UPDATE messages
+                SET sender_id = @SenderId,
+                    receiver_id = @ReceiverId,
+                    text = @Text,
+                    created_at = @CreatedAt
+                WHERE id = @Id
+            ";
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                throw new InvalidOperationException("Message not found.");
-            }
+                message.SenderId,
+                message.ReceiverId,
+                message.Text,
+                message.CreatedAt,
+                message.Id
+            });
 
-            _messages.Remove(message);
-            return Task.FromResult(true);
+            return affectedRows > 0;
         }
 
-        public Task<Message> GetById(int id)
+        public async Task<IEnumerable<Message>> GetAll()
         {
-            var message = _messages.FirstOrDefault(m => m.Id == id);
-            return Task.FromResult(message);
-        }
+            await _connection.OpenAsync();
 
-        public Task<IEnumerable<Message>> GetByUserId(int userId)
-        {
-            var messages = _messages.Where(m => m.SenderId == userId || m.ReceiverId == userId);
-            return Task.FromResult(messages);
-        }
+            var sql = "SELECT * FROM messages";
+            var messages = await _connection.QueryAsync<Message>(sql);
 
-        public Task<bool> Update(Message message)
-        {
-            var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
-            if (existingMessage == null)
-            {
-                throw new InvalidOperationException("Message not found.");
-            }
-
-            existingMessage.SenderId = message.SenderId;
-            existingMessage.ReceiverId = message.ReceiverId;
-            existingMessage.Text = message.Text;
-            existingMessage.CreatedAt = message.CreatedAt;
-
-            return Task.FromResult(true);
-        }
-
-        public Task<IEnumerable<Message>> GetAll()
-        {
-            return Task.FromResult(_messages.AsEnumerable());
+            return messages;
         }
     }
 }
