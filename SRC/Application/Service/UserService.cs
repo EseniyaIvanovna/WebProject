@@ -1,4 +1,5 @@
 ﻿using Application.Dto;
+using Application.Requests;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -22,20 +23,26 @@ namespace Application.Service
             _mapper = mapper;
         }
 
-        public async Task<int> Add(UserDto user)
+        public async Task<int> Add(CreateUserRequest request)
         {
-            if (user == null)
+            var user = new User()
             {
-                throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            }
-            var existingUser = await _userRepository.GetById(user.Id);
-            if (existingUser != null)
-            {
-                throw new InvalidOperationException("A user with the same Id already exists.");
-            }
-            var mappedUser = _mapper.Map<User>(user);
-            int userId = await _userRepository.Create(mappedUser);
-            return userId;
+                Name = request.Name,
+                LastName = request.LastName // продолжить поля которые будут с проверками
+            };
+            return await _userRepository.Create(user);
+            //if (user == null)
+            //{
+            //    throw new ArgumentNullException(nameof(user), "User cannot be null.");
+            //}
+            //var existingUser = await _userRepository.GetById(user.Id);
+            //if (existingUser != null)
+            //{
+            //    throw new InvalidOperationException("A user with the same Id already exists.");
+            //}
+            //var mappedUser = _mapper.Map<User>(user);
+            //int userId = await _userRepository.Create(mappedUser);
+            //return userId;
         }
 
         public async Task<bool> Delete(int id)

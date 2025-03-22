@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public async Task<int> Create(Message message)
         {
-            await _connection.OpenAsync();
+            message.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
                 INSERT INTO messages (sender_id, receiver_id, text, created_at)
@@ -36,8 +36,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = "DELETE FROM messages WHERE id = @Id";
             var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
@@ -46,8 +44,6 @@ namespace Infrastructure.Repositories
 
         public async Task<Message> GetById(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 SELECT id, sender_id, receiver_id, text, created_at
                 FROM messages
@@ -60,8 +56,6 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Message>> GetByUserId(int userId)
         {
-            await _connection.OpenAsync();
-
             var sql = "SELECT id, sender_id, receiver_id, text, created_at FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
             var messages = await _connection.QueryAsync<Message>(sql, new { UserId = userId });
 
@@ -70,22 +64,15 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Update(Message message)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 UPDATE messages
-                SET sender_id = @SenderId,
-                    receiver_id = @ReceiverId,
-                    text = @Text,
-                    created_at = @CreatedAt
+                SET text = @Text
                 WHERE id = @Id
             ";
+
             var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                message.SenderId,
-                message.ReceiverId,
                 message.Text,
-                message.CreatedAt,
                 message.Id
             });
 
@@ -94,8 +81,6 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Message>> GetAll()
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 SELECT id, sender_id, receiver_id, text, created_at
                 FROM messages;

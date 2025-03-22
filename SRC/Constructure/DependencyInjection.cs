@@ -12,32 +12,32 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            services.AddSingleton<IUserRepository, UserRepository>();
-            services.AddSingleton<ICommentRepository, CommentRepository>();
-            services.AddSingleton<IMessageRepository, MessageRepository>();
-            services.AddSingleton<IPostRepository, PostRepository>();
-            services.AddSingleton<IReactionRepository, ReactionRepository>();
-            services.AddSingleton<IInteractionRepository, InteractionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IReactionRepository, ReactionRepository>();
+            services.AddScoped<IInteractionRepository, InteractionRepository>();
 
             services.AddSingleton(sp =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var configurationString = configuration.GetConnectionString("PostgresDB");
-                return new NpgsqlDataSourceBuilder(configurationString).Build();
-            }
-            );
+                var connectionString = configuration.GetConnectionString("PostgresDB");
+                return new NpgsqlDataSourceBuilder(connectionString).Build();
+            });
 
             services.AddScoped(sp =>
             {
                 var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
                 return dataSource.CreateConnection();
-            }
-            );
+            });
 
-            services.AddFluentMigratorCore().ConfigureRunner(
-                rb => rb.AddPostgres().WithGlobalConnectionString("")
-                .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations())
-                .AddLogging(lb => lb.AddFluentMigratorConsole());
+            services.AddFluentMigratorCore()
+                    .ConfigureRunner(rb => rb.AddPostgres()
+                    .WithGlobalConnectionString("PostgresDB")
+                    .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations())
+                    .AddLogging(lb => lb.AddFluentMigratorConsole());
+            services.AddScoped<Database.MigrationRunner>();
 
             return services;
         }

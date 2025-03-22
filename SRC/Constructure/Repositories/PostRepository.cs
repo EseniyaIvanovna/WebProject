@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public async Task<int> Create(Post post)
         {
-            await _connection.OpenAsync();
+            post.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
                 INSERT INTO posts (user_id, text, created_at)
@@ -33,7 +33,6 @@ namespace Infrastructure.Repositories
 
             return postId;
         }
-
 
         public async Task<bool> Delete(int id)
         {

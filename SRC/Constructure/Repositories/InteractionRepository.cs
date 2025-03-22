@@ -17,8 +17,6 @@ namespace Infrastructure.Repositories
 
         public async Task<int> Create(Interaction interaction)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 INSERT INTO interactions (user1_id, user2_id, status)
                 VALUES (@User1Id, @User2Id, @Status)
@@ -37,8 +35,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = "DELETE FROM interactions WHERE id = @Id";
             var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
@@ -47,8 +43,6 @@ namespace Infrastructure.Repositories
 
         public async Task<Interaction> GetById(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 SELECT id, user1_id, user2_id, status
                 FROM interactions
@@ -61,8 +55,6 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Interaction>> GetByStatus(Status status)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 SELECT id, user1_id, user2_id, status
                 FROM interactions
@@ -75,8 +67,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Update(Interaction interaction)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 UPDATE interactions
                 SET user1_id = @User1Id,
@@ -98,8 +88,6 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Interaction>> GetAll()
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 SELECT id, user1_id, user2_id, status
                 FROM interactions;
