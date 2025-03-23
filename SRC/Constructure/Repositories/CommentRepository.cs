@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             comment.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO comments (post_id, user_id, content, created_at)
+                INSERT INTO comments (postId, userId, content, createdAt)
                 VALUES (@PostId, @UserId, @Content, @CreatedAt)
                 RETURNING id;
             ";
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
         public async Task<Comment> GetById(int id)
         {
             var sql = @"
-                SELECT id, post_id, user_id, content, created_at
+                SELECT id, postId, userId, content, createdAt
                 FROM comments
                 WHERE id = @Id;
             ";
@@ -58,9 +58,9 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetByUserId(int userId)
         {
             var sql = @"
-                SELECT id, post_id, user_id, content, created_at
+                SELECT id, postId, userId, content, createdAt
                 FROM comments
-                WHERE user_id = @UserId;
+                WHERE userId = @UserId;
             ";
             var comments = await _connection.QueryAsync<Comment>(sql, new { UserId = userId });
 
@@ -87,7 +87,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetAll()
         {
             var sql = @"
-                SELECT id, post_id, user_id, content, created_at
+                SELECT id, postId, userId, content, createdAt
                 FROM comments;
             ";
 
@@ -97,13 +97,13 @@ namespace Infrastructure.Repositories
 
         public async Task DeleteByPostId(int postId)
         {
-            var sql = "DELETE FROM comments WHERE post_id = @PostId";
+            var sql = "DELETE FROM comments WHERE postId = @PostId";
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
         public async Task DeleteByUserId(int userId)
         {
-            var sql = "DELETE FROM comments WHERE user_id = @UserId";
+            var sql = "DELETE FROM comments WHERE userId = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }

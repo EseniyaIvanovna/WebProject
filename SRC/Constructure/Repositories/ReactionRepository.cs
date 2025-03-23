@@ -16,10 +16,8 @@ namespace Infrastructure.Repositories
 
         public async Task<int> Create(Reaction reaction)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                INSERT INTO reactions (user_id, post_id, type)
+                INSERT INTO reactions (userId, postId, type)
                 VALUES (@UserId, @PostId, @Type)
                 RETURNING id;
             ";
@@ -36,8 +34,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = "DELETE FROM reactions WHERE id = @Id";
             var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
@@ -46,10 +42,8 @@ namespace Infrastructure.Repositories
 
         public async Task<Reaction> GetById(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, post_id, type
+                SELECT id, userId, postId, type
                 FROM reactions
                 WHERE id = @Id;
             ";
@@ -60,12 +54,10 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Reaction>> GetByPostId(int postId)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, post_id, type
+                SELECT id, userId, postId, type
                 FROM reactions
-                WHERE post_id = @PostId;
+                WHERE postId = @PostId;
             ";
             var reactions = await _connection.QueryAsync<Reaction>(sql, new { PostId = postId });
 
@@ -74,12 +66,10 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Reaction>> GetByUserId(int userId)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, post_id, type
+                SELECT id, userId, postId, type
                 FROM reactions
-                WHERE user_id = @UserId;
+                WHERE userId = @UserId;
             ";
             var reactions = await _connection.QueryAsync<Reaction>(sql, new { UserId = userId });
 
@@ -88,8 +78,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Update(Reaction reaction)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 UPDATE reactions
                 SET type = @Type
@@ -107,30 +95,25 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Reaction>> GetAll()
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, post_id, type
+                SELECT id, userId, postId, type
                 FROM reactions;
             ";
 
             var reactions = await _connection.QueryAsync<Reaction>(sql);
+
             return reactions;
         }
 
         public async Task DeleteByPostId(int postId)
         {
-            await _connection.OpenAsync();
-
-            var sql = "DELETE FROM reactions WHERE post_id = @PostId";
+            var sql = "DELETE FROM reactions WHERE postId = @PostId";
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
         public async Task DeleteByUserId(int userId)
         {
-            await _connection.OpenAsync();
-
-            var sql = "DELETE FROM reactions WHERE user_id = @UserId";
+            var sql = "DELETE FROM reactions WHERE userId = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }

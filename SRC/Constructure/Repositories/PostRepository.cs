@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             post.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO posts (user_id, text, created_at)
+                INSERT INTO posts (userId, text, createdAt)
                 VALUES (@UserId, @Text, @CreatedAt)
                 RETURNING id;
             ";
@@ -36,8 +36,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = "DELETE FROM posts WHERE id = @Id";
             var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
@@ -46,18 +44,14 @@ namespace Infrastructure.Repositories
 
         public async Task DeleteByUserId(int userId)
         {
-            await _connection.OpenAsync();
-
-            var sql = "DELETE FROM posts WHERE user_id = @UserId";
+            var sql = "DELETE FROM posts WHERE userId = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
 
         public async Task<IEnumerable<Post>> GetAll()
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, text, created_at
+                SELECT id, userId, text, createdAt
                 FROM posts;
             ";
 
@@ -67,10 +61,8 @@ namespace Infrastructure.Repositories
 
         public async Task<Post> GetById(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, user_id, text, created_at
+                SELECT id, userId, text, createdAt
                 FROM posts
                 WHERE id = @Id;
             ";
@@ -81,8 +73,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Update(Post post)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 UPDATE posts
                 SET text = @Text

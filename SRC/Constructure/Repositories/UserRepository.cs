@@ -16,10 +16,8 @@ namespace Infrastructure.Repositories
 
         public async Task<int> Create(User user)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                INSERT INTO users (name, last_name, age, info, email)
+                INSERT INTO users (name, lastname, age, info, email)
                 VALUES (@Name, @LastName, @Age, @Info, @Email)
                 RETURNING id;
             ";
@@ -38,8 +36,6 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = "DELETE FROM users WHERE id = @Id";
             var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
@@ -48,10 +44,8 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, name, last_name, age, info, email
+                SELECT id, name, lastname, age, info, email
                 FROM users;
             ";
 
@@ -61,10 +55,8 @@ namespace Infrastructure.Repositories
 
         public async Task<User> GetById(int id)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
-                SELECT id, name, last_name, age, info, email
+                SELECT id, name, lastname, age, info, email
                 FROM users
                 WHERE id = @Id;
             ";
@@ -75,12 +67,10 @@ namespace Infrastructure.Repositories
 
         public async Task<bool> Update(User user)
         {
-            await _connection.OpenAsync();
-
             var sql = @"
                 UPDATE users
                 SET name = @Name,
-                    last_name = @LastName,
+                    lastname = @LastName,
                     age = @Age,
                     info = @Info,
                     email = @Email

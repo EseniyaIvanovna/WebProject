@@ -5,6 +5,7 @@
         Like,
         Dislike,
         Laugh,
-        Heart
+        Heart,
+        None
     }
 }

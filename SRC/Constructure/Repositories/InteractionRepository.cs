@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(Interaction interaction)
         {
             var sql = @"
-                INSERT INTO interactions (user1_id, user2_id, status)
+                INSERT INTO interactions (user1Id, user2Id, status)
                 VALUES (@User1Id, @User2Id, @Status)
                 RETURNING id;
             ";
@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
         public async Task<Interaction> GetById(int id)
         {
             var sql = @"
-                SELECT id, user1_id, user2_id, status
+                SELECT id, user1Id, user2Id, status
                 FROM interactions
                 WHERE id = @Id;
             ";
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Interaction>> GetByStatus(Status status)
         {
             var sql = @"
-                SELECT id, user1_id, user2_id, status
+                SELECT id, user1Id, user2Id, status
                 FROM interactions
                 WHERE status = @Status;
             ";
@@ -69,8 +69,8 @@ namespace Infrastructure.Repositories
         {
             var sql = @"
                 UPDATE interactions
-                SET user1_id = @User1Id,
-                    user2_id = @User2Id,
+                SET user1Id = @User1Id,
+                    user2Id = @User2Id,
                     status = @Status
                 WHERE id = @Id;
             ";
@@ -89,11 +89,12 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Interaction>> GetAll()
         {
             var sql = @"
-                SELECT id, user1_id, user2_id, status
+                SELECT id, user1Id, user2Id, status
                 FROM interactions;
             ";
 
             var interactions = await _connection.QueryAsync<Interaction>(sql);
+
             return interactions;
         }
     }

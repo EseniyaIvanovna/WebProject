@@ -10,65 +10,65 @@ namespace Infrastructure.Database.Migrations
             Create.Table("users")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(100).NotNullable()
-                .WithColumn("last_name").AsString(100).NotNullable()
-                .WithColumn("age").AsString(100).NotNullable()
+                .WithColumn("lastname").AsString(100).NotNullable()
+                .WithColumn("age").AsInt32().NotNullable()
                 .WithColumn("info").AsString(255).NotNullable()
                 .WithColumn("email").AsString(255).NotNullable();
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("user_id").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString().NotNullable()
-                .WithColumn("created_at").AsDateTime().NotNullable();
+                .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("comments")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("post_id").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("user_id").AsInt32().NotNullable().ForeignKey("posts", "id")
+                .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
+                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("content").AsString().NotNullable()
-                .WithColumn("created_at").AsDateTime().NotNullable();
+                .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("reactions")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("user_id").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("post_id").AsInt32().NotNullable().ForeignKey("posts", "id")
+                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
                 .WithColumn("type").AsString(50).NotNullable();
 
             Create.Table("messages")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("sender_id").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("receiver_id").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("senderid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("receiverid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString().NotNullable()
-                .WithColumn("created_at").AsDateTime().NotNullable();
+                .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("interactions")
                .WithColumn("id").AsInt32().PrimaryKey().Identity()
-               .WithColumn("user1_id").AsInt32().NotNullable().ForeignKey("users", "id")
-               .WithColumn("user2_id").AsInt32().NotNullable().ForeignKey("users", "id")
+               .WithColumn("user1id").AsInt32().NotNullable().ForeignKey("users", "id")
+               .WithColumn("user2id").AsInt32().NotNullable().ForeignKey("users", "id")
                .WithColumn("status").AsString().NotNullable();
 
             Insert.IntoTable("users")
-                .Row(new { name = "John", last_name = "Doe", age = "30", info = "Software Engineer", email = "john.doe@example.com" })
-                .Row(new { name = "Jane", last_name = "Smith", age = "25", info = "Data Scientist", email = "jane.smith@example.com" });
+                .Row(new { name = "John", lastname = "Doe", age = "30", info = "Software Engineer", email = "john.doe@example.com" })
+                .Row(new { name = "Jane", lastname = "Smith", age = "25", info = "Data Scientist", email = "jane.smith@example.com" });
 
             Insert.IntoTable("posts")
-                .Row(new { user_id = 1, text = "First post by John", created_at = DateTime.UtcNow })
-                .Row(new { user_id = 2, text = "First post by Jane", created_at = DateTime.UtcNow });
+                .Row(new { userid = 1, text = "First post by John", createdat = DateTime.UtcNow })
+                .Row(new { userid = 2, text = "First post by Jane", createdat = DateTime.UtcNow });
 
             Insert.IntoTable("comments")
-                .Row(new { post_id = 1, user_id = 2, content = "Nice post, John!", created_at = DateTime.UtcNow })
-                .Row(new { post_id = 2, user_id = 1, content = "Great job, Jane!", created_at = DateTime.UtcNow });
+                .Row(new { postid = 1, userid = 2, content = "Nice post, John!", createdat = DateTime.UtcNow })
+                .Row(new { postid = 2, userid = 1, content = "Great job, Jane!", createdat = DateTime.UtcNow });
 
             Insert.IntoTable("reactions")
-                .Row(new { user_id = 1, post_id = 2, type = "like" })
-                .Row(new { user_id = 2, post_id = 1, type = "love" });
+                .Row(new { userid = 1, postid = 2, type = "Like" })
+                .Row(new { userid = 2, postid = 1, type = "Dislike" });
 
             Insert.IntoTable("messages")
-                .Row(new { sender_id = 1, receiver_id = 2, text = "Hi Jane!", created_at = DateTime.UtcNow })
-                .Row(new { sender_id = 2, receiver_id = 1, text = "Hello John!", created_at = DateTime.UtcNow });
+                .Row(new { senderid = 1, receiverid = 2, text = "Hi Jane!", createdat = DateTime.UtcNow })
+                .Row(new { senderid = 2, receiverid = 1, text = "Hello John!", createdat = DateTime.UtcNow });
 
             Insert.IntoTable("interactions")
-                .Row(new { user1_id = 1, user2_id = 2, status = "friends" });
+                .Row(new { user1id = 1, user2id = 2, status = "Friend" });
         }
 
         public override void Down()

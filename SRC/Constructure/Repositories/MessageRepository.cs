@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             message.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO messages (sender_id, receiver_id, text, created_at)
+                INSERT INTO messages (senderId, receiverId, text, createdAt)
                 VALUES (@SenderId, @ReceiverId, @Text, @CreatedAt)
                 RETURNING id
             ";
@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
         public async Task<Message> GetById(int id)
         {
             var sql = @"
-                SELECT id, sender_id, receiver_id, text, created_at
+                SELECT id, senderId, receiverId, text, createdAt
                 FROM messages
                 WHERE id = @Id;
             ";
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Message>> GetByUserId(int userId)
         {
-            var sql = "SELECT id, sender_id, receiver_id, text, created_at FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
+            var sql = "SELECT id, senderId, receiverId, text, createdAt FROM messages WHERE senderId = @UserId OR receiverId = @UserId";
             var messages = await _connection.QueryAsync<Message>(sql, new { UserId = userId });
 
             return messages;
@@ -82,7 +82,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Message>> GetAll()
         {
             var sql = @"
-                SELECT id, sender_id, receiver_id, text, created_at
+                SELECT id, senderId, receiverId, text, createdAt
                 FROM messages;
             ";
 
