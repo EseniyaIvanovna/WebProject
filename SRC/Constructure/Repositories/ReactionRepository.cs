@@ -1,105 +1,120 @@
-﻿using Domain;
-using Domain.Enums;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dapper;
+using Domain;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.Repositories
 {
     public class ReactionRepository : IReactionRepository
     {
-        private readonly List<Reaction> _reactions = new List<Reaction>();
-        
-        public ReactionRepository()
+        private readonly NpgsqlConnection _connection;
+
+        public ReactionRepository(NpgsqlConnection connection)
         {
-            // тестовые данные
-            _reactions.Add(new Reaction { Id = 1, Type = ReactionType.Like, UserId = 1, PostId = 1 });
-            _reactions.Add(new Reaction { Id = 2, Type = ReactionType.Heart, UserId = 2, PostId = 1 });
-            _reactions.Add(new Reaction { Id = 3, Type = ReactionType.Dislike, UserId = 1, PostId = 2 });
+            _connection = connection;
         }
-        
-        public Task<int> Create(Reaction reaction)
+
+        public async Task<int> Create(Reaction reaction)
         {
-            var existingReaction = _reactions.FirstOrDefault(m => m.Id == reaction.Id);
-            if (existingReaction != null)
+            var sql = @"
+                INSERT INTO reactions (userId, postId, type)
+                VALUES (@UserId, @PostId, @Type)
+                RETURNING id;
+            ";
+
+            var reactionId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("A reaction with the same ID already exists.");
-            }
-            _reactions.Add(reaction);
-            return Task.FromResult(reaction.Id);
+                reaction.UserId,
+                reaction.PostId,
+                reaction.Type
+            });
+
+            return reactionId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var reaction = _reactions.FirstOrDefault(r => r.Id == id);
-            if (reaction == null)
+            var sql = "DELETE FROM reactions WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
+        }
+
+        public async Task<Reaction> GetById(int id)
+        {
+            var sql = @"
+                SELECT id, userId, postId, type
+                FROM reactions
+                WHERE id = @Id;
+            ";
+
+            var reaction = await _connection.QuerySingleOrDefaultAsync<Reaction>(sql, new { Id = id });
+            return reaction;
+        }
+
+        public async Task<IEnumerable<Reaction>> GetByPostId(int postId)
+        {
+            var sql = @"
+                SELECT id, userId, postId, type
+                FROM reactions
+                WHERE postId = @PostId;
+            ";
+            var reactions = await _connection.QueryAsync<Reaction>(sql, new { PostId = postId });
+
+            return reactions;
+        }
+
+        public async Task<IEnumerable<Reaction>> GetByUserId(int userId)
+        {
+            var sql = @"
+                SELECT id, userId, postId, type
+                FROM reactions
+                WHERE userId = @UserId;
+            ";
+            var reactions = await _connection.QueryAsync<Reaction>(sql, new { UserId = userId });
+
+            return reactions;
+        }
+
+        public async Task<bool> Update(Reaction reaction)
+        {
+            var sql = @"
+                UPDATE reactions
+                SET type = @Type
+                WHERE id = @Id;
+            ";
+
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                throw new InvalidOperationException("Reaction not found.");
-            }
+                reaction.Type,
+                reaction.Id
+            });
 
-            _reactions.Remove(reaction);
-            return Task.FromResult(true);
+            return affectedRows > 0;
         }
 
-        public Task<Reaction> GetById(int Id)
+        public async Task<IEnumerable<Reaction>> GetAll()
         {
-            var reaction = _reactions.FirstOrDefault(r => r.Id == Id);
-            return Task.FromResult(reaction);
+            var sql = @"
+                SELECT id, userId, postId, type
+                FROM reactions;
+            ";
+
+            var reactions = await _connection.QueryAsync<Reaction>(sql);
+
+            return reactions;
         }
 
-        public Task<IEnumerable<Reaction>> GetByPostId(int postId)
+        public async Task DeleteByPostId(int postId)
         {
-            var reactions = _reactions.Where(r => r.PostId == postId);
-            return Task.FromResult(reactions);
+            var sql = "DELETE FROM reactions WHERE postId = @PostId";
+            await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
-        public Task<IEnumerable<Reaction>> GetByUserId(int Id)
+        public async Task DeleteByUserId(int userId)
         {
-            var reactions = _reactions.Where(r => r.UserId == Id);
-            return Task.FromResult(reactions);
-        }
-
-        public Task<bool> Update(Reaction reaction)
-        {
-            var existingReaction = _reactions.FirstOrDefault(r => r.Id == reaction.Id);
-            if (existingReaction == null)
-            {
-                throw new InvalidOperationException("Reaction not found.");
-            }
-
-            existingReaction.Type = reaction.Type;
-            existingReaction.PostId = reaction.PostId;
-            existingReaction.UserId = reaction.UserId;
-
-            return Task.FromResult(true);
-        }
-
-        public Task<IEnumerable<Reaction>> GetAll()
-        {
-            return Task.FromResult(_reactions.AsEnumerable());
-        }
-
-        public Task DeleteByPostId(int postId)
-        {
-            var reactionsToDelete = _reactions.Where(r => r.PostId == postId).ToList();
-            foreach (var reaction in reactionsToDelete)
-            {
-                _reactions.Remove(reaction);
-            }
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteByUserId(int userId)
-        {
-            var reactionsToDelete = _reactions.Where(r => r.UserId == userId).ToList();
-            foreach (var reaction in reactionsToDelete)
-            {
-                _reactions.Remove(reaction);
-            }
-            return Task.CompletedTask;
+            var sql = "DELETE FROM reactions WHERE userId = @UserId";
+            await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }
 }

@@ -1,3 +1,4 @@
+using Api.ExceptionHandler;
 using Application;
 using Infrastructure;
 
@@ -10,18 +11,31 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var migrationRunner = scope.ServiceProvider.GetRequiredService<Infrastructure.Database.MigrationRunner>();
+    migrationRunner.Run();
 }
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

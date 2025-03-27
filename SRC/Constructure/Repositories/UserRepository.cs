@@ -1,75 +1,93 @@
-﻿using Domain;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dapper;
+using Domain;
+using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly List<User> _users = new List<User>();
-        
-        public UserRepository()
+        private readonly NpgsqlConnection _connection;
+
+        public UserRepository(NpgsqlConnection connection)
         {
-            // тестовые данные 
-            _users.Add(new User { Id = 1,Name="John", Age=20, Info= "john_doe", Email= "john@example.com", LastName="Doe"});
-            _users.Add(new User { Id = 2,Name="Alice", Age=19, Info= "Sporty", Email= "kitty@example.com", LastName="Swan"});
-            _users.Add(new User { Id = 3,Name="Bob", Age=25, Info= "artist", Email= "bob2000@example.com", LastName="Brown"});            
+            _connection = connection;
         }
-        
-        public Task<int> Create(User user)
+
+        public async Task<int> Create(User user)
         {
-            var existingUser = _users.FirstOrDefault(m => m.Id == user.Id);
-            if (existingUser != null)
+            var sql = @"
+                INSERT INTO users (name, lastname, age, info, email)
+                VALUES (@Name, @LastName, @Age, @Info, @Email)
+                RETURNING id;
+            ";
+
+            var userId = await _connection.QuerySingleAsync<int>(sql, new
             {
-                throw new InvalidOperationException("A user with the same ID already exists.");
-            }
-            _users.Add(user);
-            return Task.FromResult(user.Id);
+                user.Name,
+                user.LastName,
+                user.Age,
+                user.Info,
+                user.Email
+            });
+
+            return userId;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
-            if (user == null)
+            var sql = "DELETE FROM users WHERE id = @Id";
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
+        }
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            var sql = @"
+                SELECT id, name, lastname, age, info, email
+                FROM users;
+            ";
+
+            var users = await _connection.QueryAsync<User>(sql);
+            return users;
+        }
+
+        public async Task<User> GetById(int id)
+        {
+            var sql = @"
+                SELECT id, name, lastname, age, info, email
+                FROM users
+                WHERE id = @Id;
+            ";
+
+            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
+            return user;
+        }
+
+        public async Task<bool> Update(User user)
+        {
+            var sql = @"
+                UPDATE users
+                SET name = @Name,
+                    lastname = @LastName,
+                    age = @Age,
+                    info = @Info,
+                    email = @Email
+                WHERE id = @Id;
+            ";
+
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
-                throw new InvalidOperationException("User not found.");
-            }
+                user.Name,
+                user.LastName,
+                user.Age,
+                user.Info,
+                user.Email,
+                user.Id
+            });
 
-            _users.Remove(user);
-            return Task.FromResult(true);
-        }
-
-        public Task<IEnumerable<User>> GetAll()
-        {
-            return Task.FromResult(_users.AsEnumerable());
-        }
-
-        public Task<User> GetById(int Id)
-        {
-            var user = _users.FirstOrDefault(u => u.Id == Id);
-            return Task.FromResult(user);
-        }
-
-        public Task<bool> Update(User user)
-        {
-            var existingUser = _users.FirstOrDefault(u => u.Id == user.Id);
-            if (existingUser == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
-
-            existingUser.Name = user.Name;
-            existingUser.LastName = user.LastName;
-            existingUser.Email = user.Email;
-            existingUser.Age = user.Age;
-            existingUser.Info = user.Info;
-
-            return Task.FromResult(true);
+            return affectedRows > 0;
         }
     }
 }

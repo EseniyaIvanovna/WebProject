@@ -1,8 +1,7 @@
 using Application.Dto;
+using Application.Requests;
 using Application.Service;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Api.Controllers;
 
@@ -42,25 +41,28 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] UserDto user)
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
-        if (user == null)
-        {
-            return BadRequest("User data is required.");
-        }
-        try
-        {
-            var userId = await _userService.Add(user);
-            return CreatedAtAction(nameof(GetUserById), new { id = userId }, user); // 201 Created
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(ex.Message); // 409 Conflict, если пользователь уже существует
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(ex.Message); // 400 Bad Request, если данные невалидны
-        }
+        
+         await _userService.Add(request);
+        return Created();
+        //if (user == null)
+        //{
+        //    return BadRequest("User data is required.");
+        //}
+        //try
+        //{
+        //    var userId = await _userService.Add(user);
+        //    return CreatedAtAction(nameof(GetUserById), new { id = userId }, user); // 201 Created
+        //}
+        //catch (InvalidOperationException ex)
+        //{
+        //    return Conflict(ex.Message); // 409 Conflict, если пользователь уже существует
+        //}
+        //catch (ArgumentNullException ex)
+        //{
+        //    return BadRequest(ex.Message); // 400 Bad Request, если данные невалидны
+        //}
     }
     
     [HttpPut]

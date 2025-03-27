@@ -1,16 +1,11 @@
 ﻿using Application.Dto;
-using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Requests;
 
 namespace Application.Service
 {
     public interface IUserService
     {
-        public Task<int> Add(UserDto user);
+        public Task<int> Add(CreateUserRequest user);
         public Task<bool> Delete(int id);
         public Task<UserDto> GetById(int Id);
         public Task<IEnumerable<UserDto>> GetAll();
