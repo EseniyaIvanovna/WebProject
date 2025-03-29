@@ -97,5 +97,18 @@ namespace Infrastructure.Repositories
 
             return interactions;
         }
+        public async Task<bool> ExistsBetweenUsers(int user1Id, int user2Id)
+        {
+            var sql = @"SELECT EXISTS(
+                SELECT 1 FROM interactions 
+                WHERE (user1id = @User1Id AND user2id = @User2Id)
+                OR (user1id = @User2Id AND user2id = @User1Id)
+            )";
+            return await _connection.QuerySingleAsync<bool>(sql, new
+            {
+                User1Id = user1Id,
+                User2Id = user2Id
+            });
+        }
     }
 }

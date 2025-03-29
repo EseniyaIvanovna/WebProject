@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
+using Application.Responses;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +16,10 @@ public class ReactionController:ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateReaction([FromBody] ReactionDto reaction)
+    public async Task<IActionResult> CreateReaction([FromBody] CreateReactionRequest request)
     {
-        if (reaction == null)
-        {
-            return BadRequest("Reaction data is required.");
-        }
-
-        var reactionId = await _reactionService.Create(reaction);
-        return CreatedAtAction(nameof(GetReactionById), new { id = reactionId }, reaction);
+        await _reactionService.Create(request);
+        return Created();
     }
     
     [HttpGet("{id}")]
@@ -44,7 +40,7 @@ public class ReactionController:ControllerBase
     }
     
     [HttpGet("ByPost/{postId}")]
-    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByPostId(int postId)
+    public async Task<ActionResult<IEnumerable<ReactionResponse>>> GetReactionsByPostId(int postId)
     {
         if (postId < 0)
         {
@@ -56,7 +52,7 @@ public class ReactionController:ControllerBase
     }
     
     [HttpGet("ByUser/{userId}")]
-    public async Task<ActionResult<IEnumerable<ReactionDto>>> GetReactionsByUserId(int userId)
+    public async Task<ActionResult<IEnumerable<ReactionResponse>>> GetReactionsByUserId(int userId)
     {
         if (userId < 0)
         {
@@ -68,19 +64,13 @@ public class ReactionController:ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateReaction([FromBody] ReactionDto reaction)
+    public async Task<IActionResult> UpdateReaction([FromBody] UpdateReactionRequest request)
     {
-        if (reaction == null)
-        {
-            return BadRequest("Reaction data is required.");
-        }
-
-        var result = await _reactionService.Update(reaction);
+        var result = await _reactionService.Update(request);
         if (!result)
         {
             return NotFound();
         }
-
         return Ok(result);
     }
     

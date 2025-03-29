@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -18,27 +19,27 @@ namespace Application.Service
             _mapper = mapper;
         }
 
-        public async Task<int> Create(MessageDto message)
+        public async Task<int> Create(CreateMessageRequest request)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message), "Message cannot be null.");
-            }
-
-            var sender = await _userRepository.GetById(message.SenderId);
+            var sender = await _userRepository.GetById(request.SenderId);
             if (sender == null)
             {
                 throw new InvalidOperationException("Sender not found.");
             }
 
-            var receiver = await _userRepository.GetById(message.ReceiverId);
+            var receiver = await _userRepository.GetById(request.ReceiverId);
             if (receiver == null)
             {
                 throw new InvalidOperationException("Receiver not found.");
             }
 
-            var mappedMessage = _mapper.Map<Message>(message);
-            return await _messageRepository.Create(mappedMessage);
+            var message = new Message()
+            {
+                SenderId = request.SenderId,
+                ReceiverId = request.ReceiverId,
+                Text = request.Text
+            };
+            return await _messageRepository.Create(message);
         }
 
         public async Task<bool> Delete(int id)
@@ -52,39 +53,38 @@ namespace Application.Service
             return await _messageRepository.Delete(id);
         }
 
-        public async Task<MessageDto> GetById(int id)
+        public async Task<MessageResponse> GetById(int id)
         {
             var message = await _messageRepository.GetById(id);
-            return _mapper.Map<MessageDto>(message);
+            return _mapper.Map<MessageResponse>(message);
         }
         
-        public async Task<IEnumerable<MessageDto>> GetAll()
+        public async Task<IEnumerable<MessageResponse>> GetAll()
         {
             var messages = await _messageRepository.GetAll();
-            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            return _mapper.Map<IEnumerable<MessageResponse>>(messages);
         }
 
-        public async Task<IEnumerable<MessageDto>> GetByUserId(int userId)
+        public async Task<IEnumerable<MessageResponse>> GetByUserId(int userId)
         {
             var messages = await _messageRepository.GetByUserId(userId);
-            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            return _mapper.Map<IEnumerable<MessageResponse>>(messages);
         }
 
-        public async Task<bool> Update(MessageDto message)
+        public async Task<bool> Update(UpdateMessageRequest request)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message), "Message cannot be null.");
-            }
-
-            var existingMessage = await _messageRepository.GetById(message.Id);
+            var existingMessage = await _messageRepository.GetById(request.Id);
             if (existingMessage == null)
             {
                 throw new InvalidOperationException("Message not found.");
             }
 
-            _mapper.Map(message, existingMessage);
-            return await _messageRepository.Update(existingMessage);
+            var message = new Message()
+            {
+                Id = request.Id,
+                Text = request.Text
+            };
+            return await _messageRepository.Update(message);
         }
     }
 }

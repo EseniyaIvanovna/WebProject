@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +17,10 @@ public class InteractionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateInteraction([FromBody] InteractionDto interaction)
+    public async Task<IActionResult> CreateInteraction([FromBody] CreateInteractionRequest request)
     {
-        if (interaction == null)
-        {
-            return BadRequest("Interaction data is required.");
-        }
-
-        var interactionId = await _interactionService.Create(interaction);
-        return CreatedAtAction(nameof(GetInteractionById), new { id = interactionId }, interaction);
+        await _interactionService.Create(request);
+        return Created();
     }
     
     [HttpGet("{id}")]
@@ -58,14 +53,9 @@ public class InteractionController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateInteraction([FromBody] InteractionDto interaction)
+    public async Task<IActionResult> UpdateInteraction([FromBody] UpdateInteractionRequest request)
     {
-        if (interaction == null)
-        {
-            return BadRequest("Interaction data is required.");
-        }
-
-        var result = await _interactionService.Update(interaction);
+        var result = await _interactionService.Update(request);
         if (!result)
         {
             return NotFound();

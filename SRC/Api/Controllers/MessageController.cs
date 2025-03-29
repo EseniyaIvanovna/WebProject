@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,15 +15,10 @@ public class MessageController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateMessage([FromBody] MessageDto message)
+    public async Task<IActionResult> CreateMessage([FromBody] CreateMessageRequest request)
     {
-        if (message == null)
-        {
-            return BadRequest("Message data is required.");
-        }
-
-        var messageId = await _messageService.Create(message);
-        return CreatedAtAction(nameof(GetMessageById), new { id = messageId }, message);
+        await _messageService.Create(request);
+        return Created();
     }
     
     [HttpGet("{id}")]
@@ -63,14 +58,9 @@ public class MessageController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateMessage([FromBody] MessageDto message)
+    public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequest request)
     {
-        if (message == null)
-        {
-            return BadRequest("Message data is required.");
-        }
-
-        var result = await _messageService.Update(message);
+        var result = await _messageService.Update(request);
         if (!result)
         {
             return NotFound();

@@ -11,5 +11,6 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<bool> Update(Interaction interaction);
         public Task<bool> Delete(int id);
         public Task<IEnumerable<Interaction>> GetAll();
+        public Task<bool> ExistsBetweenUsers(int user1Id, int user2Id);
     }
 }

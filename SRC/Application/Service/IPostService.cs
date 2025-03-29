@@ -1,13 +1,14 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
+using Application.Responses;
 
 namespace Application.Service
 {
     public interface IPostService
     {
-        public Task<PostDto> GetById(int Id);
-        public Task<IEnumerable<PostDto>> GetAll();
-        public Task<int> Create(PostDto post);
-        public Task<bool> Update(PostDto post);
+        public Task<PostResponse> GetById(int Id);
+        public Task<IEnumerable<PostResponse>> GetAll();
+        public Task<int> Create(CreatePostRequest request);
+        public Task<bool> Update(UpdatePostRequest request);
         public Task<bool> Delete(int id);
     }
 }

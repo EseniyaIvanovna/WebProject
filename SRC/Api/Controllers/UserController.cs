@@ -1,4 +1,3 @@
-using Application.Dto;
 using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -43,53 +42,19 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
-        
          await _userService.Add(request);
         return Created();
-        //if (user == null)
-        //{
-        //    return BadRequest("User data is required.");
-        //}
-        //try
-        //{
-        //    var userId = await _userService.Add(user);
-        //    return CreatedAtAction(nameof(GetUserById), new { id = userId }, user); // 201 Created
-        //}
-        //catch (InvalidOperationException ex)
-        //{
-        //    return Conflict(ex.Message); // 409 Conflict, если пользователь уже существует
-        //}
-        //catch (ArgumentNullException ex)
-        //{
-        //    return BadRequest(ex.Message); // 400 Bad Request, если данные невалидны
-        //}
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateUser([FromBody] UserDto user)
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
-        if (user == null)
+        var result = await _userService.Update(request);
+        if (!result)
         {
-            return BadRequest("User data is required.");
+            return NotFound();
         }
-
-        try
-        {
-            var result = await _userService.Update(user);
-            if (!result)
-            {
-                return NotFound(); 
-            }
-            return Ok(result); 
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(ex.Message); 
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(ex.Message); 
-        }
+        return Ok(result);
     }
     
     [HttpDelete]

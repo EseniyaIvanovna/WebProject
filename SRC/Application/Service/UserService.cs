@@ -1,5 +1,5 @@
-﻿using Application.Dto;
-using Application.Requests;
+﻿using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -28,21 +28,12 @@ namespace Application.Service
             var user = new User()
             {
                 Name = request.Name,
-                LastName = request.LastName // продолжить поля которые будут с проверками
+                LastName = request.LastName,
+                Age = request.Age,
+                Info = request.Info,
+                Email = request.Email
             };
             return await _userRepository.Create(user);
-            //if (user == null)
-            //{
-            //    throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            //}
-            //var existingUser = await _userRepository.GetById(user.Id);
-            //if (existingUser != null)
-            //{
-            //    throw new InvalidOperationException("A user with the same Id already exists.");
-            //}
-            //var mappedUser = _mapper.Map<User>(user);
-            //int userId = await _userRepository.Create(mappedUser);
-            //return userId;
         }
 
         public async Task<bool> Delete(int id)
@@ -62,24 +53,29 @@ namespace Application.Service
             return await _userRepository.Delete(id);
         }
 
-        public async Task<IEnumerable<UserDto>> GetAll()
+        public async Task<IEnumerable<UserResponse>> GetAll()
         {
             var users = await _userRepository.GetAll();
-            return _mapper.Map<IEnumerable<UserDto>>(users);
+            return _mapper.Map<IEnumerable<UserResponse>>(users);
         }
 
-        public async Task<UserDto> GetById(int id)
+        public async Task<UserResponse> GetById(int id)
         {
             var user = await _userRepository.GetById(id);
-            return _mapper.Map<UserDto>(user);
+            return _mapper.Map<UserResponse>(user);
         }
 
-        public async Task<bool> Update(UserDto user)
+        public async Task<bool> Update(UpdateUserRequest request)
         {
-            if (user == null)
+            var user = new User()
             {
-                throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            }
+                Id=request.Id,
+                Name = request.Name,
+                LastName = request.LastName,
+                Age = request.Age,
+                Info = request.Info,
+                Email = request.Email
+            };
 
             var existingUser = await _userRepository.GetById(user.Id);
             if (existingUser == null)
@@ -87,8 +83,8 @@ namespace Application.Service
                 throw new InvalidOperationException("User not found.");
             }
 
-            _mapper.Map(user, existingUser);
-            return await _userRepository.Update(existingUser);
+            //_mapper.Map(user, existingUser);
+            return await _userRepository.Update(user);
         }
     }
 }

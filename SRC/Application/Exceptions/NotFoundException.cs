@@ -2,7 +2,7 @@
 
 namespace Application.Exceptions
 {
-    public class NotFoundApplicationException : ApplicationException
+    public class NotFoundApplicationException : BaseApplicationException
     {
         public NotFoundApplicationException(string message) : base(message) { }
 

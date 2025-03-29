@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,15 +16,10 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateComment([FromBody] CommentDto comment)
+    public async Task<IActionResult> CreateComment([FromBody] CreateCommentRequest request)
     {
-        if (comment == null)
-        {
-            return BadRequest("Comment data is required.");
-        }
-
-        var commentId = await _commentService.Create(comment);
-        return CreatedAtAction(nameof(GetCommentById), new { id = commentId }, comment);
+        await _commentService.Create(request);
+        return Created();
     }
     
     [HttpGet("{id}")]
@@ -57,14 +52,9 @@ public class CommentController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateComment([FromBody] CommentDto comment)
+    public async Task<IActionResult> UpdateComment([FromBody] UpdateCommentRequest request)
     {
-        if (comment == null)
-        {
-            return BadRequest("Comment data is required.");
-        }
-
-        var result = await _commentService.Update(comment);
+       var result = await _commentService.Update(request);
         if (!result)
         {
             return NotFound();

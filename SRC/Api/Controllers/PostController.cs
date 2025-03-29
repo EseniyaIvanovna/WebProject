@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,15 +16,10 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] PostDto post)
+    public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest request)
     {
-        if (post == null)
-        {
-            return BadRequest("Post data is required.");
-        }
-
-        var postId = await _postService.Create(post);
-        return CreatedAtAction(nameof(GetPostById), new { id = postId }, post);
+        await _postService.Create(request);
+        return Created();
     }
 
     [HttpGet("{id}")]
@@ -52,14 +47,9 @@ public class PostController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePost([FromBody] PostDto post)
+    public async Task<IActionResult> UpdatePost([FromBody]UpdatePostRequest request)
     {
-        if (post == null)
-        {
-            return BadRequest("Post data is required.");
-        }
-
-        var result = await _postService.Update(post);
+        var result = await _postService.Update(request);
         if (!result)
         {
             return NotFound();
