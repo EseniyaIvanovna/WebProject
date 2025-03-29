@@ -23,13 +23,13 @@ namespace Api.ExceptionHandler
                 Type = e.GetType().Name
             };
 
-            var problenDetailsContext = new ProblemDetailsContext
+            var problemDetailsContext = new ProblemDetailsContext
             {
                 HttpContext = httpContext,
                 ProblemDetails = problenDetails,
                 Exception = e
             };
-            await problemDetailsService.WriteAsync(problenDetailsContext);
+            await problemDetailsService.WriteAsync(problemDetailsContext);
             return true;
         }
     }
