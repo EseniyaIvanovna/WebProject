@@ -7,7 +7,7 @@ namespace Application.Requests
         public string Name { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }
-        public string? Info { get; set; }
+        public string Info { get; set; }
         public string Email { get; set; }
     }
 
@@ -24,6 +24,7 @@ namespace Application.Requests
                 .MaximumLength(20).WithMessage("{PropertyName} has length more then 20 ");
             
             RuleFor(x => x.Info)
+                .NotEmpty().WithMessage("Info is requied")
                 .MaximumLength(255).WithMessage("{PropertyName} has length more then 255");
             
             RuleFor(x => x.Age)

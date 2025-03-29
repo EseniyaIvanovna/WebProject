@@ -18,8 +18,8 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateComment([FromBody] CreateCommentRequest request)
     {
-        await _commentService.Create(request);
-        return Created();
+        var commentId = await _commentService.Create(request);
+        return Created($"/comment/{commentId}", new { Id = commentId });
     }
     
     [HttpGet("{id}")]

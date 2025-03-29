@@ -19,8 +19,8 @@ public class InteractionController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateInteraction([FromBody] CreateInteractionRequest request)
     {
-        await _interactionService.Create(request);
-        return Created();
+        var interactionId = await _interactionService.Create(request);
+        return Created($"/interaction/{interactionId}", new { Id = interactionId });
     }
     
     [HttpGet("{id}")]

@@ -32,8 +32,8 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
-         await _userService.Add(request);
-        return Created();
+        var userId= await _userService.Add(request);
+        return Created($"/user/{userId}", new { Id = userId });
     }
     
     [HttpPut]

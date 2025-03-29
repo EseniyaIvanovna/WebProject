@@ -18,8 +18,8 @@ public class ReactionController:ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateReaction([FromBody] CreateReactionRequest request)
     {
-        await _reactionService.Create(request);
-        return Created();
+        var reactionId = await _reactionService.Create(request);
+        return Created($"/reaction/{reactionId}", new { Id = reactionId });
     }
     
     [HttpGet("{id}")]

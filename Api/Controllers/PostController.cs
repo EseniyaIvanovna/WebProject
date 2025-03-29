@@ -18,8 +18,8 @@ public class PostController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest request)
     {
-        await _postService.Create(request);
-        return Created();
+        var postId = await _postService.Create(request);
+        return Created($"/post/{postId}", new { Id = postId });
     }
 
     [HttpGet("{id}")]

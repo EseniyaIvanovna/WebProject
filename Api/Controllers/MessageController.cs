@@ -17,8 +17,8 @@ public class MessageController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateMessage([FromBody] CreateMessageRequest request)
     {
-        await _messageService.Create(request);
-        return Created();
+        var messageId = await _messageService.Create(request);
+        return Created($"/message/{messageId}", new { Id = messageId });
     }
     
     [HttpGet("{id}")]
