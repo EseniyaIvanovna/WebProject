@@ -72,5 +72,15 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         {
             return Task.FromResult(_interactions.AsEnumerable());
         }
+
+        Task<bool> IInteractionRepository.ExistsBetweenUsers(int user1Id, int user2Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IInteractionRepository.DeleteByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

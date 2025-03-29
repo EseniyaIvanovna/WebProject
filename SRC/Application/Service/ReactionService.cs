@@ -1,4 +1,7 @@
-﻿using Application.Dto;
+﻿using Application.Exceptions;
+using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -20,79 +23,73 @@ namespace Application.Service
             _mapper = mapper;
         }
 
-        public async Task<int> Create(ReactionDto reaction)
+        public async Task<int> Create(CreateReactionRequest request)
         {
-            if (reaction == null)
-            {
-                throw new ArgumentNullException(nameof(reaction), "Reaction cannot be null.");
-            }
-
-            var user = await _userRepository.GetById(reaction.UserId);
+            var user = await _userRepository.GetById(request.UserId);
             if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.UserId} not found");
 
-            var post = await _postRepository.GetById(reaction.PostId);
+            // Проверяем существование поста
+            var post = await _postRepository.GetById(request.PostId);
             if (post == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {request.PostId} not found");
 
-            var mappedReaction = _mapper.Map<Reaction>(reaction);
-            return await _reactionRepository.Create(mappedReaction);
+            if (await _reactionRepository.Exists(request.UserId, request.PostId))
+                throw new ConflictApplicationException("User can have only one reaction per post");
+
+            var reaction = new Reaction()
+            {
+                PostId = request.PostId,
+                UserId = request.UserId,
+                Type = request.Type
+            };            
+            return await _reactionRepository.Create(reaction);
         }
 
         public async Task<bool> Delete(int id)
         {
             var reaction = await _reactionRepository.GetById(id);
             if (reaction == null)
-            {
-                throw new InvalidOperationException("Reaction not found.");
-            }
+                throw new NotFoundApplicationException($"Reaction {id} not found");
 
             return await _reactionRepository.Delete(id);
         }
 
-        public async Task<ReactionDto> GetById(int id)
+        public async Task<ReactionResponse> GetById(int id)
         {
             var reaction = await _reactionRepository.GetById(id);
-            return _mapper.Map<ReactionDto>(reaction);
+            if (reaction == null)
+                throw new NotFoundApplicationException($"Reaction {id} not found");
+
+            return _mapper.Map<ReactionResponse>(reaction);
         }
 
-        public async Task<IEnumerable<ReactionDto>> GetByPostId(int postId)
+        public async Task<IEnumerable<ReactionResponse>> GetByPostId(int postId)
         {
             var reactions = await _reactionRepository.GetByPostId(postId);
-            return _mapper.Map<IEnumerable<ReactionDto>>(reactions);
+            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
         }
 
-        public async Task<IEnumerable<ReactionDto>> GetByUserId(int userId)
+        public async Task<IEnumerable<ReactionResponse>> GetByUserId(int userId)
         {
             var reactions = await _reactionRepository.GetByUserId(userId);
-            return _mapper.Map<IEnumerable<ReactionDto>>(reactions);
+            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
         }
 
-        public async Task<bool> Update(ReactionDto reaction)
+        public async Task<bool> Update(UpdateReactionRequest request)
         {
-            if (reaction == null)
-            {
-                throw new ArgumentNullException(nameof(reaction), "Reaction cannot be null.");
-            }
-
-            var existingReaction = await _reactionRepository.GetById(reaction.Id);
+            var existingReaction = await _reactionRepository.GetById(request.Id);
             if (existingReaction == null)
-            {
-                throw new InvalidOperationException("Reaction not found.");
-            }
+                throw new NotFoundApplicationException($"Reaction {request.Id} not found");
 
-            _mapper.Map(reaction, existingReaction);
+            existingReaction.Type = request.Type;
             return await _reactionRepository.Update(existingReaction);
         }
 
-        public async Task<IEnumerable<ReactionDto>> GetAll()
+        public async Task<IEnumerable<ReactionResponse>> GetAll()
         {
             var reactions = await _reactionRepository.GetAll();
-            return _mapper.Map<IEnumerable<ReactionDto>>(reactions);
+            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
         }
     }
 }

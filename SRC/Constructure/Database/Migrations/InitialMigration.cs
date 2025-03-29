@@ -9,23 +9,23 @@ namespace Infrastructure.Database.Migrations
         {
             Create.Table("users")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("name").AsString(100).NotNullable()
-                .WithColumn("lastname").AsString(100).NotNullable()
+                .WithColumn("name").AsString(20).NotNullable()
+                .WithColumn("lastname").AsString(20).NotNullable()
                 .WithColumn("age").AsInt32().NotNullable()
-                .WithColumn("info").AsString(255).NotNullable()
-                .WithColumn("email").AsString(255).NotNullable();
+                .WithColumn("info").AsString(255)
+                .WithColumn("email").AsString(50).NotNullable();
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("text").AsString().NotNullable()
+                .WithColumn("text").AsString(1000).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("comments")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
                 .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("content").AsString().NotNullable()
+                .WithColumn("content").AsString(1000).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("reactions")
@@ -38,7 +38,7 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("senderid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("receiverid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("text").AsString().NotNullable()
+                .WithColumn("text").AsString(1000).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("interactions")

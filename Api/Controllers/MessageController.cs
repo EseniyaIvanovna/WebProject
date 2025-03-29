@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,42 +15,22 @@ public class MessageController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateMessage([FromBody] MessageDto message)
+    public async Task<IActionResult> CreateMessage([FromBody] CreateMessageRequest request)
     {
-        if (message == null)
-        {
-            return BadRequest("Message data is required.");
-        }
-
-        var messageId = await _messageService.Create(message);
-        return CreatedAtAction(nameof(GetMessageById), new { id = messageId }, message);
+        var messageId = await _messageService.Create(request);
+        return Created($"/message/{messageId}", new { Id = messageId });
     }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMessageById(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var message = await _messageService.GetById(id);
-        if (message == null)
-        {
-            return NotFound();
-        }
-
         return Ok(message);
     }
     
     [HttpGet("ByUser/{userId}")]
     public async Task<IActionResult> GetMessagesByUserId(int userId)
     {
-        if (userId < 0)
-        {
-            return BadRequest("User ID must be a positive integer.");
-        }
-
         var messages = await _messageService.GetByUserId(userId);
         return Ok(messages);
     }
@@ -63,36 +43,16 @@ public class MessageController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateMessage([FromBody] MessageDto message)
+    public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageRequest request)
     {
-        if (message == null)
-        {
-            return BadRequest("Message data is required.");
-        }
-
-        var result = await _messageService.Update(message);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        await _messageService.Update(request);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMessage(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        var result = await _messageService.Delete(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
+        await _messageService.Delete(id);
         return NoContent();
     }
 }

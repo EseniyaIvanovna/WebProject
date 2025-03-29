@@ -10,7 +10,7 @@ namespace Api.ExceptionHandler
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            httpContext.Response.ContentType = "application/problen+json";
+            httpContext.Response.ContentType = "application/problem+json";
 
             var problenDetails = new ProblemDetails
             {
@@ -21,13 +21,13 @@ namespace Api.ExceptionHandler
                 Type = exception.GetType().Name
             };
 
-            var problenDetailsContext = new ProblemDetailsContext
+            var problemDetailsContext = new ProblemDetailsContext
             {
                 HttpContext = httpContext,
                 ProblemDetails = problenDetails,
                 Exception = exception
             };
-            await problemDetailsService.WriteAsync(problenDetailsContext);
+            await problemDetailsService.WriteAsync(problemDetailsContext);
             return true;
         }
     }

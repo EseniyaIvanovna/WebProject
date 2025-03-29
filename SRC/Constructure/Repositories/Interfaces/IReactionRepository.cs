@@ -13,5 +13,6 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<bool> Delete(int id);
         public Task DeleteByPostId(int postId);
         public Task DeleteByUserId(int userId);
+        public Task<bool> Exists(int userId, int postId);
     }
 }

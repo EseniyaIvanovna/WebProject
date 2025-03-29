@@ -116,5 +116,10 @@ namespace Infrastructure.Repositories
             var sql = "DELETE FROM reactions WHERE userId = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
+        public async Task<bool> Exists(int userId, int postId)
+        {
+            var sql = "SELECT EXISTS(SELECT 1 FROM reactions WHERE userid = @UserId AND postid = @PostId)";
+            return await _connection.QuerySingleAsync<bool>(sql, new { UserId = userId, PostId = postId });
+        }
     }
 }

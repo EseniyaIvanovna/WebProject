@@ -96,5 +96,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             }
             return Task.CompletedTask;
         }
+
+        Task<bool> IReactionRepository.Exists(int userId, int postId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
 using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,31 +16,16 @@ public class PostController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] PostDto post)
+    public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest request)
     {
-        if (post == null)
-        {
-            return BadRequest("Post data is required.");
-        }
-
-        var postId = await _postService.Create(post);
-        return CreatedAtAction(nameof(GetPostById), new { id = postId }, post);
+        var postId = await _postService.Create(request);
+        return Created($"/post/{postId}", new { Id = postId });
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPostById( int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var post = await _postService.GetById(id);
-        if (post == null)
-        {
-            return NotFound();
-        }
-
         return Ok(post);
     }
 
@@ -52,36 +37,16 @@ public class PostController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePost([FromBody] PostDto post)
+    public async Task<IActionResult> UpdatePost([FromBody]UpdatePostRequest request)
     {
-        if (post == null)
-        {
-            return BadRequest("Post data is required.");
-        }
-
-        var result = await _postService.Update(post);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        await _postService.Update(request);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePost(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        var result = await _postService.Delete(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
+        await _postService.Delete(id);
         return NoContent();
     }
 }

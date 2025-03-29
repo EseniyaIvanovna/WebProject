@@ -1,4 +1,6 @@
-﻿using Application.Dto;
+﻿using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -20,43 +22,32 @@ namespace Application.Service
             _mapper = mapper;
         }
        
-        public async Task<int> Create(CommentDto comment)
+        public async Task<int> Create(CreateCommentRequest request)
         {
-            if (comment == null)
-            {
-                throw new ArgumentNullException(nameof(comment));
-            }
-
-            var user = await _userRepository.GetById(comment.UserId);
+            var user = await _userRepository.GetById(request.UserId);
             if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.UserId} not found");
 
-            var post = await _postRepository.GetById(comment.PostId);
+            var post = await _postRepository.GetById(request.PostId);
             if (post == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {request.PostId} not found");        
 
-            var mappedComment = _mapper.Map<Comment>(comment);
-            return await _commentRepository.Create(mappedComment);
+            var comment = new Comment()
+            {
+                UserId= request.UserId,
+                PostId=request.PostId,
+                Content=request.Content
+            };
+            return await _commentRepository.Create(comment);
         }
         
-        public async Task<bool> Update(CommentDto comment)
+        public async Task<bool> Update(UpdateCommentRequest request)
         {
-            if (comment == null)
-            {
-                throw new ArgumentNullException(nameof(comment), "Comment cannot be null.");
-            }
-
-            var existingComment = await _commentRepository.GetById(comment.Id);
+            var existingComment = await _commentRepository.GetById(request.Id);
             if (existingComment == null)
-            {
-                throw new InvalidOperationException("Comment not found.");
-            }
+                throw new NotFoundApplicationException($"Comment {request.Id} not found");
 
-            _mapper.Map(comment, existingComment);
+            existingComment.Content = request.Content;
             return await _commentRepository.Update(existingComment);
         }
 
@@ -64,29 +55,30 @@ namespace Application.Service
         {
             var comment = await _commentRepository.GetById(id);
             if (comment == null)
-            {
-                throw new InvalidOperationException("Comment not found.");
-            }
+                throw new NotFoundApplicationException($"Comment {id} not found");
 
             return await _commentRepository.Delete(id);
         }
 
-        public async Task<CommentDto> GetById(int id)
+        public async Task<CommentResponse> GetById(int id)
         {
             var comment = await _commentRepository.GetById(id);
-            return _mapper.Map<CommentDto>(comment);
+            if (comment == null)
+                throw new NotFoundApplicationException($"Comment {id} not found");
+
+            return _mapper.Map<CommentResponse>(comment);
         }
 
-        public async Task<IEnumerable<CommentDto>> GetByUserId(int userId)
+        public async Task<IEnumerable<CommentResponse>> GetByUserId(int userId)
         {
             var comments = await _commentRepository.GetByUserId(userId);
-            return _mapper.Map<IEnumerable<CommentDto>>(comments);
+            return _mapper.Map<IEnumerable<CommentResponse>>(comments);
         }
    
-        public async Task<IEnumerable<CommentDto>> GetAll()
+        public async Task<IEnumerable<CommentResponse>> GetAll()
         {
             var comments = await _commentRepository.GetAll();
-            return _mapper.Map<IEnumerable<CommentDto>>(comments);
+            return _mapper.Map<IEnumerable<CommentResponse>>(comments);
         }
     }
 }
