@@ -1,16 +1,17 @@
 ﻿using System.Net;
-
 namespace Application.Exceptions
 {
-    public class NotFoundApplicationException : BaseApplicationException
+    namespace Application.Exceptions
     {
-        public NotFoundApplicationException(string message) : base(message) { }
+        public class BaseApplicationException : ApplicationException
+        {
+            public BaseApplicationException(string message) : base(message) { }
 
-        public NotFoundApplicationException(string message, Exception inner)
-            : base(message, inner) { }
+            public BaseApplicationException(string message, Exception inner)
+                : base(message, inner) { }
 
-        public HttpStatusCode StatusCode => HttpStatusCode.NotFound;
-
-        public override string Message => "Entity not found";
+            public virtual HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
+            public virtual string Title => "Bad request";
+        }
     }
 }

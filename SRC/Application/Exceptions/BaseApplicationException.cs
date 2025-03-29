@@ -4,7 +4,7 @@ namespace Application.Exceptions
 {
     public class BaseApplicationException : ApplicationException
     {
-        public BaseApplicationException(string message) : base(message) {}
+        public BaseApplicationException(string message, string title) : base(message) {}
 
         public BaseApplicationException(string message, Exception inner) 
             : base(message, inner) {}
