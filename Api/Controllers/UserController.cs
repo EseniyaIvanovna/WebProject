@@ -18,17 +18,7 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUserById(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var user = await _userService.GetById(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
         return Ok(user);
     }
    
@@ -49,34 +39,14 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
-        var result = await _userService.Update(request);
-        if (!result)
-        {
-            return NotFound();
-        }
-        return Ok(result);
+        await _userService.Update(request);
+        return NoContent();
     }
     
     [HttpDelete]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        try
-        {
-            var result = await _userService.Delete(id);
-            if (!result)
-            {
-                return NotFound(); 
-            }
-            return NoContent(); 
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message); 
-        }
+        await _userService.Delete(id);
+        return NoContent();
     }
 }

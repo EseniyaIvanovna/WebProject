@@ -1,4 +1,5 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
@@ -12,27 +13,21 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
+        private readonly IInteractionRepository _interactionRepository;
         private readonly IMapper _mapper;
-
-        public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository,
+            IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
+            _interactionRepository = interactionRepository;
             _mapper = mapper;
         }
-
         public async Task<int> Add(CreateUserRequest request)
         {
-            var user = new User()
-            {
-                Name = request.Name,
-                LastName = request.LastName,
-                Age = request.Age,
-                Info = request.Info,
-                Email = request.Email
-            };
+            var user = _mapper.Map<User>(request);
             return await _userRepository.Create(user);
         }
 
@@ -40,15 +35,15 @@ namespace Application.Service
         {
             var user = await _userRepository.GetById(id);
             if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {id} not found");
+
 
             await _postRepository.DeleteByUserId(id);
 
             await _commentRepository.DeleteByUserId(id);
 
             await _reactionRepository.DeleteByUserId(id);
+            await _interactionRepository.DeleteByUserId(id);
 
             return await _userRepository.Delete(id);
         }
@@ -62,29 +57,20 @@ namespace Application.Service
         public async Task<UserResponse> GetById(int id)
         {
             var user = await _userRepository.GetById(id);
+            if (user == null)
+                throw new NotFoundApplicationException($"User {id} not found");
+
             return _mapper.Map<UserResponse>(user);
         }
 
         public async Task<bool> Update(UpdateUserRequest request)
         {
-            var user = new User()
-            {
-                Id=request.Id,
-                Name = request.Name,
-                LastName = request.LastName,
-                Age = request.Age,
-                Info = request.Info,
-                Email = request.Email
-            };
-
-            var existingUser = await _userRepository.GetById(user.Id);
+            var existingUser = await _userRepository.GetById(request.Id);
             if (existingUser == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.Id} not found");
 
-            //_mapper.Map(user, existingUser);
-            return await _userRepository.Update(user);
+            _mapper.Map(request, existingUser);
+            return await _userRepository.Update(existingUser);
         }
     }
 }

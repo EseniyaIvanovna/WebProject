@@ -110,5 +110,10 @@ namespace Infrastructure.Repositories
                 User2Id = user2Id
             });
         }
+        public async Task DeleteByUserId(int userId)
+        {
+            var sql = "DELETE FROM interactions WHERE user1_id = @UserId OR user2_id = @UserId";
+            await _connection.ExecuteAsync(sql, new { UserId = userId });
+        }
     }
 }

@@ -2,14 +2,17 @@
 
 namespace Application.Exceptions
 {
-    public class BaseApplicationException : ApplicationException
+    namespace Application.Exceptions
     {
-        public BaseApplicationException(string message, string title) : base(message) {}
+        public class BaseApplicationException : ApplicationException
+        {
+            public BaseApplicationException(string message) : base(message) { }
 
-        public BaseApplicationException(string message, Exception inner) 
-            : base(message, inner) {}
+            public BaseApplicationException(string message, Exception inner)
+                : base(message, inner) { }
 
-        public virtual HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
-        public virtual string Title => "Bad request";
+            public virtual HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
+            public virtual string Title => "Bad request";
+        }
     }
 }

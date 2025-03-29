@@ -25,17 +25,7 @@ public class PostController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPostById( int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var post = await _postService.GetById(id);
-        if (post == null)
-        {
-            return NotFound();
-        }
-
         return Ok(post);
     }
 
@@ -49,29 +39,14 @@ public class PostController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdatePost([FromBody]UpdatePostRequest request)
     {
-        var result = await _postService.Update(request);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        await _postService.Update(request);
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePost(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        var result = await _postService.Delete(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
+        await _postService.Delete(id);
         return NoContent();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Exceptions;
+﻿using Application.Exceptions.Application.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +12,7 @@ namespace Api.ExceptionHandler
                 return false;
 
             httpContext.Response.StatusCode = (int)e.StatusCode;
-            httpContext.Response.ContentType = "application/problen+json";
+            httpContext.Response.ContentType = "application/problem+json";
 
             var problenDetails = new ProblemDetails
             {

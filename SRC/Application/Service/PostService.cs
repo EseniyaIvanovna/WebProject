@@ -1,4 +1,5 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
@@ -27,10 +28,8 @@ namespace Application.Service
         {
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
-
+                throw new NotFoundApplicationException($"User {request.UserId} not found");
+            
             var post = new Post()
             {
                 UserId = request.UserId,
@@ -43,9 +42,8 @@ namespace Application.Service
         {
             var post = await _postRepository.GetById(id);
             if (post == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {id} not found");
+
 
             await _commentRepository.DeleteByPostId(id);
 
@@ -63,6 +61,9 @@ namespace Application.Service
         public async Task<PostResponse> GetById(int id)
         {
             var post = await _postRepository.GetById(id);
+            if (post == null)
+                throw new NotFoundApplicationException($"Post {id} not found");
+
             return _mapper.Map<PostResponse>(post);
         }
 
@@ -70,16 +71,10 @@ namespace Application.Service
         {
             var existingPost = await _postRepository.GetById(request.Id);
             if (existingPost == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {request.Id} not found");
 
-            var post = new Post()
-            {
-                Id = request.Id,
-                Text = request.Text
-            };
-            return await _postRepository.Update(post);
+            existingPost.Text = request.Text;
+            return await _postRepository.Update(existingPost);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
@@ -23,15 +24,11 @@ namespace Application.Service
         {
             var sender = await _userRepository.GetById(request.SenderId);
             if (sender == null)
-            {
-                throw new InvalidOperationException("Sender not found.");
-            }
+                throw new NotFoundApplicationException($"Sender {request.SenderId} not found");
 
             var receiver = await _userRepository.GetById(request.ReceiverId);
             if (receiver == null)
-            {
-                throw new InvalidOperationException("Receiver not found.");
-            }
+                throw new NotFoundApplicationException($"Receiver {request.ReceiverId} not found");
 
             var message = new Message()
             {
@@ -46,9 +43,7 @@ namespace Application.Service
         {
             var message = await _messageRepository.GetById(id);
             if (message == null)
-            {
-                throw new InvalidOperationException("Message not found.");
-            }
+                throw new NotFoundApplicationException($"Message {id} not found");
 
             return await _messageRepository.Delete(id);
         }
@@ -56,6 +51,9 @@ namespace Application.Service
         public async Task<MessageResponse> GetById(int id)
         {
             var message = await _messageRepository.GetById(id);
+            if (message == null)
+                throw new NotFoundApplicationException($"Message {id} not found");
+
             return _mapper.Map<MessageResponse>(message);
         }
         
@@ -75,16 +73,10 @@ namespace Application.Service
         {
             var existingMessage = await _messageRepository.GetById(request.Id);
             if (existingMessage == null)
-            {
-                throw new InvalidOperationException("Message not found.");
-            }
+                throw new NotFoundApplicationException($"Message {request.Id} not found");
 
-            var message = new Message()
-            {
-                Id = request.Id,
-                Text = request.Text
-            };
-            return await _messageRepository.Update(message);
+            existingMessage.Text = request.Text;
+            return await _messageRepository.Update(existingMessage);
         }
     }
 }

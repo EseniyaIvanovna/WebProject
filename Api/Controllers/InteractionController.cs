@@ -26,28 +26,13 @@ public class InteractionController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetInteractionById( int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var interaction = await _interactionService.GetById(id);
-        if (interaction == null)
-        {
-            return NotFound();
-        }
-
         return Ok(interaction);
     }
     
     [HttpGet("ByStatus/{status}")]
     public async Task<IActionResult> GetInteractionsByStatus(Status status)
     {
-        if (!Enum.IsDefined(typeof(Status), status))
-        {
-            return BadRequest("Invalid status value.");
-        }
-
         var interactions = await _interactionService.GetByStatus(status);
         return Ok(interactions);
     }
@@ -56,28 +41,13 @@ public class InteractionController : ControllerBase
     public async Task<IActionResult> UpdateInteraction([FromBody] UpdateInteractionRequest request)
     {
         var result = await _interactionService.Update(request);
-        if (!result)
-        {
-            return NotFound();
-        }
-
-        return Ok(result);
+        return NoContent();
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInteraction(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        var result = await _interactionService.Delete(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
+        await _interactionService.Delete(id);
         return NoContent();
     }
     

@@ -25,28 +25,13 @@ public class ReactionController:ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetReactionById(int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
         var reaction = await _reactionService.GetById(id);
-        if (reaction == null)
-        {
-            return NotFound();
-        }
-
         return Ok(reaction);
     }
     
     [HttpGet("ByPost/{postId}")]
     public async Task<ActionResult<IEnumerable<ReactionResponse>>> GetReactionsByPostId(int postId)
     {
-        if (postId < 0)
-        {
-            return BadRequest("Post ID must be a positive integer.");
-        }
-
         var reactions = await _reactionService.GetByPostId(postId);
         return Ok(reactions);
     }
@@ -54,11 +39,6 @@ public class ReactionController:ControllerBase
     [HttpGet("ByUser/{userId}")]
     public async Task<ActionResult<IEnumerable<ReactionResponse>>> GetReactionsByUserId(int userId)
     {
-        if (userId < 0)
-        {
-            return BadRequest("User ID must be a positive integer.");
-        }
-
         var reactions = await _reactionService.GetByUserId(userId);
         return Ok(reactions);
     }
@@ -66,28 +46,14 @@ public class ReactionController:ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateReaction([FromBody] UpdateReactionRequest request)
     {
-        var result = await _reactionService.Update(request);
-        if (!result)
-        {
-            return NotFound();
-        }
-        return Ok(result);
+        await _reactionService.Update(request);
+        return NoContent();
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteReaction( int id)
     {
-        if (id < 0)
-        {
-            return BadRequest("ID must be a positive integer.");
-        }
-
-        var result = await _reactionService.Delete(id);
-        if (!result)
-        {
-            return NotFound();
-        }
-
+        await _reactionService.Delete(id);
         return NoContent();
     }
     

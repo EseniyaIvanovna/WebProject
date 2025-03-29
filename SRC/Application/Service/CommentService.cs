@@ -1,4 +1,5 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
@@ -25,15 +26,11 @@ namespace Application.Service
         {
             var user = await _userRepository.GetById(request.UserId);
             if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.UserId} not found");
 
             var post = await _postRepository.GetById(request.PostId);
             if (post == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {request.PostId} not found");        
 
             var comment = new Comment()
             {
@@ -48,25 +45,17 @@ namespace Application.Service
         {
             var existingComment = await _commentRepository.GetById(request.Id);
             if (existingComment == null)
-            {
-                throw new InvalidOperationException("Comment not found.");
-            }
+                throw new NotFoundApplicationException($"Comment {request.Id} not found");
 
-            var comment = new Comment()
-            {
-                Id= request.Id,
-                Content=request.Content
-            };
-            return await _commentRepository.Update(comment);
+            existingComment.Content = request.Content;
+            return await _commentRepository.Update(existingComment);
         }
 
         public async Task<bool> Delete(int id)
         {
             var comment = await _commentRepository.GetById(id);
             if (comment == null)
-            {
-                throw new InvalidOperationException("Comment not found.");
-            }
+                throw new NotFoundApplicationException($"Comment {id} not found");
 
             return await _commentRepository.Delete(id);
         }
@@ -74,6 +63,9 @@ namespace Application.Service
         public async Task<CommentResponse> GetById(int id)
         {
             var comment = await _commentRepository.GetById(id);
+            if (comment == null)
+                throw new NotFoundApplicationException($"Comment {id} not found");
+
             return _mapper.Map<CommentResponse>(comment);
         }
 

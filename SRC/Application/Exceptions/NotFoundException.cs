@@ -3,15 +3,13 @@ namespace Application.Exceptions
 {
     namespace Application.Exceptions
     {
-        public class BaseApplicationException : ApplicationException
+        public class NotFoundApplicationException : BaseApplicationException
         {
-            public BaseApplicationException(string message) : base(message) { }
+            public NotFoundApplicationException(string message) : base(message) { }
+            public NotFoundApplicationException(string message, Exception inner) : base(message, inner) { }
 
-            public BaseApplicationException(string message, Exception inner)
-                : base(message, inner) { }
-
-            public virtual HttpStatusCode StatusCode => HttpStatusCode.BadRequest;
-            public virtual string Title => "Bad request";
+            public override HttpStatusCode StatusCode => HttpStatusCode.NotFound;
+            public override string Title => "Not Found";
         }
     }
 }

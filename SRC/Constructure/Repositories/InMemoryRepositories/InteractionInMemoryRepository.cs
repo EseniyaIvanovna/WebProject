@@ -77,5 +77,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         {
             throw new NotImplementedException();
         }
+
+        Task IInteractionRepository.DeleteByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

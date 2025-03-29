@@ -1,4 +1,6 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions;
+using Application.Exceptions.Application.Exceptions;
+using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
@@ -24,21 +26,14 @@ namespace Application.Service
         {
             var user1 = await _userRepository.GetById(request.User1Id);
             if (user1 == null)
-            {
-                throw new InvalidOperationException("User1 not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.User1Id} not found");
 
             var user2 = await _userRepository.GetById(request.User2Id);
             if (user2 == null)
-            {
-                throw new InvalidOperationException("User2 not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.User2Id} not found");
 
-            bool interactionExists = await _interactionRepository.ExistsBetweenUsers(request.User1Id, request.User2Id);
-            if (interactionExists)
-            {
-                throw new InvalidOperationException("Interaction between these users already exists");
-            }
+            if (await _interactionRepository.ExistsBetweenUsers(request.User1Id, request.User2Id))
+                throw new ConflictApplicationException("Interaction between these users already exists");
 
             var inreraction = new Interaction()
             {
@@ -53,9 +48,7 @@ namespace Application.Service
         {
             var interaction = await _interactionRepository.GetById(id);
             if (interaction == null)
-            {
-                throw new InvalidOperationException("Interaction not found.");
-            }
+                throw new NotFoundApplicationException($"Interaction {id} not found");
 
             return await _interactionRepository.Delete(id);
         }
@@ -63,6 +56,8 @@ namespace Application.Service
         public async Task<InteractionResponse> GetById(int id)
         {
             var interaction = await _interactionRepository.GetById(id);
+            if (interaction == null)
+                throw new NotFoundApplicationException($"Interaction {id} not found");
             return _mapper.Map<InteractionResponse>(interaction);
         }
         
@@ -82,15 +77,9 @@ namespace Application.Service
         {
             var existingInteraction = await _interactionRepository.GetById(request.Id);
             if (existingInteraction == null)
-            {
-                throw new InvalidOperationException("Interaction not found.");
-            }
+                throw new NotFoundApplicationException($"Interaction {request.Id} not found");
 
-            var interaction = new Interaction()
-            {
-                Id=request.Id,
-                Status=request.Status
-            };
+            existingInteraction.Status = request.Status;
             return await _interactionRepository.Update(existingInteraction);
         }
     }
