@@ -1,4 +1,4 @@
-﻿namespace Application
+﻿namespace Infrastructure
 {
     public static class ValidationConstants
     {
@@ -16,4 +16,5 @@
         // Interactions
         public const int MaxInteractionStatusLength = 20;
     }
+
 }

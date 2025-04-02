@@ -1,5 +1,5 @@
-﻿using Application;
-using FluentMigrator;
+﻿using FluentMigrator;
+
 
 
 namespace Infrastructure.Database.Migrations
