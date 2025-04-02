@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
         {
             var sql = @"
                 INSERT INTO users (name, lastname, dateofbirth, info, email)
-                VALUES (@Name, @LastName, @Age, @Info, @Email)
+                VALUES (@Name, @LastName, @Dateofbirth, @Info, @Email)
                 RETURNING id;
             ";
 
