@@ -25,24 +25,10 @@ namespace Application.Service
 
         public async Task<int> Create(CreateReactionRequest request)
         {
-            var user = await _userRepository.GetById(request.UserId);
-            if (user == null)
-                throw new NotFoundApplicationException($"User {request.UserId} not found");
-
-            // Проверяем существование поста
-            var post = await _postRepository.GetById(request.PostId);
-            if (post == null)
-                throw new NotFoundApplicationException($"Post {request.PostId} not found");
-
             if (await _reactionRepository.Exists(request.UserId, request.PostId))
                 throw new ConflictApplicationException("User can have only one reaction per post");
 
-            var reaction = new Reaction()
-            {
-                PostId = request.PostId,
-                UserId = request.UserId,
-                Type = request.Type
-            };            
+            var reaction = _mapper.Map<Reaction>(request);
             return await _reactionRepository.Create(reaction);
         }
 

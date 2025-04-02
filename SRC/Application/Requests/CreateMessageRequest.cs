@@ -6,7 +6,7 @@ namespace Application.Requests
     {
         public int SenderId { get; set; }
         public int ReceiverId { get; set; }
-        public string Text { get; set; }
+        public required string Text { get; set; }
     }
     public class CreateMessageRequestValidator : AbstractValidator<CreateMessageRequest>
     {
@@ -23,7 +23,7 @@ namespace Application.Requests
 
             RuleFor(x => x.Text)
                 .NotEmpty().WithMessage("Message text is required")
-                .MaximumLength(1000).WithMessage("Message text cannot exceed 1000 characters");
+                .MaximumLength(ValidationConstants.MaxTextContentLength).WithMessage("Message text cannot exceed 1000 characters");
         }
     }
 }

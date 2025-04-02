@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
             return posts;
         }
 
-        public async Task<Post> GetById(int id)
+        public async Task<Post?> GetById(int id)
         {
             var sql = @"
                 SELECT id, userId, text, createdAt

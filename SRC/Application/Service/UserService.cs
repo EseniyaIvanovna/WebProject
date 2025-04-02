@@ -2,8 +2,11 @@
 using Application.Requests;
 using Application.Responses;
 using AutoMapper;
+using Dapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace Application.Service
 {
@@ -15,8 +18,9 @@ namespace Application.Service
         private readonly IReactionRepository _reactionRepository;
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
         public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository,
-            IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper)
+            IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -24,6 +28,7 @@ namespace Application.Service
             _reactionRepository = reactionRepository;
             _interactionRepository = interactionRepository;
             _mapper = mapper;
+            _configuration = configuration;
         }
         public async Task<int> Add(CreateUserRequest request)
         {
@@ -33,19 +38,65 @@ namespace Application.Service
 
         public async Task<bool> Delete(int id)
         {
-            var user = await _userRepository.GetById(id);
-            if (user == null)
-                throw new NotFoundApplicationException($"User {id} not found");
+            var connectionString = _configuration.GetConnectionString("PostgresDB");
+
+            await using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                var user = await _userRepository.GetById(id);
+                if (user == null)
+                {
+                    throw new NotFoundApplicationException($"User {id} not found");
+                }
+
+                await connection.ExecuteAsync(
+                    "DELETE FROM posts WHERE userid = @userId",
+                    new { userId = id },
+                    transaction);
+
+                await connection.ExecuteAsync(
+                    "DELETE FROM comments WHERE userid = @userId",
+                    new { userId = id },
+                    transaction);
+
+                await connection.ExecuteAsync(
+                   "DELETE FROM reactions WHERE userid = @userId",
+                   new { userId = id },
+                   transaction);
+
+                await connection.ExecuteAsync(
+                    "DELETE FROM interactions WHERE user1id = @userId or user2id = @userId",
+                    new { userId = id },
+                    transaction);
+
+                var affectedRows = await connection.ExecuteAsync(
+                    "DELETE FROM users WHERE id = @id",
+                    new { id },
+                    transaction);
+
+                await transaction.CommitAsync();
+                return affectedRows > 0;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+            //var user = await _userRepository.GetById(id);
+            //if (user == null)
+            //    throw new NotFoundApplicationException($"User {id} not found");
 
 
-            await _postRepository.DeleteByUserId(id);
+            //await _postRepository.DeleteByUserId(id);
+            //await _commentRepository.DeleteByUserId(id);
+            //await _reactionRepository.DeleteByUserId(id);
+            //await _interactionRepository.DeleteByUserId(id);
 
-            await _commentRepository.DeleteByUserId(id);
-
-            await _reactionRepository.DeleteByUserId(id);
-            await _interactionRepository.DeleteByUserId(id);
-
-            return await _userRepository.Delete(id);
+            //return await _userRepository.Delete(id);
         }
 
         public async Task<IEnumerable<UserResponse>> GetAll()

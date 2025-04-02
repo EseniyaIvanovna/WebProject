@@ -22,20 +22,7 @@ namespace Application.Service
 
         public async Task<int> Create(CreateMessageRequest request)
         {
-            var sender = await _userRepository.GetById(request.SenderId);
-            if (sender == null)
-                throw new NotFoundApplicationException($"Sender {request.SenderId} not found");
-
-            var receiver = await _userRepository.GetById(request.ReceiverId);
-            if (receiver == null)
-                throw new NotFoundApplicationException($"Receiver {request.ReceiverId} not found");
-
-            var message = new Message()
-            {
-                SenderId = request.SenderId,
-                ReceiverId = request.ReceiverId,
-                Text = request.Text
-            };
+            var message = _mapper.Map<Message>(request);
             return await _messageRepository.Create(message);
         }
 

@@ -17,7 +17,7 @@ namespace Application.Requests
 
             RuleFor(x => x.Text)
                 .NotEmpty().WithMessage("Post text is required")
-                .MaximumLength(1000).WithMessage("Post text cannot exceed 1000 characters");
+                .MaximumLength(ValidationConstants.MaxTextContentLength).WithMessage("Post text cannot exceed 1000 characters");
         }
     }
 }

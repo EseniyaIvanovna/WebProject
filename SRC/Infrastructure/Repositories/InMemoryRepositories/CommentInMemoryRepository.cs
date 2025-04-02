@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Comment> GetById(int id)
+        public Task<Comment?> GetById(int id)
         {
             var comment = _comments.FirstOrDefault(c => c.Id == id);
            

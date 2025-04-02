@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SRC", "SRC", "{1A6F48E1-B6C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "SRC\Domain\Domain.csproj", "{ECFC7060-53B2-41CC-B35E-35AACD9E417B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "SRC\Constructure\Infrastructure.csproj", "{35128954-5341-4C03-9306-9A8A832EF42E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "SRC\Infrastructure\Infrastructure.csproj", "{35128954-5341-4C03-9306-9A8A832EF42E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "SRC\Application\Application.csproj", "{D6F23453-3138-42AA-8285-D65A968CDD99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{D6F23453-3138-42AA-8285-D65A968CDD99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{D68ABC5A-3166-4D59-9804-38FCBBB0CAF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{D68ABC5A-3166-4D59-9804-38FCBBB0CAF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

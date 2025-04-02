@@ -17,7 +17,7 @@ namespace Application.Requests
 
             RuleFor(x => x.Content)
                 .NotEmpty().WithMessage("Comment content is required")
-                .MaximumLength(1000).WithMessage("Comment cannot exceed 1000 characters");
+                .MaximumLength(ValidationConstants.MaxTextContentLength).WithMessage("Comment cannot exceed 1000 characters");
         }
     }
 }

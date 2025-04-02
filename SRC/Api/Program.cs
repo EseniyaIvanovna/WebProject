@@ -14,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<DatabaseExceptionHandler>();
 
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();

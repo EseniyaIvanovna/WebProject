@@ -26,15 +26,7 @@ namespace Application.Service
 
         public async Task<int> Create(CreatePostRequest request)
         {
-            var user = await _userRepository.GetById(request.UserId);
-            if (user == null)
-                throw new NotFoundApplicationException($"User {request.UserId} not found");
-            
-            var post = new Post()
-            {
-                UserId = request.UserId,
-                Text=request.Text,
-            };
+            var post = _mapper.Map<Post>(request);
             return await _postRepository.Create(post);
         }
 

@@ -1,4 +1,6 @@
-﻿using FluentMigrator;
+﻿using Application;
+using FluentMigrator;
+
 
 namespace Infrastructure.Database.Migrations
 {
@@ -9,36 +11,36 @@ namespace Infrastructure.Database.Migrations
         {
             Create.Table("users")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("name").AsString(20).NotNullable()
-                .WithColumn("lastname").AsString(20).NotNullable()
-                .WithColumn("age").AsInt32().NotNullable()
-                .WithColumn("info").AsString(255)
-                .WithColumn("email").AsString(50).NotNullable();
+                .WithColumn("name").AsString(ValidationConstants.MaxNameLength).NotNullable()
+                .WithColumn("lastname").AsString(ValidationConstants.MaxLastNameLength).NotNullable()
+                .WithColumn("dateofbirth").AsInt32().NotNullable()
+                .WithColumn("info").AsString(ValidationConstants.MaxUserInfoLength)
+                .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable();
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("text").AsString(1000).NotNullable()
+                .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("comments")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
                 .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("content").AsString(1000).NotNullable()
+                .WithColumn("content").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("reactions")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
-                .WithColumn("type").AsString(50).NotNullable();
+                .WithColumn("type").AsString(ValidationConstants.MaxReactionTypeLength).NotNullable();
 
             Create.Table("messages")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("senderid").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("receiverid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("text").AsString(1000).NotNullable()
+                .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
             Create.Table("interactions")
@@ -48,8 +50,8 @@ namespace Infrastructure.Database.Migrations
                .WithColumn("status").AsString().NotNullable();
 
             Insert.IntoTable("users")
-                .Row(new { name = "John", lastname = "Doe", age = "30", info = "Software Engineer", email = "john.doe@example.com" })
-                .Row(new { name = "Jane", lastname = "Smith", age = "25", info = "Data Scientist", email = "jane.smith@example.com" });
+                .Row(new { name = "John", lastname = "Doe", dateofbirth = "2000-01-01", info = "Software Engineer", email = "john.doe@example.com" })
+                .Row(new { name = "Jane", lastname = "Smith", dateofbirth = "2003-10-01", info = "Data Scientist", email = "jane.smith@example.com" });
 
             Insert.IntoTable("posts")
                 .Row(new { userid = 1, text = "First post by John", createdat = DateTime.UtcNow })

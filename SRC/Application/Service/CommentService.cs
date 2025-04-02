@@ -24,20 +24,7 @@ namespace Application.Service
        
         public async Task<int> Create(CreateCommentRequest request)
         {
-            var user = await _userRepository.GetById(request.UserId);
-            if (user == null)
-                throw new NotFoundApplicationException($"User {request.UserId} not found");
-
-            var post = await _postRepository.GetById(request.PostId);
-            if (post == null)
-                throw new NotFoundApplicationException($"Post {request.PostId} not found");        
-
-            var comment = new Comment()
-            {
-                UserId= request.UserId,
-                PostId=request.PostId,
-                Content=request.Content
-            };
+            var comment = _mapper.Map<Comment>(request);
             return await _commentRepository.Create(comment);
         }
         

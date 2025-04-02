@@ -6,7 +6,7 @@ namespace Application.Requests
     {
         public string Name { get; set; }
         public string LastName { get; set; }
-        public int Age { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public string Info { get; set; }
         public string Email { get; set; }
     }
@@ -16,24 +16,24 @@ namespace Application.Requests
         public CreateUserRequestValidator() 
         {
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is requied")
-                .MaximumLength(20).WithMessage("{PropertyName} has length more then 20 ");
+                .NotEmpty().WithMessage("Name is required")
+                .MaximumLength(ValidationConstants.MaxNameLength).WithMessage("{PropertyName} has length more then 20 ");
 
             RuleFor(x => x.LastName)
-                .NotEmpty().WithMessage("LastName is requied")
-                .MaximumLength(20).WithMessage("{PropertyName} has length more then 20 ");
+                .NotEmpty().WithMessage("LastName is required")
+                .MaximumLength(ValidationConstants.MaxLastNameLength).WithMessage("{PropertyName} has length more then 20 ");
             
             RuleFor(x => x.Info)
-                .NotEmpty().WithMessage("Info is requied")
-                .MaximumLength(255).WithMessage("{PropertyName} has length more then 255");
-            
-            RuleFor(x => x.Age)
-                .NotEmpty().WithMessage("Age is requied")
-                .GreaterThanOrEqualTo(0).WithMessage("Age must be positive");
+                .NotEmpty().WithMessage("Info is required")
+                .MaximumLength(ValidationConstants.MaxUserInfoLength).WithMessage("{PropertyName} has length more then 255");
+
+            RuleFor(x => x.DateOfBirth)
+                .NotEmpty().WithMessage("DateOfBirth is required")
+                .LessThan(DateTime.Today.AddYears(-14)).WithMessage("User must be at least 14 years old"); 
            
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is requied")
-                .MaximumLength(50).WithMessage("Email has length more then 50" )
+                .NotEmpty().WithMessage("Email is required")
+                .MaximumLength(ValidationConstants.MaxEmailLength).WithMessage("Email has length more then 50" )
                 .EmailAddress().WithMessage("It does not look like email");
         }
     }

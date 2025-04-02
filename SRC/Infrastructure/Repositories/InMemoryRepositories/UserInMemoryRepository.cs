@@ -10,9 +10,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         public UserInMemoryRepository()
         {
             // тестовые данные 
-            _users.Add(new User { Id = 1,Name="John", Age=20, Info= "john_doe", Email= "john@example.com", LastName="Doe"});
-            _users.Add(new User { Id = 2,Name="Alice", Age=19, Info= "Sporty", Email= "kitty@example.com", LastName="Swan"});
-            _users.Add(new User { Id = 3,Name="Bob", Age=25, Info= "artist", Email= "bob2000@example.com", LastName="Brown"});            
+            _users.Add(new User { Id = 1,Name="John", DateOfBirth=new DateTime(2000,10,10), Info= "john_doe", Email= "john@example.com", LastName="Doe"});
+            _users.Add(new User { Id = 2,Name="Alice", DateOfBirth = new DateTime(2000, 10, 10), Email= "kitty@example.com", LastName="Swan"});
+            _users.Add(new User { Id = 3,Name="Bob", DateOfBirth = new DateTime(2000, 10, 10), Info= "artist", Email= "bob2000@example.com", LastName="Brown"});            
         }
         
         public Task<int> Create(User user)
@@ -60,7 +60,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             existingUser.Name = user.Name;
             existingUser.LastName = user.LastName;
             existingUser.Email = user.Email;
-            existingUser.Age = user.Age;
+            existingUser.DateOfBirth = user.DateOfBirth;
             existingUser.Info = user.Info;
 
             return Task.FromResult(true);

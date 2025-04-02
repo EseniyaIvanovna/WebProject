@@ -6,7 +6,7 @@ namespace Application.Requests
     {
         public int PostId { get; set; }
         public int UserId { get; set; }
-        public string Content { get; set; }
+        public required string Content { get; set; }
     }
     public class CreateCommentRequestValidator : AbstractValidator<CreateCommentRequest>
     {
@@ -22,7 +22,7 @@ namespace Application.Requests
 
             RuleFor(x => x.Content)
                 .NotEmpty().WithMessage("Comment content is required")
-                .MaximumLength(1000).WithMessage("Comment cannot exceed 1000 characters");
+                .MaximumLength(ValidationConstants.MaxTextContentLength).WithMessage("Comment cannot exceed 1000 characters");
         }
     }
 }

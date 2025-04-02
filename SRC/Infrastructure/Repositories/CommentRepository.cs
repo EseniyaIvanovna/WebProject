@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Comment> GetById(int id)
+        public async Task<Comment?> GetById(int id)
         {
             var sql = @"
                 SELECT id, postId, userId, content, createdAt
@@ -84,7 +84,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<IEnumerable<Comment>> GetAll()
+        public async Task<IEnumerable<Comment?>> GetAll()
         {
             var sql = @"
                 SELECT id, postId, userId, content, createdAt

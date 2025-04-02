@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Reaction> GetById(int id)
+        public async Task<Reaction?> GetById(int id)
         {
             var sql = @"
                 SELECT id, userId, postId, type

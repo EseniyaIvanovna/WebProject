@@ -24,23 +24,10 @@ namespace Application.Service
 
         public async Task<int> Create(CreateInteractionRequest request)
         {
-            var user1 = await _userRepository.GetById(request.User1Id);
-            if (user1 == null)
-                throw new NotFoundApplicationException($"User {request.User1Id} not found");
-
-            var user2 = await _userRepository.GetById(request.User2Id);
-            if (user2 == null)
-                throw new NotFoundApplicationException($"User {request.User2Id} not found");
-
             if (await _interactionRepository.ExistsBetweenUsers(request.User1Id, request.User2Id))
                 throw new ConflictApplicationException("Interaction between these users already exists");
 
-            var inreraction = new Interaction()
-            {
-                User1Id = request.User1Id,
-                User2Id=request.User2Id,
-                Status=request.Status
-            }; 
+            var inreraction = _mapper.Map<Interaction>(request);
             return await _interactionRepository.Create(inreraction);
         }
 
