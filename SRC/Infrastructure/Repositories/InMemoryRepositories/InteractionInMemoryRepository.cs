@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(interaction.Id); 
         }
 
-        public Task<bool> Delete(int id)
+        public Task Delete(int id)
         {
             var interaction = _interactions.FirstOrDefault(i => i.Id == id);
             if (interaction == null)
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Interaction> GetById(int id)
+        public Task<Interaction?> GetById(int id)
         {
             var interaction = _interactions.FirstOrDefault(i => i.Id == id);
             return Task.FromResult(interaction);
@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(interactions);
         }
 
-        public Task<bool> Update(Interaction interaction)
+        public Task Update(Interaction interaction)
         {
             var existingInteraction = _interactions.FirstOrDefault(i => i.Id == interaction.Id);
             if (existingInteraction == null)

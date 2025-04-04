@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(reaction.Id);
         }
 
-        public Task<bool> Delete(int id)
+        public Task Delete(int id)
         {
             var reaction = _reactions.FirstOrDefault(r => r.Id == id);
             if (reaction == null)
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Reaction> GetById(int Id)
+        public Task<Reaction?> GetById(int Id)
         {
             var reaction = _reactions.FirstOrDefault(r => r.Id == Id);
             return Task.FromResult(reaction);
@@ -57,7 +57,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(reactions);
         }
 
-        public Task<bool> Update(Reaction reaction)
+        public Task Update(Reaction reaction)
         {
             var existingReaction = _reactions.FirstOrDefault(r => r.Id == reaction.Id);
             if (existingReaction == null)
@@ -98,6 +98,11 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         }
 
         Task<bool> IReactionRepository.Exists(int userId, int postId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReactionRepository.DeleteByPostOwnerId(int userId)
         {
             throw new NotImplementedException();
         }

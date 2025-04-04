@@ -1,5 +1,4 @@
 ﻿using Application.Exceptions;
-using Application.Exceptions.Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
 using AutoMapper;
@@ -12,13 +11,11 @@ namespace Application.Service
     public class InteractionService : IInteractionService
     {
         private readonly IInteractionRepository _interactionRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public InteractionService(IInteractionRepository interactionRepository, IUserRepository userRepository, IMapper mapper)
+        public InteractionService(IInteractionRepository interactionRepository, IMapper mapper)
         {
             _interactionRepository = interactionRepository;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -27,17 +24,17 @@ namespace Application.Service
             if (await _interactionRepository.ExistsBetweenUsers(request.User1Id, request.User2Id))
                 throw new ConflictApplicationException("Interaction between these users already exists");
 
-            var inreraction = _mapper.Map<Interaction>(request);
-            return await _interactionRepository.Create(inreraction);
+            var interaction = _mapper.Map<Interaction>(request);
+            return await _interactionRepository.Create(interaction);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var interaction = await _interactionRepository.GetById(id);
             if (interaction == null)
                 throw new NotFoundApplicationException($"Interaction {id} not found");
 
-            return await _interactionRepository.Delete(id);
+            await _interactionRepository.Delete(id);
         }
 
         public async Task<InteractionResponse> GetById(int id)
@@ -60,14 +57,14 @@ namespace Application.Service
             return _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
         }
        
-        public async Task<bool> Update(UpdateInteractionRequest request)
+        public async Task Update(UpdateInteractionRequest request)
         {
             var existingInteraction = await _interactionRepository.GetById(request.Id);
             if (existingInteraction == null)
                 throw new NotFoundApplicationException($"Interaction {request.Id} not found");
 
             existingInteraction.Status = request.Status;
-            return await _interactionRepository.Update(existingInteraction);
+            await _interactionRepository.Update(existingInteraction);
         }
     }
 }

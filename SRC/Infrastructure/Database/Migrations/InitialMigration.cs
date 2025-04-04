@@ -1,7 +1,5 @@
 ﻿using FluentMigrator;
 
-
-
 namespace Infrastructure.Database.Migrations
 {
     [Migration(202503151112)]
@@ -13,7 +11,7 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(ValidationConstants.MaxNameLength).NotNullable()
                 .WithColumn("lastname").AsString(ValidationConstants.MaxLastNameLength).NotNullable()
-                .WithColumn("dateofbirth").AsInt32().NotNullable()
+                .WithColumn("dateofbirth").AsDateTime().NotNullable()
                 .WithColumn("info").AsString(ValidationConstants.MaxUserInfoLength)
                 .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable();
 

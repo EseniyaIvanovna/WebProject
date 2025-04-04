@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(message.Id) ;
         }
 
-        public Task<bool> Delete(int id)
+        public Task Delete(int id)
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
             if (message == null)
@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Message> GetById(int id)
+        public Task<Message?> GetById(int id)
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
             return Task.FromResult(message);
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(messages);
         }
 
-        public Task<bool> Update(Message message)
+        public Task Update(Message message)
         {
             var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
             if (existingMessage == null)
@@ -69,6 +69,11 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         public Task<IEnumerable<Message>> GetAll()
         {
             return Task.FromResult(_messages.AsEnumerable());
+        }
+
+        Task IMessageRepository.DeleteMessagesByUser(int userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

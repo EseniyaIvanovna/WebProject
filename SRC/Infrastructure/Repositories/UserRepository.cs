@@ -34,12 +34,10 @@ namespace Infrastructure.Repositories
             return userId;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var sql = "DELETE FROM users WHERE id = @Id";
-            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
-
-            return affectedRows > 0;
+            await _connection.ExecuteAsync(sql, new { Id = id });
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -65,7 +63,7 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task<bool> Update(User user)
+        public async Task Update(User user)
         {
             var sql = @"
                 UPDATE users
@@ -86,8 +84,6 @@ namespace Infrastructure.Repositories
                 user.Email,
                 user.Id
             });
-
-            return affectedRows > 0;
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Application.Requests
     public class UpdateUserRequest
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string LastName { get; set; }
+        public required string Name { get; set; }
+        public required string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? Info { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 
     public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
@@ -37,7 +37,6 @@ namespace Application.Requests
                 .LessThan(DateTime.Today.AddYears(-14)).WithMessage("User must be at least 14 years old"); 
                              
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required")
                 .MaximumLength(ValidationConstants.MaxEmailLength).WithMessage("Email has length more then 50")
                 .EmailAddress().WithMessage("It does not look like email");
         }

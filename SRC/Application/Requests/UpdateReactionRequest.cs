@@ -8,6 +8,7 @@ namespace Application.Requests
         public int Id { get; set; }
         public ReactionType Type { get; set; }
     }
+
     public class UpdateReactionRequestValidator : AbstractValidator<UpdateReactionRequest>
     {
         public UpdateReactionRequestValidator()

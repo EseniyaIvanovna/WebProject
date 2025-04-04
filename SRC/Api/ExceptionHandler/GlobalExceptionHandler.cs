@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,7 +11,7 @@ namespace Api.ExceptionHandler
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             httpContext.Response.ContentType = "application/problem+json";
 
-            var problenDetails = new ProblemDetails
+            var problemDetails = new ProblemDetails
             {
                 Status = (int)HttpStatusCode.InternalServerError,
                 Title = "An error occured ...",
@@ -24,7 +23,7 @@ namespace Api.ExceptionHandler
             var problemDetailsContext = new ProblemDetailsContext
             {
                 HttpContext = httpContext,
-                ProblemDetails = problenDetails,
+                ProblemDetails = problemDetails,
                 Exception = exception
             };
             await problemDetailsService.WriteAsync(problemDetailsContext);

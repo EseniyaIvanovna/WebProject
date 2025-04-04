@@ -34,12 +34,10 @@ namespace Infrastructure.Repositories
             return postId;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var sql = "DELETE FROM posts WHERE id = @Id";
-            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
-
-            return affectedRows > 0;
+            await _connection.ExecuteAsync(sql, new { Id = id });
         }
 
         public async Task DeleteByUserId(int userId)
@@ -71,7 +69,7 @@ namespace Infrastructure.Repositories
             return post;
         }
 
-        public async Task<bool> Update(Post post)
+        public async Task Update(Post post)
         {
             var sql = @"
                 UPDATE posts
@@ -79,13 +77,11 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var affectedRows = await _connection.ExecuteAsync(sql, new
+            await _connection.ExecuteAsync(sql, new
             {
                 post.Text,
                 post.Id
             });
-
-            return affectedRows > 0;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Application.Requests
         public int UserId { get; set; }
         public required string Text { get; set; }
     }
+
     public class CreatePostRequestValidator : AbstractValidator<CreatePostRequest>
     {
         public CreatePostRequestValidator()

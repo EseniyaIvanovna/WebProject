@@ -33,12 +33,10 @@ namespace Infrastructure.Repositories
             return interactionId;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var sql = "DELETE FROM interactions WHERE id = @Id";
-            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
-
-            return affectedRows > 0;
+            await _connection.ExecuteAsync(sql, new { Id = id });
         }
 
         public async Task<Interaction?> GetById(int id)
@@ -65,7 +63,7 @@ namespace Infrastructure.Repositories
             return interactions;
         }
 
-        public async Task<bool> Update(Interaction interaction)
+        public async Task Update(Interaction interaction)
         {
             var sql = @"
                 UPDATE interactions
@@ -75,15 +73,13 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var affectedRows = await _connection.ExecuteAsync(sql, new
+            await _connection.ExecuteAsync(sql, new
             {
                 interaction.User1Id,
                 interaction.User2Id,
                 Status = interaction.Status.ToString(), 
                 interaction.Id
             });
-
-            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<Interaction>> GetAll()
@@ -97,6 +93,7 @@ namespace Infrastructure.Repositories
 
             return interactions;
         }
+
         public async Task<bool> ExistsBetweenUsers(int user1Id, int user2Id)
         {
             var sql = @"SELECT EXISTS(
@@ -110,9 +107,10 @@ namespace Infrastructure.Repositories
                 User2Id = user2Id
             });
         }
+
         public async Task DeleteByUserId(int userId)
         {
-            var sql = "DELETE FROM interactions WHERE user1_id = @UserId OR user2_id = @UserId";
+            var sql = "DELETE FROM interactions WHERE user1id = @UserId OR user2id = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
     }

@@ -9,6 +9,7 @@ namespace Application.Requests
         public int ReceiverId { get; set; }
         public required string Text { get; set; }
     }
+
     public class CreateMessageRequestValidator : AbstractValidator<CreateMessageRequest>
     {
         public CreateMessageRequestValidator()

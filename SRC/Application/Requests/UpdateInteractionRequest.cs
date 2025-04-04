@@ -8,6 +8,7 @@ namespace Application.Requests
         public int Id { get; set; }
         public Status Status { get; set; }
     }
+
     public class UpdateInteractionRequestValidator : AbstractValidator<UpdateInteractionRequest>
     {
         public UpdateInteractionRequestValidator()

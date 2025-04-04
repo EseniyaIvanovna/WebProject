@@ -32,12 +32,10 @@ namespace Infrastructure.Repositories
             return reactionId;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var sql = "DELETE FROM reactions WHERE id = @Id";
-            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
-
-            return affectedRows > 0;
+            await _connection.ExecuteAsync(sql, new { Id = id });
         }
 
         public async Task<Reaction?> GetById(int id)
@@ -76,7 +74,7 @@ namespace Infrastructure.Repositories
             return reactions;
         }
 
-        public async Task<bool> Update(Reaction reaction)
+        public async Task Update(Reaction reaction)
         {
             var sql = @"
                 UPDATE reactions
@@ -84,13 +82,11 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var affectedRows = await _connection.ExecuteAsync(sql, new
+            await _connection.ExecuteAsync(sql, new
             {
                 reaction.Type,
                 reaction.Id
             });
-
-            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<Reaction>> GetAll()
@@ -116,6 +112,14 @@ namespace Infrastructure.Repositories
             var sql = "DELETE FROM reactions WHERE userId = @UserId";
             await _connection.ExecuteAsync(sql, new { UserId = userId });
         }
+        public async Task DeleteByPostOwnerId(int userId)
+        {
+            var sql = @"
+                DELETE FROM reactions 
+                WHERE postId IN ( SELECT id FROM posts WHERE userId = @UserId)";
+            await _connection.ExecuteAsync(sql, new { UserId = userId });
+        }
+
         public async Task<bool> Exists(int userId, int postId)
         {
             var sql = "SELECT EXISTS(SELECT 1 FROM reactions WHERE userid = @UserId AND postid = @PostId)";

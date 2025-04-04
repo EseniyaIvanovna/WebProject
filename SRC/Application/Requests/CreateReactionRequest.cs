@@ -9,6 +9,7 @@ namespace Application.Requests
         public int PostId { get; set; }
         public ReactionType Type { get; set; }
     }
+
     public class CreateReactionRequestValidator : AbstractValidator<CreateReactionRequest>
     {
         public CreateReactionRequestValidator()

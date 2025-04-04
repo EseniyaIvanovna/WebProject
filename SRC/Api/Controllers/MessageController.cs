@@ -3,6 +3,7 @@ using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
 [ApiController]
 [Route("[controller]")]
 public class MessageController : ControllerBase

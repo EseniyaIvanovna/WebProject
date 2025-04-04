@@ -5,11 +5,11 @@ namespace Application.Requests
 {
     public class CreateUserRequest
     {
-        public string Name { get; set; }
-        public string LastName { get; set; }
+        public required string Name { get; set; }
+        public required string LastName { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public string Info { get; set; }
-        public string Email { get; set; }
+        public string? Info { get; set; }
+        public string? Email { get; set; }
     }
 
     public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>

@@ -1,4 +1,4 @@
-﻿using Application.Exceptions.Application.Exceptions;
+﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
 using AutoMapper;
@@ -28,23 +28,23 @@ namespace Application.Service
             return await _commentRepository.Create(comment);
         }
         
-        public async Task<bool> Update(UpdateCommentRequest request)
+        public async Task Update(UpdateCommentRequest request)
         {
             var existingComment = await _commentRepository.GetById(request.Id);
             if (existingComment == null)
                 throw new NotFoundApplicationException($"Comment {request.Id} not found");
 
             existingComment.Content = request.Content;
-            return await _commentRepository.Update(existingComment);
+            await _commentRepository.Update(existingComment);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var comment = await _commentRepository.GetById(id);
             if (comment == null)
                 throw new NotFoundApplicationException($"Comment {id} not found");
 
-            return await _commentRepository.Delete(id);
+            await _commentRepository.Delete(id);
         }
 
         public async Task<CommentResponse> GetById(int id)

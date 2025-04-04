@@ -40,7 +40,7 @@ public class InteractionController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateInteraction([FromBody] UpdateInteractionRequest request)
     {
-        var result = await _interactionService.Update(request);
+        await _interactionService.Update(request);
         return NoContent();
     }
     

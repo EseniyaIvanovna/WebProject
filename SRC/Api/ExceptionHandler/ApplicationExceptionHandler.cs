@@ -14,7 +14,7 @@ namespace Api.ExceptionHandler
             httpContext.Response.StatusCode = (int)e.StatusCode;
             httpContext.Response.ContentType = "application/problem+json";
 
-            var problenDetails = new ProblemDetails
+            var problemDetails = new ProblemDetails
             {
                 Status = (int)e.StatusCode,
                 Title = e.Title,
@@ -26,7 +26,7 @@ namespace Api.ExceptionHandler
             var problemDetailsContext = new ProblemDetailsContext
             {
                 HttpContext = httpContext,
-                ProblemDetails = problenDetails,
+                ProblemDetails = problemDetails,
                 Exception = e
             };
             await problemDetailsService.WriteAsync(problemDetailsContext);

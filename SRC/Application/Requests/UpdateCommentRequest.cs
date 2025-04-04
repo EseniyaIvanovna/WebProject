@@ -6,8 +6,9 @@ namespace Application.Requests
     public class UpdateCommentRequest
     {
         public int Id { get; set; }
-        public string Content { get; set; }
+        public string? Content { get; set; }
     }
+
     public class UpdateCommentRequestValidator : AbstractValidator<UpdateCommentRequest>
     {
         public UpdateCommentRequestValidator()

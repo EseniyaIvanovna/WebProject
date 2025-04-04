@@ -9,6 +9,7 @@ namespace Application.Requests
         public int UserId { get; set; }
         public required string Content { get; set; }
     }
+
     public class CreateCommentRequestValidator : AbstractValidator<CreateCommentRequest>
     {
         public CreateCommentRequestValidator()

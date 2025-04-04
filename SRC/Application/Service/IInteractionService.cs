@@ -10,7 +10,7 @@ namespace Application.Service
         public Task<IEnumerable<InteractionResponse>> GetByStatus(Status status);
         public Task<IEnumerable<InteractionResponse>> GetAll();
         public Task<int> Create(CreateInteractionRequest request);
-        public Task<bool> Update(UpdateInteractionRequest request);
-        public Task<bool> Delete(int id);
+        public Task Update(UpdateInteractionRequest request);
+        public Task Delete(int id);
     }
 }

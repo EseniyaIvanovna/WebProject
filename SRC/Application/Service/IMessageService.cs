@@ -8,8 +8,8 @@ namespace Application.Service
         public Task<MessageResponse> GetById(int Id);
         public Task<IEnumerable<MessageResponse>> GetByUserId(int Id);
         public Task<int> Create(CreateMessageRequest request);
-        public Task<bool> Update(UpdateMessageRequest request);
-        public Task<bool> Delete(int id);
+        public Task Update(UpdateMessageRequest request);
+        public Task Delete(int id);
         public Task<IEnumerable<MessageResponse>> GetAll();
     }
 }

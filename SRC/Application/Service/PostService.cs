@@ -1,9 +1,10 @@
-﻿using Application.Exceptions.Application.Exceptions;
+﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Transactions;
 
 namespace Application.Service
 {
@@ -30,18 +31,33 @@ namespace Application.Service
             return await _postRepository.Create(post);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
-            var post = await _postRepository.GetById(id);
-            if (post == null)
-                throw new NotFoundApplicationException($"Post {id} not found");
+            var options = new TransactionOptions
+            {
+                IsolationLevel = IsolationLevel.ReadCommitted,
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+            using (var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    var post = await _postRepository.GetById(id);
+                    if (post == null)
+                        throw new NotFoundApplicationException($"Post {id} not found");
 
+                    await _commentRepository.DeleteByPostId(id);
+                    await _reactionRepository.DeleteByPostId(id);
 
-            await _commentRepository.DeleteByPostId(id);
+                    await _userRepository.Delete(id);
 
-            await _reactionRepository.DeleteByPostId(id);
-
-            return await _postRepository.Delete(id);
+                    scope.Complete();
+                }
+                catch
+                {
+                    throw;
+                }
+            }
         }
 
         public async Task<IEnumerable<PostResponse>> GetAll()
@@ -59,14 +75,14 @@ namespace Application.Service
             return _mapper.Map<PostResponse>(post);
         }
 
-        public async Task<bool> Update(UpdatePostRequest request)
+        public async Task Update(UpdatePostRequest request)
         {
             var existingPost = await _postRepository.GetById(request.Id);
             if (existingPost == null)
                 throw new NotFoundApplicationException($"Post {request.Id} not found");
 
             existingPost.Text = request.Text;
-            return await _postRepository.Update(existingPost);
+            await _postRepository.Update(existingPost);
         }
     }
 }

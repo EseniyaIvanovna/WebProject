@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using System.Data.Common;
 
 namespace Api.ExceptionHandler
@@ -9,7 +8,7 @@ namespace Api.ExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is not DbException and not NpgsqlException)
+            if (exception is not DbException)
                 return false;
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;

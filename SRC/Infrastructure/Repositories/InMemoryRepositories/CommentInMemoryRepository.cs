@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(comment.Id); 
         }
 
-        public Task<bool> Delete(int id)
+        public Task Delete(int id)
         {
             var comment = _comments.FirstOrDefault(c => c.Id == id);
 
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(comments);
         }
 
-        public Task<bool> Update(Comment comment)
+        public Task Update(Comment comment)
         {
             if (comment == null) 
                 throw new ArgumentNullException(nameof(comment));

@@ -16,5 +16,4 @@
         // Interactions
         public const int MaxInteractionStatusLength = 20;
     }
-
 }

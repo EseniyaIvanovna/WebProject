@@ -6,8 +6,9 @@ namespace Application.Requests
     public class UpdateMessageRequest
     {
         public int Id { get; set; }
-        public string Text { get; set; }
+        public string? Text { get; set; }
     }
+
     public class UpdateMessageRequestValidator : AbstractValidator<UpdateMessageRequest>
     {
         public UpdateMessageRequestValidator()

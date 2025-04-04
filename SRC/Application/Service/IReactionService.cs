@@ -9,8 +9,8 @@ namespace Application.Service
         public Task<IEnumerable<ReactionResponse>> GetByUserId(int Id);
         public Task<IEnumerable<ReactionResponse>> GetByPostId(int Id);
         public Task<int> Create(CreateReactionRequest request);
-        public Task<bool> Update(UpdateReactionRequest request);
-        public Task<bool> Delete(int id);
+        public Task Update(UpdateReactionRequest request);
+        public Task Delete(int id);
         public Task<IEnumerable<ReactionResponse>> GetAll();
     }
 }

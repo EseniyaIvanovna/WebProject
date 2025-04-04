@@ -1,4 +1,4 @@
-﻿using Application.Exceptions.Application.Exceptions;
+﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
 using AutoMapper;
@@ -26,13 +26,13 @@ namespace Application.Service
             return await _messageRepository.Create(message);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var message = await _messageRepository.GetById(id);
             if (message == null)
                 throw new NotFoundApplicationException($"Message {id} not found");
 
-            return await _messageRepository.Delete(id);
+            await _messageRepository.Delete(id);
         }
 
         public async Task<MessageResponse> GetById(int id)
@@ -56,14 +56,14 @@ namespace Application.Service
             return _mapper.Map<IEnumerable<MessageResponse>>(messages);
         }
 
-        public async Task<bool> Update(UpdateMessageRequest request)
+        public async Task Update(UpdateMessageRequest request)
         {
             var existingMessage = await _messageRepository.GetById(request.Id);
             if (existingMessage == null)
                 throw new NotFoundApplicationException($"Message {request.Id} not found");
 
             existingMessage.Text = request.Text;
-            return await _messageRepository.Update(existingMessage);
+            await _messageRepository.Update(existingMessage);
         }
     }
 }
