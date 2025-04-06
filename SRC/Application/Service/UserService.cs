@@ -4,7 +4,6 @@ using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace Application.Service
@@ -17,10 +16,10 @@ namespace Application.Service
         private readonly IReactionRepository _reactionRepository;
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMessageRepository _messageRepository;
+        private readonly NpgsqlConnection _connection; 
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
         public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IMessageRepository messageRepository,
-                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, IConfiguration configuration)
+                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, NpgsqlConnection connection, IMapper mapper)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -28,8 +27,8 @@ namespace Application.Service
             _reactionRepository = reactionRepository;
             _interactionRepository = interactionRepository;
             _messageRepository = messageRepository;
+            _connection = connection;
             _mapper = mapper;
-            _configuration = configuration;
         }
         public async Task<int> Add(CreateUserRequest request)
         {
@@ -39,12 +38,7 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
-            var connectionString = _configuration.GetConnectionString("PostgresDb");
-
-            await using var connection = new NpgsqlConnection(connectionString);
-            await connection.OpenAsync();
-
-            await using var tran = await connection.BeginTransactionAsync();
+            await using var tran = await _connection.BeginTransactionAsync();
 
             try
             {

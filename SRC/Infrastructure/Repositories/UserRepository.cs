@@ -17,8 +17,8 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(User user)
         {
             var sql = @"
-                INSERT INTO users (name, lastname, dateofbirth, info, email)
-                VALUES (@Name, @LastName, @Dateofbirth, @Info, @Email)
+                INSERT INTO users (name, lastname, dateOfBirth, info, email)
+                VALUES (@Name, @LastName, @DateOfBirth, @Info, @Email)
                 RETURNING id;
             ";
 
@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<User>> GetAll()
         {
             var sql = @"
-                SELECT id, name, lastname, dateofbirth, info, email
+                SELECT id, name, lastname, dateOfBirth, info, email
                 FROM users;
             ";
 
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
         public async Task<User> GetById(int id)
         {
             var sql = @"
-                SELECT id, name, lastname, dateofbirth, info, email
+                SELECT id, name, lastname, dateOfBirth, info, email
                 FROM users
                 WHERE id = @Id;
             ";
@@ -71,7 +71,7 @@ namespace Infrastructure.Repositories
                 UPDATE users
                 SET name = @Name,
                     lastname = @LastName,
-                    dateofbirth = @Dateofbirth,
+                    dateOfBirth = @DateOfBirth,
                     info = @Info,
                     email = @Email
                 WHERE id = @Id;
