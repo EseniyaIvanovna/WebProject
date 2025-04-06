@@ -35,7 +35,12 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"Comment {request.Id} not found");
 
             existingComment.Content = request.Content;
-            await _commentRepository.Update(existingComment);
+            var result = await _commentRepository.Update(existingComment);
+
+            if (result == false)
+            {
+                throw new EntityUpdateException("Comment", request.Id.ToString());
+            }
         }
 
         public async Task Delete(int id)
@@ -44,7 +49,11 @@ namespace Application.Service
             if (comment == null)
                 throw new NotFoundApplicationException($"Comment {id} not found");
 
-            await _commentRepository.Delete(id);
+            var result = await _commentRepository.Delete(id);
+            if(result == false)
+            {
+                throw new EntityDeleteException("Comment", id.ToString());
+            }
         }
 
         public async Task<CommentResponse> GetById(int id)

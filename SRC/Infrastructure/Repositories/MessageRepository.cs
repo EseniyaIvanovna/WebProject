@@ -34,11 +34,12 @@ namespace Infrastructure.Repositories
             return messageId;
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var sql = "DELETE FROM messages WHERE id = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id });
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
 
+            return affectedRows > 0;
         }
 
         public async Task DeleteMessagesByUser(int userId)
@@ -68,7 +69,7 @@ namespace Infrastructure.Repositories
             return messages;
         }
 
-        public async Task Update(Message message)
+        public async Task<bool> Update(Message message)
         {
             var sql = @"
                 UPDATE messages
@@ -76,12 +77,13 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id
             ";
 
-            await _connection.ExecuteAsync(sql, new
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
                 message.Text,
                 message.Id
             });
 
+            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<Message>> GetAll()

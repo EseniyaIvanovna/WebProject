@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(message.Id) ;
         }
 
-        public Task Delete(int id)
+        public Task<bool> Delete(int id)
         {
             var message = _messages.FirstOrDefault(m => m.Id == id);
             if (message == null)
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(messages);
         }
 
-        public Task Update(Message message)
+        public Task<bool> Update(Message message)
         {
             var existingMessage = _messages.FirstOrDefault(m => m.Id == message.Id);
             if (existingMessage == null)

@@ -7,8 +7,8 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<Post?> GetById(int Id);
         public Task<IEnumerable<Post>> GetAll();
         public Task<int> Create(Post post);
-        public Task Update(Post post);
-        public Task Delete(int id);
+        public Task<bool> Update(Post post);
+        public Task<bool> Delete(int id);
         public Task DeleteByUserId(int userId);
     }
 }

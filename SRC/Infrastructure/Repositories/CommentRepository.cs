@@ -35,10 +35,12 @@ namespace Infrastructure.Repositories
             return commentId;
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var sql = "DELETE FROM comments WHERE id = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id });
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
         }
 
         public async Task<Comment?> GetById(int id)
@@ -65,7 +67,7 @@ namespace Infrastructure.Repositories
             return comments;
         }
 
-        public async Task Update(Comment comment)
+        public async Task<bool> Update(Comment comment)
         {
             var sql = @"
                 UPDATE comments
@@ -73,11 +75,13 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-             await _connection.ExecuteAsync(sql, new
-            {
-                comment.Content,
-                comment.Id
-            });
+            var affectedRows = await _connection.ExecuteAsync(sql, new
+             {
+                 comment.Content,
+                 comment.Id
+             });
+
+            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<Comment>> GetAll()

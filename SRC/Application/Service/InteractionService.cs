@@ -34,7 +34,11 @@ namespace Application.Service
             if (interaction == null)
                 throw new NotFoundApplicationException($"Interaction {id} not found");
 
-            await _interactionRepository.Delete(id);
+            var result = await _interactionRepository.Delete(id);
+            if(result == false)
+            {
+                throw new EntityDeleteException("Interaction", id.ToString());
+            }
         }
 
         public async Task<InteractionResponse> GetById(int id)
@@ -64,7 +68,12 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"Interaction {request.Id} not found");
 
             existingInteraction.Status = request.Status;
-            await _interactionRepository.Update(existingInteraction);
+            var result = await _interactionRepository.Update(existingInteraction);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Interaction", request.Id.ToString());
+            }
         }
     }
 }

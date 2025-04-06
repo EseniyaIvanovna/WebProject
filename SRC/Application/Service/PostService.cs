@@ -46,7 +46,11 @@ namespace Application.Service
                 await _commentRepository.DeleteByPostId(id);
                 await _reactionRepository.DeleteByPostId(id);
 
-                await _postRepository.Delete(id);
+                var result = await _postRepository.Delete(id);
+                if(result == false)
+                {
+                    throw new EntityDeleteException("Post", id.ToString());
+                }
 
                 await tran.CommitAsync();
             }
@@ -79,7 +83,12 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"Post {request.Id} not found");
 
             existingPost.Text = request.Text;
-            await _postRepository.Update(existingPost);
+            var result = await _postRepository.Update(existingPost);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Post", request.Id.ToString());
+            }
         }
     }
 }

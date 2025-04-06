@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(reaction.Id);
         }
 
-        public Task Delete(int id)
+        public Task<bool> Delete(int id)
         {
             var reaction = _reactions.FirstOrDefault(r => r.Id == id);
             if (reaction == null)
@@ -57,7 +57,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(reactions);
         }
 
-        public Task Update(Reaction reaction)
+        public Task<bool> Update(Reaction reaction)
         {
             var existingReaction = _reactions.FirstOrDefault(r => r.Id == reaction.Id);
             if (existingReaction == null)

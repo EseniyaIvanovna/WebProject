@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(user.Id);
         }
 
-        public Task Delete(int id)
+        public Task<bool> Delete(int id)
         {
             var user = _users.FirstOrDefault(u => u.Id == id);
             if (user == null)
@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(user);
         }
 
-        public Task Update(User user)
+        public Task<bool> Update(User user)
         {
             var existingUser = _users.FirstOrDefault(u => u.Id == user.Id);
             if (existingUser == null)
@@ -66,9 +66,5 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        Task IUserRepository.Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

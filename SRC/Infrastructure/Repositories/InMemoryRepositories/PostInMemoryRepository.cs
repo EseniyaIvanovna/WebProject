@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(post.Id);
         }
 
-        public Task Delete(int id)
+        public Task<bool> Delete(int id)
         {
             var post = _posts.FirstOrDefault(p => p.Id == id);
             if (post == null)
@@ -67,7 +67,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(post);
         }
 
-        public Task Update(Post post)
+        public Task<bool> Update(Post post)
         {
             if (post == null)
             {

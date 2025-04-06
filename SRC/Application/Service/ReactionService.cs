@@ -33,7 +33,11 @@ namespace Application.Service
             if (reaction == null)
                 throw new NotFoundApplicationException($"Reaction {id} not found");
 
-            await _reactionRepository.Delete(id);
+            var result = await _reactionRepository.Delete(id);
+            if(result == false)
+            {
+                throw new EntityDeleteException("Reaction", id.ToString());
+            }
         }
 
         public async Task<ReactionResponse> GetById(int id)
@@ -64,7 +68,12 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"Reaction {request.Id} not found");
 
             existingReaction.Type = request.Type;
-            await _reactionRepository.Update(existingReaction);
+            var result = await _reactionRepository.Update(existingReaction);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Reaction", request.Id.ToString());
+            }
         }
 
         public async Task<IEnumerable<ReactionResponse>> GetAll()

@@ -93,6 +93,14 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.CompletedTask;
         }
 
-       
+        Task<bool> ICommentRepository.Update(Comment comment)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> ICommentRepository.Delete(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

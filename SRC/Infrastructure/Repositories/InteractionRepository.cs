@@ -33,10 +33,12 @@ namespace Infrastructure.Repositories
             return interactionId;
         }
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var sql = "DELETE FROM interactions WHERE id = @Id";
-            await _connection.ExecuteAsync(sql, new { Id = id });
+            var affectedRows = await _connection.ExecuteAsync(sql, new { Id = id });
+
+            return affectedRows > 0;
         }
 
         public async Task<Interaction?> GetById(int id)
@@ -63,7 +65,7 @@ namespace Infrastructure.Repositories
             return interactions;
         }
 
-        public async Task Update(Interaction interaction)
+        public async Task<bool> Update(Interaction interaction)
         {
             var sql = @"
                 UPDATE interactions
@@ -73,13 +75,15 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            await _connection.ExecuteAsync(sql, new
+            var affectedRows = await _connection.ExecuteAsync(sql, new
             {
                 interaction.User1Id,
                 interaction.User2Id,
                 Status = interaction.Status.ToString(), 
                 interaction.Id
             });
+
+            return affectedRows > 0;
         }
 
         public async Task<IEnumerable<Interaction>> GetAll()

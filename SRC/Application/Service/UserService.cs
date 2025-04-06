@@ -56,7 +56,12 @@ namespace Application.Service
                 await _postRepository.DeleteByUserId(id);
                 await _interactionRepository.DeleteByUserId(id);
                 await _messageRepository.DeleteMessagesByUser(id);
-                await _userRepository.Delete(id);
+
+                var result = await _userRepository.Delete(id);
+                if(result == false)
+                {
+                    throw new EntityDeleteException("User", id.ToString());
+                }
 
                 await tran.CommitAsync();
             }
@@ -89,7 +94,11 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"User {request.Id} not found");
 
             _mapper.Map(request, existingUser);
-            await _userRepository.Update(existingUser);
+            var result = await _userRepository.Update(existingUser);
+            if(result == false)
+            {
+                throw new EntityUpdateException("User", request.Id.ToString());
+            }
         }
     }
 }

@@ -32,7 +32,11 @@ namespace Application.Service
             if (message == null)
                 throw new NotFoundApplicationException($"Message {id} not found");
 
-            await _messageRepository.Delete(id);
+            var result = await _messageRepository.Delete(id);
+            if(result == false)
+            {
+                throw new EntityDeleteException("Message", id.ToString());
+            }
         }
 
         public async Task<MessageResponse> GetById(int id)
@@ -63,7 +67,12 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"Message {request.Id} not found");
 
             existingMessage.Text = request.Text;
-            await _messageRepository.Update(existingMessage);
+            var result = await _messageRepository.Update(existingMessage);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Message", request.Id.ToString());
+            }
         }
     }
 }
