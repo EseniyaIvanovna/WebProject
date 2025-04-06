@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Interaction?> GetById(int id)
+        public async Task<Interaction> GetById(int id)
         {
             var sql = @"
                 SELECT id, user1Id, user2Id, status
@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var interaction = await _connection.QuerySingleOrDefaultAsync<Interaction>(sql, new { Id = id });
+            var interaction = await _connection.QuerySingleAsync<Interaction>(sql, new { Id = id });
             return interaction;
         }
 

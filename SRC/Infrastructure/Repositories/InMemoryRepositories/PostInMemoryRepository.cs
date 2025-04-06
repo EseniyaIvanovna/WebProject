@@ -61,9 +61,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(_posts.AsEnumerable());
         }
 
-        public Task<Post?> GetById(int Id)
+        public Task<Post> GetById(int Id)
         {
-            var post = _posts.FirstOrDefault(p => p.Id == Id);
+            var post = _posts.First(p => p.Id == Id);
             return Task.FromResult(post);
         }
 

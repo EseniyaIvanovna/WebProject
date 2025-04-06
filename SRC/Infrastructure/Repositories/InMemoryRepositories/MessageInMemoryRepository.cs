@@ -38,9 +38,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Message?> GetById(int id)
+        public Task<Message> GetById(int id)
         {
-            var message = _messages.FirstOrDefault(m => m.Id == id);
+            var message = _messages.First(m => m.Id == id);
             return Task.FromResult(message);
         }
 

@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Comment?> GetById(int id)
+        public async Task<Comment> GetById(int id)
         {
             var sql = @"
                 SELECT id, postId, userId, content, createdAt
@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var comment = await _connection.QuerySingleOrDefaultAsync<Comment>(sql, new { Id = id });
+            var comment = await _connection.QuerySingleAsync<Comment>(sql, new { Id = id });
             return comment;
         }
 

@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
             return users;
         }
 
-        public async Task<User?> GetById(int id)
+        public async Task<User> GetById(int id)
         {
             var sql = @"
                 SELECT id, name, lastname, dateofbirth, info, email
@@ -61,7 +61,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
+            var user = await _connection.QuerySingleAsync<User>(sql, new { Id = id });
             return user;
         }
 

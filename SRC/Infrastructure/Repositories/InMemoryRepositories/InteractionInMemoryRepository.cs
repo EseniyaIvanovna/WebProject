@@ -41,9 +41,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
-        public Task<Interaction?> GetById(int id)
+        public Task<Interaction> GetById(int id)
         {
-            var interaction = _interactions.FirstOrDefault(i => i.Id == id);
+            var interaction = _interactions.First(i => i.Id == id);
             return Task.FromResult(interaction);
         }
 

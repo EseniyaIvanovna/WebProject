@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Reaction?> GetById(int id)
+        public async Task<Reaction> GetById(int id)
         {
             var sql = @"
                 SELECT id, userId, postId, type
@@ -48,7 +48,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var reaction = await _connection.QuerySingleOrDefaultAsync<Reaction>(sql, new { Id = id });
+            var reaction = await _connection.QuerySingleAsync<Reaction>(sql, new { Id = id });
             return reaction;
         }
 

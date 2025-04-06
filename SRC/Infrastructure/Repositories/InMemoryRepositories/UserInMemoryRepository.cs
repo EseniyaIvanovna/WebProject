@@ -43,9 +43,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(_users.AsEnumerable());
         }
 
-        public Task<User?> GetById(int Id)
+        public Task<User> GetById(int Id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == Id);
+            var user = _users.First(u => u.Id == Id);
             return Task.FromResult(user);
         }
 
