@@ -50,13 +50,13 @@ namespace Application.Service
 
             try
             {
-                await _commentRepository.DeleteByUserId(id, tran);
-                await _reactionRepository.DeleteByUserId(id, tran);
-                await _reactionRepository.DeleteByPostOwnerId(id, tran);
-                await _postRepository.DeleteByUserId(id, tran);
-                await _interactionRepository.DeleteByUserId(id, tran);
-                await _messageRepository.DeleteMessagesByUser(id, tran);
-                await _userRepository.Delete(id, tran);
+                await _commentRepository.DeleteByUserId(id);
+                await _reactionRepository.DeleteByUserId(id);
+                await _reactionRepository.DeleteByPostOwnerId(id);
+                await _postRepository.DeleteByUserId(id);
+                await _interactionRepository.DeleteByUserId(id);
+                await _messageRepository.DeleteMessagesByUser(id);
+                await _userRepository.Delete(id);
 
                 await tran.CommitAsync();
             }

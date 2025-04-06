@@ -107,20 +107,18 @@ namespace Infrastructure.Repositories
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
-        public async Task DeleteByUserId(int userId, NpgsqlTransaction transaction)
+        public async Task DeleteByUserId(int userId)
         {
             await _connection.ExecuteAsync(
                 "DELETE FROM reactions WHERE userId = @UserId",
-                new { UserId = userId },
-                transaction: transaction);
+                new { UserId = userId });
         }
-        public async Task DeleteByPostOwnerId(int userId, NpgsqlTransaction transaction)
+        public async Task DeleteByPostOwnerId(int userId)
         {
             await _connection.ExecuteAsync(
             @"DELETE FROM reactions 
               WHERE postId IN (SELECT id FROM posts WHERE userId = @UserId)",
-            new { UserId = userId },
-            transaction: transaction);
+            new { UserId = userId });
         }
 
         public async Task<bool> Exists(int userId, int postId)

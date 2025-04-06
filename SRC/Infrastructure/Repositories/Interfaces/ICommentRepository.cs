@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Npgsql;
 
 namespace Infrastructure.Repositories.Interfaces
 {
@@ -12,6 +11,6 @@ namespace Infrastructure.Repositories.Interfaces
         public Task Delete(int id);
         public Task<IEnumerable<Comment>> GetAll();
         public Task DeleteByPostId(int postId);
-        public Task DeleteByUserId(int userId, NpgsqlTransaction tran);
+        public Task DeleteByUserId(int userId);
     }
 }

@@ -4,7 +4,8 @@ using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
-using System.Transactions;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace Application.Service
 {
@@ -14,13 +15,15 @@ namespace Application.Service
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper, IConfiguration configuration)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<int> Create(CreatePostRequest request)
@@ -31,30 +34,26 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
-            var options = new TransactionOptions
+            var connectionString = _configuration.GetConnectionString("PostgresDb");
+
+            await using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var tran = await connection.BeginTransactionAsync();
+
+            try
             {
-                IsolationLevel = IsolationLevel.ReadCommitted,
-                Timeout = TimeSpan.FromSeconds(30)
-            };
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
+                await _commentRepository.DeleteByPostId(id);
+                await _reactionRepository.DeleteByPostId(id);
+
+                await _postRepository.Delete(id);
+
+                await tran.CommitAsync();
+            }
+            catch
             {
-                try
-                {
-                    //var post = await _postRepository.GetById(id);
-                    //if (post == null)
-                    //    throw new NotFoundApplicationException($"Post {id} not found");
-
-                    await _commentRepository.DeleteByPostId(id);
-                    await _reactionRepository.DeleteByPostId(id);
-
-                    await _postRepository.Delete(id);
-
-                    scope.Complete();
-                }
-                catch
-                {
-                    throw;
-                }
+                await tran.RollbackAsync();
+                throw;
             }
         }
 

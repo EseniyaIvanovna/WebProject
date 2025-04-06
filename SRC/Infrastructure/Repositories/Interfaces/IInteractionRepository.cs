@@ -1,6 +1,5 @@
 ﻿using Domain;
 using Domain.Enums;
-using Npgsql;
 
 namespace Infrastructure.Repositories.Interfaces
 {
@@ -13,6 +12,6 @@ namespace Infrastructure.Repositories.Interfaces
         public Task Delete(int id);
         public Task<IEnumerable<Interaction>> GetAll();
         public Task<bool> ExistsBetweenUsers(int user1Id, int user2Id);
-        public Task DeleteByUserId(int userId, NpgsqlTransaction transaction);
+        public Task DeleteByUserId(int userId);
     }
 }

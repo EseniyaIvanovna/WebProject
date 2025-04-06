@@ -40,12 +40,11 @@ namespace Infrastructure.Repositories
             await _connection.ExecuteAsync(sql, new { Id = id });
         }
 
-        public async Task DeleteByUserId(int userId, NpgsqlTransaction transaction)
+        public async Task DeleteByUserId(int userId)
         {
             await _connection.ExecuteAsync(
                 "DELETE FROM posts WHERE userId = @UserId",
-                new { UserId = userId },
-                transaction: transaction);
+                new { UserId = userId });
         }
 
         public async Task<IEnumerable<Post>> GetAll()

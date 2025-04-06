@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Npgsql;
 
 namespace Infrastructure.Repositories.Interfaces
 {
@@ -10,7 +9,7 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<int> Create(Message message);
         public Task Update(Message message);
         public Task Delete(int id);
-        public Task DeleteMessagesByUser(int userId, NpgsqlTransaction transaction);
+        public Task DeleteMessagesByUser(int userId);
         public Task<IEnumerable<Message>> GetAll();
     }
 }

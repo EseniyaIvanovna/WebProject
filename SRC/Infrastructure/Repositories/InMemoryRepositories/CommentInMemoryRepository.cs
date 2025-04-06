@@ -1,6 +1,5 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
-using Npgsql;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
@@ -94,9 +93,6 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.CompletedTask;
         }
 
-        Task ICommentRepository.DeleteByUserId(int userId, NpgsqlTransaction tran)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

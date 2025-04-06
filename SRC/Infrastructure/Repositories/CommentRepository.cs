@@ -97,12 +97,11 @@ namespace Infrastructure.Repositories
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
-        public async Task DeleteByUserId(int userId, NpgsqlTransaction transaction)
+        public async Task DeleteByUserId(int userId)
         {
             await _connection.ExecuteAsync(
                 "DELETE FROM comments WHERE userId = @UserId",
-                new { UserId = userId },
-                transaction: transaction);
+                new { UserId = userId });
         }
     }
 }

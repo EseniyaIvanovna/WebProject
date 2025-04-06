@@ -1,6 +1,5 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
-using Npgsql;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
@@ -72,12 +71,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(_messages.AsEnumerable());
         }
 
-        //Task IMessageRepository.DeleteMessagesByUser(int userId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        Task IMessageRepository.DeleteMessagesByUser(int userId, NpgsqlTransaction transaction)
+        Task IMessageRepository.DeleteMessagesByUser(int userId)
         {
             throw new NotImplementedException();
         }
