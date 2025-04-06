@@ -56,6 +56,7 @@ namespace Application.Service
                 await _messageRepository.DeleteMessagesByUser(id);
 
                 var result = await _userRepository.Delete(id);
+
                 if(result == false)
                 {
                     throw new EntityDeleteException("User", id.ToString());

@@ -59,8 +59,8 @@ namespace Infrastructure.Repositories
                 FROM reactions
                 WHERE postId = @PostId;
             ";
-            var reactions = await _connection.QueryAsync<Reaction>(sql, new { PostId = postId });
 
+            var reactions = await _connection.QueryAsync<Reaction>(sql, new { PostId = postId });
             return reactions;
         }
 
