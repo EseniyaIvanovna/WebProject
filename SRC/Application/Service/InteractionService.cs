@@ -1,4 +1,6 @@
-﻿using Application.Dto;
+﻿using Application.Exceptions;
+using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Domain.Enums;
@@ -9,83 +11,69 @@ namespace Application.Service
     public class InteractionService : IInteractionService
     {
         private readonly IInteractionRepository _interactionRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public InteractionService(IInteractionRepository interactionRepository, IUserRepository userRepository, IMapper mapper)
+        public InteractionService(IInteractionRepository interactionRepository, IMapper mapper)
         {
             _interactionRepository = interactionRepository;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
 
-        public async Task<int> Create(InteractionDto interaction)
+        public async Task<int> Create(CreateInteractionRequest request)
         {
-            if (interaction == null)
-            {
-                throw new ArgumentNullException(nameof(interaction), "Interaction cannot be null.");
-            }
+            if (await _interactionRepository.ExistsBetweenUsers(request.User1Id, request.User2Id))
+                throw new ConflictApplicationException("Interaction between these users already exists");
 
-            var user1 = await _userRepository.GetById(interaction.User1Id);
-            if (user1 == null)
-            {
-                throw new InvalidOperationException("User1 not found.");
-            }
-
-            var user2 = await _userRepository.GetById(interaction.User2Id);
-            if (user2 == null)
-            {
-                throw new InvalidOperationException("User2 not found.");
-            }
-
-            var mappedInteraction = _mapper.Map<Interaction>(interaction);
-            return await _interactionRepository.Create(mappedInteraction);
+            var interaction = _mapper.Map<Interaction>(request);
+            return await _interactionRepository.Create(interaction);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var interaction = await _interactionRepository.GetById(id);
             if (interaction == null)
-            {
-                throw new InvalidOperationException("Interaction not found.");
-            }
+                throw new NotFoundApplicationException($"Interaction {id} not found");
 
-            return await _interactionRepository.Delete(id);
+            var result = await _interactionRepository.Delete(id);
+            if(result == false)
+            {
+                throw new EntityDeleteException("Interaction", id.ToString());
+            }
         }
 
-        public async Task<InteractionDto> GetById(int id)
+        public async Task<InteractionResponse> GetById(int id)
         {
             var interaction = await _interactionRepository.GetById(id);
-            return _mapper.Map<InteractionDto>(interaction);
+            if (interaction == null)
+                throw new NotFoundApplicationException($"Interaction {id} not found");
+            return _mapper.Map<InteractionResponse>(interaction);
         }
         
-        public async Task<IEnumerable<InteractionDto>> GetAll()
+        public async Task<IEnumerable<InteractionResponse>> GetAll()
         {
             var interactions = await _interactionRepository.GetAll();
-            return _mapper.Map<IEnumerable<InteractionDto>>(interactions);
+            return _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
         }
        
-        public async Task<IEnumerable<InteractionDto>> GetByStatus(Status status)
+        public async Task<IEnumerable<InteractionResponse>> GetByStatus(Status status)
         {
             var interactions = await _interactionRepository.GetByStatus(status);
-            return _mapper.Map<IEnumerable<InteractionDto>>(interactions);
+            return _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
         }
        
-        public async Task<bool> Update(InteractionDto interaction)
+        public async Task Update(UpdateInteractionRequest request)
         {
-            if (interaction == null)
-            {
-                throw new ArgumentNullException(nameof(interaction), "Interaction cannot be null.");
-            }
-
-            var existingInteraction = await _interactionRepository.GetById(interaction.Id);
+            var existingInteraction = await _interactionRepository.GetById(request.Id);
             if (existingInteraction == null)
-            {
-                throw new InvalidOperationException("Interaction not found.");
-            }
+                throw new NotFoundApplicationException($"Interaction {request.Id} not found");
 
-            _mapper.Map(interaction, existingInteraction);
-            return await _interactionRepository.Update(existingInteraction);
+            existingInteraction.Status = request.Status;
+            var result = await _interactionRepository.Update(existingInteraction);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Interaction", request.Id.ToString());
+            }
         }
     }
 }

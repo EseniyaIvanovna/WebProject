@@ -1,15 +1,16 @@
-﻿using Application.Dto;
+﻿using Application.Requests;
+using Application.Responses;
 
 namespace Application.Service
 {
     public interface IReactionService
     {
-        public Task<ReactionDto> GetById(int Id);
-        public Task<IEnumerable<ReactionDto>> GetByUserId(int Id);
-        public Task<IEnumerable<ReactionDto>> GetByPostId(int Id);
-        public Task<int> Create(ReactionDto reaction);
-        public Task<bool> Update(ReactionDto reaction);
-        public Task<bool> Delete(int id);
-        public Task<IEnumerable<ReactionDto>> GetAll();
+        public Task<ReactionResponse> GetById(int Id);
+        public Task<IEnumerable<ReactionResponse>> GetByUserId(int Id);
+        public Task<IEnumerable<ReactionResponse>> GetByPostId(int Id);
+        public Task<int> Create(CreateReactionRequest request);
+        public Task Update(UpdateReactionRequest request);
+        public Task Delete(int id);
+        public Task<IEnumerable<ReactionResponse>> GetAll();
     }
 }

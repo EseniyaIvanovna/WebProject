@@ -1,8 +1,10 @@
-﻿using Application.Dto;
+﻿using Application.Exceptions;
 using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Application.Service
 {
@@ -12,83 +14,84 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
+        private readonly IInteractionRepository _interactionRepository;
+        private readonly IMessageRepository _messageRepository;
+        private readonly NpgsqlConnection _connection; 
         private readonly IMapper _mapper;
-
-        public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IMessageRepository messageRepository,
+                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, NpgsqlConnection connection, IMapper mapper)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
+            _interactionRepository = interactionRepository;
+            _messageRepository = messageRepository;
+            _connection = connection;
             _mapper = mapper;
         }
-
         public async Task<int> Add(CreateUserRequest request)
         {
-            var user = new User()
-            {
-                Name = request.Name,
-                LastName = request.LastName // продолжить поля которые будут с проверками
-            };
+            var user = _mapper.Map<User>(request);
             return await _userRepository.Create(user);
-            //if (user == null)
-            //{
-            //    throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            //}
-            //var existingUser = await _userRepository.GetById(user.Id);
-            //if (existingUser != null)
-            //{
-            //    throw new InvalidOperationException("A user with the same Id already exists.");
-            //}
-            //var mappedUser = _mapper.Map<User>(user);
-            //int userId = await _userRepository.Create(mappedUser);
-            //return userId;
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
-            var user = await _userRepository.GetById(id);
-            if (user == null)
+            await using var tran = await _connection.BeginTransactionAsync();
+
+            try
             {
-                throw new InvalidOperationException("User not found.");
+                await _commentRepository.DeleteByUserId(id);
+                await _reactionRepository.DeleteByUserId(id);
+                await _reactionRepository.DeleteByPostOwnerId(id);
+                await _postRepository.DeleteByUserId(id);
+                await _interactionRepository.DeleteByUserId(id);
+                await _messageRepository.DeleteMessagesByUser(id);
+
+                var result = await _userRepository.Delete(id);
+
+                if(result == false)
+                {
+                    throw new EntityDeleteException("User", id.ToString());
+                }
+
+                await tran.CommitAsync();
             }
-
-            await _postRepository.DeleteByUserId(id);
-
-            await _commentRepository.DeleteByUserId(id);
-
-            await _reactionRepository.DeleteByUserId(id);
-
-            return await _userRepository.Delete(id);
+            catch
+            {
+                await tran.RollbackAsync();
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<UserDto>> GetAll()
+        public async Task<IEnumerable<UserResponse>> GetAll()
         {
             var users = await _userRepository.GetAll();
-            return _mapper.Map<IEnumerable<UserDto>>(users);
+            return _mapper.Map<IEnumerable<UserResponse>>(users);
         }
 
-        public async Task<UserDto> GetById(int id)
+        public async Task<UserResponse> GetById(int id)
         {
             var user = await _userRepository.GetById(id);
-            return _mapper.Map<UserDto>(user);
+            if (user == null)
+                throw new NotFoundApplicationException($"User {id} not found");
+
+            return _mapper.Map<UserResponse>(user);
         }
 
-        public async Task<bool> Update(UserDto user)
+        public async Task Update(UpdateUserRequest request)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            }
-
-            var existingUser = await _userRepository.GetById(user.Id);
+            var existingUser = await _userRepository.GetById(request.Id);
             if (existingUser == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
+                throw new NotFoundApplicationException($"User {request.Id} not found");
 
-            _mapper.Map(user, existingUser);
-            return await _userRepository.Update(existingUser);
+            _mapper.Map(request, existingUser);
+            var result = await _userRepository.Update(existingUser);
+            if(result == false)
+            {
+                throw new EntityUpdateException("User", request.Id.ToString());
+            }
         }
     }
 }
