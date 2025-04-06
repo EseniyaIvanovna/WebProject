@@ -5,13 +5,13 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{547089B5-1E05-4B48-AA0E-478F0A71315A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{ECFC7060-53B2-41CC-B35E-35AACD9E417B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "SRC\Domain\Domain.csproj", "{ECFC7060-53B2-41CC-B35E-35AACD9E417B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{35128954-5341-4C03-9306-9A8A832EF42E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "SRC\Infrastructure\Infrastructure.csproj", "{35128954-5341-4C03-9306-9A8A832EF42E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{D6F23453-3138-42AA-8285-D65A968CDD99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "SRC\Application\Application.csproj", "{D6F23453-3138-42AA-8285-D65A968CDD99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{D68ABC5A-3166-4D59-9804-38FCBBB0CAF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "SRC\Api\Api.csproj", "{D68ABC5A-3166-4D59-9804-38FCBBB0CAF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
