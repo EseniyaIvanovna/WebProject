@@ -10,13 +10,11 @@ namespace Application.Service
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository _messageRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public MessageService(IMessageRepository messageRepository, IUserRepository userRepository, IMapper mapper)
+        public MessageService(IMessageRepository messageRepository, IMapper mapper)
         {
             _messageRepository = messageRepository;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
 

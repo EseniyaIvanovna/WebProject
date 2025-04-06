@@ -18,10 +18,9 @@ namespace Application.Service
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
-        private readonly NpgsqlConnection _connection;
         private readonly IConfiguration _configuration;
         public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IMessageRepository messageRepository,
-                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, NpgsqlConnection connection, IConfiguration configuration)
+                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -30,7 +29,6 @@ namespace Application.Service
             _interactionRepository = interactionRepository;
             _messageRepository = messageRepository;
             _mapper = mapper;
-            _connection = connection;
             _configuration = configuration;
         }
         public async Task<int> Add(CreateUserRequest request)
