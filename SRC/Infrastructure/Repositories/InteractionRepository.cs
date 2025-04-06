@@ -108,10 +108,12 @@ namespace Infrastructure.Repositories
             });
         }
 
-        public async Task DeleteByUserId(int userId)
+        public async Task DeleteByUserId(int userId, NpgsqlTransaction transaction)
         {
-            var sql = "DELETE FROM interactions WHERE user1id = @UserId OR user2id = @UserId";
-            await _connection.ExecuteAsync(sql, new { UserId = userId });
+            await _connection.ExecuteAsync(
+                "DELETE FROM interactions WHERE user1id = @UserId OR user2id = @UserId",
+                new { UserId = userId },
+                transaction: transaction);
         }
     }
 }

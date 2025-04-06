@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
@@ -102,7 +103,17 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             throw new NotImplementedException();
         }
 
-        Task IReactionRepository.DeleteByPostOwnerId(int userId)
+        //Task IReactionRepository.DeleteByPostOwnerId(int userId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        Task IReactionRepository.DeleteByUserId(int userId, NpgsqlTransaction transaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReactionRepository.DeleteByPostOwnerId(int userId, NpgsqlTransaction transaction)
         {
             throw new NotImplementedException();
         }

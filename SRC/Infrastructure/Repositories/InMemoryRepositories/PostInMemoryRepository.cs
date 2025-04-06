@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
@@ -85,6 +86,11 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             existingPost.CreatedAt = post.CreatedAt;
 
             return Task.FromResult(true);
+        }
+
+        Task IPostRepository.DeleteByUserId(int userId, NpgsqlTransaction transaction)
+        {
+            throw new NotImplementedException();
         }
     }
 }

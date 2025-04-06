@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System.Transactions;
+using Npgsql;
 
 namespace Application.Service
 {
@@ -18,9 +18,10 @@ namespace Application.Service
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
+        private readonly NpgsqlConnection _connection;
         private readonly IConfiguration _configuration;
         public UserService(IUserRepository userRepository, IPostRepository postRepository, ICommentRepository commentRepository, IMessageRepository messageRepository,
-                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, IConfiguration configuration)
+                             IReactionRepository reactionRepository, IInteractionRepository interactionRepository, IMapper mapper, NpgsqlConnection connection, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -29,6 +30,7 @@ namespace Application.Service
             _interactionRepository = interactionRepository;
             _messageRepository = messageRepository;
             _mapper = mapper;
+            _connection = connection;
             _configuration = configuration;
         }
         public async Task<int> Add(CreateUserRequest request)
@@ -39,39 +41,32 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
-            var options = new TransactionOptions
+            var connectionString = _configuration.GetConnectionString("PostgresDb");
+
+            await using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var tran = await connection.BeginTransactionAsync();
+
+            try
             {
-                IsolationLevel = IsolationLevel.ReadCommitted,
-                Timeout = TimeSpan.FromSeconds(30)
-            };
+                await _commentRepository.DeleteByUserId(id, tran);
+                await _reactionRepository.DeleteByUserId(id, tran);
+                await _reactionRepository.DeleteByPostOwnerId(id, tran);
+                await _postRepository.DeleteByUserId(id, tran);
+                await _interactionRepository.DeleteByUserId(id, tran);
+                await _messageRepository.DeleteMessagesByUser(id, tran);
+                await _userRepository.Delete(id, tran);
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
+                await tran.CommitAsync();
+            }
+            catch
             {
-                try
-                {
-                    var user = await _userRepository.GetById(id);
-                    if (user == null)
-                        throw new NotFoundApplicationException($"User {id} not found");
-
-                    await _commentRepository.DeleteByUserId(id);
-                    await _reactionRepository.DeleteByUserId(id);
-                    await _reactionRepository.DeleteByPostOwnerId(id);
-                    await _postRepository.DeleteByUserId(id);
-                    await _interactionRepository.DeleteByUserId(id);
-                    await _messageRepository.DeleteMessagesByUser(id);
-
-                    await _userRepository.Delete(id);
-
-                    scope.Complete(); 
-                    
-                }
-                catch 
-                {
-                    throw;
-                }
+                await tran.RollbackAsync();
+                throw;
             }
         }
-            
+
         public async Task<IEnumerable<UserResponse>> GetAll()
         {
             var users = await _userRepository.GetAll();

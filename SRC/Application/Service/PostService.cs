@@ -13,15 +13,13 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IUserRepository userRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -42,14 +40,14 @@ namespace Application.Service
             {
                 try
                 {
-                    var post = await _postRepository.GetById(id);
-                    if (post == null)
-                        throw new NotFoundApplicationException($"Post {id} not found");
+                    //var post = await _postRepository.GetById(id);
+                    //if (post == null)
+                    //    throw new NotFoundApplicationException($"Post {id} not found");
 
                     await _commentRepository.DeleteByPostId(id);
                     await _reactionRepository.DeleteByPostId(id);
 
-                    await _userRepository.Delete(id);
+                    await _postRepository.Delete(id);
 
                     scope.Complete();
                 }

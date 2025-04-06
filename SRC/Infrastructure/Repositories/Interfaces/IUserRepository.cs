@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Npgsql;
 
 namespace Infrastructure.Repositories.Interfaces
 {
@@ -8,6 +9,6 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<IEnumerable<User>> GetAll();
         public Task<int> Create(User user);
         public Task Update(User user);
-        public Task Delete(int id);  
+        public Task Delete(int id, NpgsqlTransaction transaction);  
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
@@ -78,7 +79,12 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             throw new NotImplementedException();
         }
 
-        Task IInteractionRepository.DeleteByUserId(int userId)
+        //Task IInteractionRepository.DeleteByUserId(int userId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        Task IInteractionRepository.DeleteByUserId(int userId, NpgsqlTransaction transaction)
         {
             throw new NotImplementedException();
         }

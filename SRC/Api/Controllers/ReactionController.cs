@@ -4,6 +4,7 @@ using Application.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
 [ApiController]
 [Route("[controller]")]
 public class ReactionController:ControllerBase
@@ -51,7 +52,7 @@ public class ReactionController:ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteReaction( int id)
+    public async Task<IActionResult> DeleteReaction(int id)
     {
         await _reactionService.Delete(id);
         return NoContent();

@@ -41,14 +41,12 @@ namespace Infrastructure.Repositories
 
         }
 
-        public async Task DeleteMessagesByUser(int userId)
+        public async Task DeleteMessagesByUser(int userId, NpgsqlTransaction transaction)
         {
-            var sql = @"
-                DELETE FROM messages 
-                WHERE senderId = @UserId 
-                    OR receiverId = @UserId";
-
-            await _connection.ExecuteAsync(sql, new { UserId = userId });
+            await _connection.ExecuteAsync(
+                "DELETE FROM messages WHERE senderId = @UserId OR receiverId = @UserId",
+                new { UserId = userId },
+                transaction: transaction);
         }
 
         public async Task<Message?> GetById(int id)
