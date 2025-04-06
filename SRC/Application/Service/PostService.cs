@@ -4,7 +4,6 @@ using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace Application.Service
@@ -14,16 +13,16 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
+        private readonly NpgsqlConnection _connection;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IMapper mapper, IConfiguration configuration)
+        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, NpgsqlConnection connection, IMapper mapper)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
+            _connection = connection;
             _mapper = mapper;
-            _configuration = configuration;
         }
 
         public async Task<int> Create(CreatePostRequest request)
@@ -34,12 +33,7 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
-            var connectionString = _configuration.GetConnectionString("PostgresDb");
-
-            await using var connection = new NpgsqlConnection(connectionString);
-            await connection.OpenAsync();
-
-            await using var tran = await connection.BeginTransactionAsync();
+            await using var tran = await _connection.BeginTransactionAsync();
 
             try
             {
