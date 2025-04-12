@@ -1,7 +1,10 @@
-﻿using Application.Dto;
+﻿using Application.Exceptions;
+using Application.Requests;
+using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Npgsql;
 
 namespace Application.Service
 {
@@ -10,77 +13,76 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly NpgsqlConnection _connection;
         private readonly IMapper _mapper;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, IUserRepository userRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, NpgsqlConnection connection, IMapper mapper)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
-            _userRepository = userRepository;
+            _connection = connection;
             _mapper = mapper;
         }
 
-        public async Task<int> Create(PostDto post)
+        public async Task<int> Create(CreatePostRequest request)
         {
-            if (post == null)
-            {
-                throw new ArgumentNullException(nameof(post), "Post cannot be null.");
-            }
-
-            var user = await _userRepository.GetById(post.UserId);
-            if (user == null)
-            {
-                throw new InvalidOperationException("User not found.");
-            }
-
-            var mappedPost = _mapper.Map<Post>(post);
-            return await _postRepository.Create(mappedPost);
+            var post = _mapper.Map<Post>(request);
+            return await _postRepository.Create(post);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
-            var post = await _postRepository.GetById(id);
-            if (post == null)
+            await using var tran = await _connection.BeginTransactionAsync();
+
+            try
             {
-                throw new InvalidOperationException("Post not found.");
+                await _commentRepository.DeleteByPostId(id);
+                await _reactionRepository.DeleteByPostId(id);
+
+                var result = await _postRepository.Delete(id);
+                if(result == false)
+                {
+                    throw new EntityDeleteException("Post", id.ToString());
+                }
+
+                await tran.CommitAsync();
             }
-
-            await _commentRepository.DeleteByPostId(id);
-
-            await _reactionRepository.DeleteByPostId(id);
-
-            return await _postRepository.Delete(id);
+            catch
+            {
+                await tran.RollbackAsync();
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<PostDto>> GetAll()
+        public async Task<IEnumerable<PostResponse>> GetAll()
         {
             var posts = await _postRepository.GetAll();
-            return _mapper.Map<IEnumerable<PostDto>>(posts);
+            return _mapper.Map<IEnumerable<PostResponse>>(posts);
         }
 
-        public async Task<PostDto> GetById(int id)
+        public async Task<PostResponse> GetById(int id)
         {
             var post = await _postRepository.GetById(id);
-            return _mapper.Map<PostDto>(post);
+            if (post == null)
+                throw new NotFoundApplicationException($"Post {id} not found");
+
+            return _mapper.Map<PostResponse>(post);
         }
 
-        public async Task<bool> Update(PostDto post)
+        public async Task Update(UpdatePostRequest request)
         {
-            if (post == null)
-            {
-                throw new ArgumentNullException(nameof(post), "Post cannot be null.");
-            }
-
-            var existingPost = await _postRepository.GetById(post.Id);
+            var existingPost = await _postRepository.GetById(request.Id);
             if (existingPost == null)
-            {
-                throw new InvalidOperationException("Post not found.");
-            }
+                throw new NotFoundApplicationException($"Post {request.Id} not found");
 
-            _mapper.Map(post, existingPost);
-            return await _postRepository.Update(existingPost);
+            existingPost.Text = request.Text;
+            var result = await _postRepository.Update(existingPost);
+
+            if(result == false)
+            {
+                throw new EntityUpdateException("Post", request.Id.ToString());
+            }
         }
     }
 }
