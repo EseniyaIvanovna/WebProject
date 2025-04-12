@@ -22,14 +22,7 @@ namespace Infrastructure.Repositories
                 RETURNING id;
             ";
 
-            var userId = await _connection.QuerySingleAsync<int>(sql, new
-            {
-                user.Name,
-                user.LastName,
-                user.DateOfBirth,
-                user.Info,
-                user.Email
-            });
+            var userId = await _connection.QuerySingleAsync(sql, user);
 
             return userId;
         }
