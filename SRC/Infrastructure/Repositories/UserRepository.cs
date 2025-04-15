@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
             _connection = connection;
         }
 
-        public async Task<int> Create(User user)
+        public async Task<int> Create(User user) //добавить пароль и роль
         {
             var sql = @"
                 INSERT INTO users (name, lastname, dateOfBirth, info, email)

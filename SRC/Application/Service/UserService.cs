@@ -93,5 +93,19 @@ namespace Application.Service
                 throw new EntityUpdateException("User", request.Id.ToString());
             }
         }
+
+        public string HashPassword(string password)
+        {
+            var hash = BCrypt.Net.BCrypt.HashPassword(password);
+            return hash;
+        }
+        
+        private bool VerifyPassword(string password, string? storedHash)
+        {
+            if (string.IsNullOrEmpty(storedHash))
+                return false;
+            var hashedPassword = HashPassword(password);
+            return hashedPassword == storedHash;
+        }
     }
 }
