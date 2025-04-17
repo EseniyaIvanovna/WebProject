@@ -4,6 +4,7 @@
     {
         Subscriber,
         Friend,
-        Lover
+        Lover,
+        Blocked
     }
 }
