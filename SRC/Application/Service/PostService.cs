@@ -13,20 +13,33 @@ namespace Application.Service
         private readonly IPostRepository _postRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IReactionRepository _reactionRepository;
+        private readonly IUserService _userService;
         private readonly NpgsqlConnection _connection;
         private readonly IMapper _mapper;
 
-        public PostService(IPostRepository postRepository, ICommentRepository commentRepository, IReactionRepository reactionRepository, NpgsqlConnection connection, IMapper mapper)
+        public PostService(
+            IPostRepository postRepository, 
+            ICommentRepository commentRepository, 
+            IReactionRepository reactionRepository,
+            IUserService userService,
+            NpgsqlConnection connection, 
+            IMapper mapper)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
             _reactionRepository = reactionRepository;
+            _userService = userService;
             _connection = connection;
             _mapper = mapper;
         }
 
         public async Task<int> Create(CreatePostRequest request)
         {
+            // Check if user exists
+            var user = await _userService.GetById(request.UserId);
+            if (user == null)
+                throw new NotFoundApplicationException($"User {request.UserId} not found");
+
             var post = _mapper.Map<Post>(request);
             return await _postRepository.Create(post);
         }

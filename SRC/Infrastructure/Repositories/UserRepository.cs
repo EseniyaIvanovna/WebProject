@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
                 RETURNING id;
             ";
 
-            var userId = await _connection.QuerySingleAsync(sql, user);
+            var userId = await _connection.QuerySingleAsync<int>(sql, user);
 
             return userId;
         }
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
             return users;
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User?> GetById(int id)
         {
             var sql = @"
                 SELECT id, name, lastname, dateOfBirth, info, email
@@ -54,7 +54,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var user = await _connection.QuerySingleAsync<User>(sql, new { Id = id });
+            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
             return user;
         }
 
@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
                 UPDATE users
                 SET name = @Name,
                     lastname = @LastName,
-                    dateOfBirth = @DateOfBirth,
+                    dateOfBirth=@DateOfBirth,
                     info = @Info,
                     email = @Email
                 WHERE id = @Id;

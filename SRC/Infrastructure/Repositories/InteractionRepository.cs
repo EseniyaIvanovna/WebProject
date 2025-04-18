@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var interaction = await _connection.QuerySingleAsync<Interaction>(sql, new { Id = id });
+            var interaction = await _connection.QuerySingleOrDefaultAsync<Interaction>(sql, new { Id = id });
             return interaction;
         }
 

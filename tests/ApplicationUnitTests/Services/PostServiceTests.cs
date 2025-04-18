@@ -19,6 +19,7 @@ namespace ApplicationUnitTests.Services
         private readonly Mock<IPostRepository> _postRepositoryMock;
         private readonly Mock<ICommentRepository> _commentRepositoryMock;
         private readonly Mock<IReactionRepository> _reactionRepositoryMock;
+        private readonly Mock<IUserService> _userServiceMock;
         private readonly Mock<NpgsqlConnection> _connectionMock;
         private readonly IMapper _mapper;
         private readonly IPostService _postService;
@@ -34,7 +35,7 @@ namespace ApplicationUnitTests.Services
             {
                 Id = 1,
                 UserId = 1,
-                Text = _faker.Lorem.Paragraph(),
+                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255)),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -45,6 +46,18 @@ namespace ApplicationUnitTests.Services
             _reactionRepositoryMock = new Mock<IReactionRepository>();
             _connectionMock = new Mock<NpgsqlConnection>();
 
+            _userServiceMock = new Mock<IUserService>();
+            _userServiceMock.Setup(x => x.GetById(_testPost.UserId))
+                .ReturnsAsync(new UserResponse 
+                { 
+                    Id = _testPost.UserId,
+                    Name = _faker.Person.FirstName,
+                    LastName = _faker.Person.LastName,
+                    DateOfBirth = _faker.Person.DateOfBirth,
+                    Info = _faker.Lorem.Paragraph(),
+                    Email = _faker.Person.Email
+                });
+
             var mappingConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             _mapper = mappingConfig.CreateMapper();
 
@@ -54,6 +67,7 @@ namespace ApplicationUnitTests.Services
                 _postRepositoryMock.Object,
                 _commentRepositoryMock.Object,
                 _reactionRepositoryMock.Object,
+                _userServiceMock.Object,
                 _connectionMock.Object,
                 _mapper);
         }
@@ -105,7 +119,7 @@ namespace ApplicationUnitTests.Services
             var request = new CreatePostRequest
             {
                 UserId = _testPost.UserId,
-                Text = _testPost.Text
+                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255))
             };
 
             _postRepositoryMock.Setup(x => x.Create(It.IsAny<Post>()))
@@ -119,16 +133,36 @@ namespace ApplicationUnitTests.Services
             _postRepositoryMock.Verify(x => x.Create(It.Is<Post>(p =>
                 p.UserId == request.UserId &&
                 p.Text == request.Text)), Times.Once);
+            _userServiceMock.Verify(x => x.GetById(request.UserId), Times.Once);
+        }
+
+        [Fact]
+        public async Task Create_NonExistingUser_ShouldThrowNotFoundApplicationException()
+        {
+            // Arrange
+            var request = new CreatePostRequest
+            {
+                UserId = 999,
+                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255))
+            };
+
+            _userServiceMock.Setup(x => x.GetById(request.UserId))
+                .ReturnsAsync((UserResponse)null);
+
+            // Act & Assert
+            await _postService.Invoking(x => x.Create(request))
+                .Should().ThrowAsync<NotFoundApplicationException>()
+                .WithMessage($"User {request.UserId} not found");
         }
 
         [Fact]
         public async Task Update_ExistingPost_ShouldUpdatePost()
         {
             // Arrange
-            var request = new UpdatePostRequest
+            var updateRequest = new UpdatePostRequest
             {
                 Id = _testPost.Id,
-                Text = _faker.Lorem.Paragraph()
+                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255))
             };
 
             _postRepositoryMock.Setup(x => x.GetById(_testPost.Id))
@@ -137,32 +171,32 @@ namespace ApplicationUnitTests.Services
                 .ReturnsAsync(true);
 
             // Act
-            await _postService.Update(request);
+            await _postService.Update(updateRequest);
 
             // Assert
             _postRepositoryMock.Verify(x => x.GetById(_testPost.Id), Times.Once);
             _postRepositoryMock.Verify(x => x.Update(It.Is<Post>(p =>
-                p.Id == request.Id &&
-                p.Text == request.Text)), Times.Once);
+                p.Id == updateRequest.Id &&
+                p.Text == updateRequest.Text)), Times.Once);
         }
 
         [Fact]
         public async Task Update_NonExistingPost_ShouldThrowNotFoundApplicationException()
         {
             // Arrange
-            var request = new UpdatePostRequest
+            var updateRequest = new UpdatePostRequest
             {
                 Id = 999,
-                Text = _faker.Lorem.Paragraph()
+                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255))
             };
 
-            _postRepositoryMock.Setup(x => x.GetById(request.Id))
+            _postRepositoryMock.Setup(x => x.GetById(updateRequest.Id))
                 .ReturnsAsync((Post?)null);
 
             // Act & Assert
-            await _postService.Invoking(x => x.Update(request))
+            await _postService.Invoking(x => x.Update(updateRequest))
                 .Should().ThrowAsync<NotFoundApplicationException>()
-                .WithMessage($"Post {request.Id} not found");
+                .WithMessage($"Post {updateRequest.Id} not found");
         }
 
         [Fact]
@@ -211,8 +245,9 @@ namespace ApplicationUnitTests.Services
             // Assert
             result.Should().NotBeNullOrEmpty();
             result.Should().HaveCount(1);
-            var firstPost = result.First();
-            firstPost.Id.Should().Be(_testPost.Id);
+            var firstPost = result.FirstOrDefault();
+            firstPost.Should().NotBeNull();
+            firstPost!.Id.Should().Be(_testPost.Id);
             firstPost.UserId.Should().Be(_testPost.UserId);
             firstPost.Text.Should().Be(_testPost.Text);
             firstPost.CreatedAt.Should().Be(_testPost.CreatedAt);

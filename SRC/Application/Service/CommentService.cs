@@ -10,16 +10,23 @@ namespace Application.Service
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IPostService _postService;
         private readonly IMapper _mapper;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper)
+        public CommentService(ICommentRepository commentRepository, IPostService postService, IMapper mapper)
         {
             _commentRepository = commentRepository;
+            _postService = postService;
             _mapper = mapper;
         }
        
         public async Task<int> Create(CreateCommentRequest request)
         {
+            // Check if post exists
+            var post = await _postService.GetById(request.PostId);
+            if (post == null)
+                throw new NotFoundApplicationException($"Post {request.PostId} not found");
+
             var comment = _mapper.Map<Comment>(request);
             return await _commentRepository.Create(comment);
         }

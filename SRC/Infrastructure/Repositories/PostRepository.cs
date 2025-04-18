@@ -68,7 +68,7 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            var post = await _connection.QuerySingleAsync<Post>(sql, new { Id = id });
+            var post = await _connection.QuerySingleOrDefaultAsync<Post>(sql, new { Id = id });
             return post;
         }
 

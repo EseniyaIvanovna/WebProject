@@ -16,6 +16,7 @@ namespace ApplicationUnitTests.Services
     public class CommentServiceTests
     {
         private readonly Mock<ICommentRepository> _commentRepositoryMock;
+        private readonly Mock<IPostService> _postServiceMock;
         private readonly IMapper _mapper;
         private readonly ICommentService _commentService;
         private readonly Comment _testComment;
@@ -38,12 +39,22 @@ namespace ApplicationUnitTests.Services
             _commentRepositoryMock = new Mock<ICommentRepository>();
             _commentRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync(_testComment);
 
+            _postServiceMock = new Mock<IPostService>();
+            _postServiceMock.Setup(x => x.GetById(_testComment.PostId))
+                .ReturnsAsync(new PostResponse 
+                { 
+                    Id = _testComment.PostId,
+                    UserId = _testComment.UserId,
+                    Text = _faker.Lorem.Paragraph(),
+                    CreatedAt = DateTime.UtcNow
+                });
+
             var mappingConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             _mapper = mappingConfig.CreateMapper();
 
             _loggerMock = new Mock<ILogger<CommentService>>();
 
-            _commentService = new CommentService(_commentRepositoryMock.Object, _mapper);
+            _commentService = new CommentService(_commentRepositoryMock.Object, _postServiceMock.Object, _mapper);
         }
 
         [Fact]
@@ -110,6 +121,27 @@ namespace ApplicationUnitTests.Services
                 c.PostId == request.PostId &&
                 c.UserId == request.UserId &&
                 c.Content == request.Content)), Times.Once);
+            _postServiceMock.Verify(x => x.GetById(request.PostId), Times.Once);
+        }
+
+        [Fact]
+        public async Task Create_NonExistingPost_ShouldThrowNotFoundApplicationException()
+        {
+            // Arrange
+            var request = new CreateCommentRequest
+            {
+                PostId = 999,
+                UserId = _testComment.UserId,
+                Content = _testComment.Content
+            };
+
+            _postServiceMock.Setup(x => x.GetById(request.PostId))
+                .ReturnsAsync((PostResponse)null);
+
+            // Act & Assert
+            await _commentService.Invoking(x => x.Create(request))
+                .Should().ThrowAsync<NotFoundApplicationException>()
+                .WithMessage($"Post {request.PostId} not found");
         }
 
         [Fact]

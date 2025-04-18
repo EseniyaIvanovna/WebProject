@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
                 FROM messages
                 WHERE id = @Id;
             ";
-            var message = await _connection.QuerySingleAsync<Message>(sql, new { Id = id });
+            var message = await _connection.QuerySingleOrDefaultAsync<Message>(sql, new { Id = id });
 
             return message;
         }

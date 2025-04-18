@@ -11,7 +11,7 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(ValidationConstants.MaxNameLength).NotNullable()
                 .WithColumn("lastname").AsString(ValidationConstants.MaxLastNameLength).NotNullable()
-                .WithColumn("dateOfBirth").AsDateTime().NotNullable()
+                .WithColumn("\"dateOfBirth\"").AsDateTime().NotNullable()
                 .WithColumn("info").AsString(ValidationConstants.MaxUserInfoLength)
                 .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable();
 
@@ -36,10 +36,10 @@ namespace Infrastructure.Database.Migrations
 
             Create.Table("messages")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("senderid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("receiverid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"senderId\"").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"receiverId\"").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
-                .WithColumn("createdat").AsDateTime().NotNullable();
+                .WithColumn("\"createdAt\"").AsDateTime().NotNullable();
 
             Create.Table("interactions")
                .WithColumn("id").AsInt32().PrimaryKey().Identity()
@@ -64,8 +64,8 @@ namespace Infrastructure.Database.Migrations
                 .Row(new { userid = 2, postid = 1, type = "Dislike" });
 
             Insert.IntoTable("messages")
-                .Row(new { senderid = 1, receiverid = 2, text = "Hi Jane!", createdat = DateTime.UtcNow })
-                .Row(new { senderid = 2, receiverid = 1, text = "Hello John!", createdat = DateTime.UtcNow });
+                .Row(new { senderId = 1, receiverId = 2, text = "Hi Jane!", createdAt = DateTime.UtcNow })
+                .Row(new { senderId = 2, receiverId = 1, text = "Hello John!", createdAt = DateTime.UtcNow });
 
             Insert.IntoTable("interactions")
                 .Row(new { user1id = 1, user2id = 2, status = "Friend" });
