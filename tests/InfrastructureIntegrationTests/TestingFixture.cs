@@ -33,7 +33,7 @@ namespace InfrastructureIntegrationTests
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration")
+                    var connectionString = context.Configuration.GetConnectionString("blog_tests")
                         ?? "Host=localhost;Database=testdb;Username=postgres;Password=password";
 
                     if (string.IsNullOrWhiteSpace(connectionString))
