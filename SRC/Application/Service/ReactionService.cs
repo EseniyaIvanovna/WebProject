@@ -4,6 +4,7 @@ using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Service
 {
@@ -11,11 +12,13 @@ namespace Application.Service
     {
         private readonly IReactionRepository _reactionRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<ReactionService> _logger;
 
-        public ReactionService(IReactionRepository reactRepository, IMapper mapper)
+        public ReactionService(IReactionRepository reactRepository, IMapper mapper, ILogger<ReactionService> logger)
         {
             _reactionRepository = reactRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int> Create(CreateReactionRequest request)
@@ -24,7 +27,16 @@ namespace Application.Service
                 throw new ConflictApplicationException("User can have only one reaction per post");
 
             var reaction = _mapper.Map<Reaction>(request);
-            return await _reactionRepository.Create(reaction);
+            var reactionId = await _reactionRepository.Create(reaction);
+
+            _logger.LogInformation(
+                "Reaction created with id {Id} of type {Type} by user {UserId} to post {PostId}",
+                reactionId,
+                request.Type,
+                request.UserId,
+                request.PostId);
+
+            return reactionId;
         }
 
         public async Task Delete(int id)
@@ -38,6 +50,10 @@ namespace Application.Service
             {
                 throw new EntityDeleteException("Reaction", id.ToString());
             }
+
+            _logger.LogInformation(
+                "Reaction successfully deleted with id {Id}",
+                id);
         }
 
         public async Task<ReactionResponse> GetById(int id)
@@ -46,19 +62,39 @@ namespace Application.Service
             if (reaction == null)
                 throw new NotFoundApplicationException($"Reaction {id} not found");
 
-            return _mapper.Map<ReactionResponse>(reaction);
+            var response = _mapper.Map<ReactionResponse>(reaction);
+
+            _logger.LogInformation(
+                "Reaction retrieved with id {Id}",
+                id);
+
+            return response;
         }
 
         public async Task<IEnumerable<ReactionResponse>> GetByPostId(int postId)
         {
             var reactions = await _reactionRepository.GetByPostId(postId);
-            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+            var responses = _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} reactions for post {PostId}",
+                responses.Count(),
+                postId);
+
+            return responses;
         }
 
         public async Task<IEnumerable<ReactionResponse>> GetByUserId(int userId)
         {
             var reactions = await _reactionRepository.GetByUserId(userId);
-            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+            var responses = _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} reactions for user {UserId}",
+                responses.Count(),
+                userId);
+
+            return responses;
         }
 
         public async Task Update(UpdateReactionRequest request)
@@ -74,12 +110,23 @@ namespace Application.Service
             {
                 throw new EntityUpdateException("Reaction", request.Id.ToString());
             }
+
+            _logger.LogInformation(
+                "Reaction updated with id {Id} to type {Type}",
+                request.Id,
+                request.Type);
         }
 
         public async Task<IEnumerable<ReactionResponse>> GetAll()
         {
             var reactions = await _reactionRepository.GetAll();
-            return _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+            var responses = _mapper.Map<IEnumerable<ReactionResponse>>(reactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} reactions in total",
+                responses.Count());
+
+            return responses;
         }
     }
 }

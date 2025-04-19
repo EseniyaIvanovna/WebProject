@@ -13,8 +13,8 @@ namespace Application
         {
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IReactionService, ReactionService>();
             services.AddScoped<IInteractionService, InteractionService>();
             services.AddScoped<IMessageService, MessageService>();

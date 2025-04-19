@@ -5,7 +5,7 @@ namespace Infrastructure.Repositories.Interfaces
 {
     public interface IInteractionRepository
     {
-        public Task<Interaction> GetById(int Id);
+        public Task<Interaction? > GetById(int Id);
         public Task<IEnumerable<Interaction>> GetByStatus(Status status);
         public Task<int> Create(Interaction interaction);
         public Task<bool> Update(Interaction interaction);

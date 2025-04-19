@@ -5,7 +5,7 @@ using Domain;
 
 namespace Application.Mappings
 {
-    class MappingProfile :Profile
+    public class MappingProfile :Profile
     {
         public MappingProfile()
         {

@@ -17,34 +17,34 @@ namespace Infrastructure.Database.Migrations
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"userId\"").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
-                .WithColumn("createdat").AsDateTime().NotNullable();
+                .WithColumn("\"createdAt\"").AsDateTime().NotNullable();
 
             Create.Table("comments")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
-                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("postId").AsInt32().NotNullable().ForeignKey("posts", "id")
+                .WithColumn("userId").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("content").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
-                .WithColumn("createdat").AsDateTime().NotNullable();
+                .WithColumn("\"createdAt\"").AsDateTime().NotNullable();
 
             Create.Table("reactions")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("userid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("postid").AsInt32().NotNullable().ForeignKey("posts", "id")
+                .WithColumn("userId").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("postId").AsInt32().NotNullable().ForeignKey("posts", "id")
                 .WithColumn("type").AsString(ValidationConstants.MaxReactionTypeLength).NotNullable();
 
             Create.Table("messages")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("senderid").AsInt32().NotNullable().ForeignKey("users", "id")
-                .WithColumn("receiverid").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"senderId\"").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"receiverId\"").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
-                .WithColumn("createdat").AsDateTime().NotNullable();
+                .WithColumn("\"createdAt\"").AsDateTime().NotNullable();
 
             Create.Table("interactions")
                .WithColumn("id").AsInt32().PrimaryKey().Identity()
-               .WithColumn("user1id").AsInt32().NotNullable().ForeignKey("users", "id")
-               .WithColumn("user2id").AsInt32().NotNullable().ForeignKey("users", "id")
+               .WithColumn("\"user1Id\"").AsInt32().NotNullable().ForeignKey("users", "id")
+               .WithColumn("\"user2Id\"").AsInt32().NotNullable().ForeignKey("users", "id")
                .WithColumn("status").AsString().NotNullable();
 
             Insert.IntoTable("users")
@@ -52,23 +52,23 @@ namespace Infrastructure.Database.Migrations
                 .Row(new { name = "Jane", lastname = "Smith", dateOfBirth = "2003-10-01", info = "Data Scientist", email = "jane.smith@example.com" });
 
             Insert.IntoTable("posts")
-                .Row(new { userid = 1, text = "First post by John", createdat = DateTime.UtcNow })
-                .Row(new { userid = 2, text = "First post by Jane", createdat = DateTime.UtcNow });
+                .Row(new { userId = 1, text = "First post by John", createdAt = DateTime.UtcNow })
+                .Row(new { userId = 2, text = "First post by Jane", createdAt = DateTime.UtcNow });
 
             Insert.IntoTable("comments")
-                .Row(new { postid = 1, userid = 2, content = "Nice post, John!", createdat = DateTime.UtcNow })
-                .Row(new { postid = 2, userid = 1, content = "Great job, Jane!", createdat = DateTime.UtcNow });
+                .Row(new { postId = 1, userId = 2, content = "Nice post, John!", createdAt = DateTime.UtcNow })
+                .Row(new { postId = 2, userId = 1, content = "Great job, Jane!", createdAt = DateTime.UtcNow });
 
             Insert.IntoTable("reactions")
-                .Row(new { userid = 1, postid = 2, type = "Like" })
-                .Row(new { userid = 2, postid = 1, type = "Dislike" });
+                .Row(new { userId = 1, postId = 2, type = "Like" })
+                .Row(new { userId = 2, postId = 1, type = "Dislike" });
 
             Insert.IntoTable("messages")
-                .Row(new { senderid = 1, receiverid = 2, text = "Hi Jane!", createdat = DateTime.UtcNow })
-                .Row(new { senderid = 2, receiverid = 1, text = "Hello John!", createdat = DateTime.UtcNow });
+                .Row(new { senderId = 1, receiverId = 2, text = "Hi Jane!", createdAt = DateTime.UtcNow })
+                .Row(new { senderId = 2, receiverId = 1, text = "Hello John!", createdAt = DateTime.UtcNow });
 
             Insert.IntoTable("interactions")
-                .Row(new { user1id = 1, user2id = 2, status = "Friend" });
+                .Row(new { user1Id = 1, user2Id = 2, status = "Friend" });
         }
 
         public override void Down()
