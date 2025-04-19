@@ -9,13 +9,11 @@ namespace InfrastructureIntegrationTests.Repositories;
 [Collection("IntegrationTests")]
 public class UserRepositoryTests : IClassFixture<TestingFixture>
 {
-    private readonly TestingFixture _fixture;
     private readonly IUserRepository _userRepository;
     private readonly Faker _faker;
 
     public UserRepositoryTests(TestingFixture fixture)
     {
-        _fixture = fixture;
         var scope = fixture.ServiceProvider.CreateScope();
         _userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         _faker = new Faker();
