@@ -11,6 +11,7 @@ namespace Infrastructure.Repositories.Interfaces
         public Task<bool> Delete(int id);
         public Task<IEnumerable<Comment>> GetAll();
         public Task DeleteByPostId(int postId);
+        public Task DeleteByPostOwnerId(int userId);
         public Task DeleteByUserId(int userId);
     }
 }

@@ -39,7 +39,6 @@ namespace Application.Service
 
         public async Task<int> Create(CreatePostRequest request)
         {
-            // Check if user exists
             var user = await _userService.GetById(request.UserId);
             if (user == null)
                 throw new NotFoundApplicationException($"User {request.UserId} not found");
@@ -95,7 +94,7 @@ namespace Application.Service
             return responses;
         }
 
-        public async Task<PostResponse> GetById(int id)
+        public async Task<PostResponse?> GetById(int id)
         {
             var post = await _postRepository.GetById(id);
             if (post == null)

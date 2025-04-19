@@ -136,7 +136,7 @@ namespace ApplicationUnitTests.Services
             };
 
             _postServiceMock.Setup(x => x.GetById(request.PostId))
-                .ReturnsAsync((PostResponse)null);
+                .ReturnsAsync((PostResponse?)null);
 
             // Act & Assert
             await _commentService.Invoking(x => x.Create(request))

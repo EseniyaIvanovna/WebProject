@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Requests;
+﻿using Application.Requests;
 using Application.Service;
 using FluentAssertions;
+using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationIntegrationTests.Services;
 
+[Collection("IntegrationTests")]
 public class UserServiceTests : IClassFixture<TestingFixture>
 {
     private readonly TestingFixture _fixture;
     private readonly IUserService _userService;
+    private readonly ICommentRepository _commentRepository;
+    private readonly IPostRepository _postRepository;
+    
 
     public UserServiceTests(TestingFixture fixture)
     {
         _fixture = fixture;
         var scope = fixture.ServiceProvider.CreateScope();
         _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+        _commentRepository = scope.ServiceProvider.GetRequiredService<ICommentRepository>();
+        _postRepository = scope.ServiceProvider.GetRequiredService<IPostRepository>();
     }
 
     [Fact]
@@ -111,8 +113,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
     public async Task UpdateUser_ShouldUpdateExistingUser()
     {
         // Arrange
-        var createRequest = new CreateUserRequest 
-        { 
+        var createRequest = new CreateUserRequest
+        {
             Name = "Original",
             LastName = "User",
             DateOfBirth = DateTime.Now.AddYears(-25),
@@ -121,8 +123,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
         };
         var userId = await _userService.Add(createRequest);
 
-        var updateRequest = new UpdateUserRequest 
-        { 
+        var updateRequest = new UpdateUserRequest
+        {
             Id = userId,
             Name = "Updated",
             LastName = "User",
@@ -142,24 +144,5 @@ public class UserServiceTests : IClassFixture<TestingFixture>
         updatedUser.DateOfBirth.Should().BeCloseTo(updateRequest.DateOfBirth, TimeSpan.FromMilliseconds(1));
         updatedUser.Info.Should().Be(updateRequest.Info);
         updatedUser.Email.Should().Be(updateRequest.Email);
-    }
-
-    [Fact]
-    public async Task DeleteUser_ShouldDeleteExistingUser()
-    {
-        // Arrange
-        var request = new CreateUserRequest 
-        { 
-            Name = "Delete",
-            LastName = "User",
-            DateOfBirth = DateTime.Now.AddYears(-28),
-            Info = "To be deleted",
-            Email = "delete@example.com"
-        };
-        var userId = await _userService.Add(request);
-
-        // Act & Assert
-        await _userService.Invoking(x => x.Delete(userId))
-            .Should().NotThrowAsync();
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationIntegrationTests.Services;
 
+[Collection("IntegrationTests")]
 public class ReactionServiceTests : IClassFixture<TestingFixture>
 {
     private readonly TestingFixture _fixture;

@@ -91,5 +91,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             }
             return Task.CompletedTask;
         }
+
+        Task ICommentRepository.DeleteByPostOwnerId(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

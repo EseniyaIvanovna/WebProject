@@ -39,7 +39,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
+#pragma warning disable CS8613 // Допустимость значения NULL для ссылочных типов в возвращаемом типе не совпадает с явно реализованным членом.
         public Task<Reaction> GetById(int Id)
+#pragma warning restore CS8613 // Допустимость значения NULL для ссылочных типов в возвращаемом типе не совпадает с явно реализованным членом.
         {
             var reaction = _reactions.First(r => r.Id == Id);
             return Task.FromResult(reaction);

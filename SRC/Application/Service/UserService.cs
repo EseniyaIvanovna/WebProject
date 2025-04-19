@@ -17,7 +17,7 @@ namespace Application.Service
         private readonly IReactionRepository _reactionRepository;
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMessageRepository _messageRepository;
-        private readonly NpgsqlConnection _connection; 
+        private readonly NpgsqlConnection _connection;
         private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
 
@@ -63,11 +63,13 @@ namespace Application.Service
             try
             {
                 await _commentRepository.DeleteByUserId(id);
+                await _commentRepository.DeleteByPostOwnerId(id);
                 await _reactionRepository.DeleteByUserId(id);
                 await _reactionRepository.DeleteByPostOwnerId(id);
-                await _postRepository.DeleteByUserId(id);
                 await _interactionRepository.DeleteByUserId(id);
                 await _messageRepository.DeleteMessagesByUser(id);
+                await _postRepository.DeleteByUserId(id);
+
 
                 var result = await _userRepository.Delete(id);
 

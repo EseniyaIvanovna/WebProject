@@ -42,6 +42,13 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
+        public async Task DeleteByPostOwnerId(int userId)
+        {
+            await _connection.ExecuteAsync(
+            @"DELETE FROM comments 
+              WHERE postId IN (SELECT id FROM posts WHERE userid = @UserId)",
+            new { UserId = userId });
+        }
 
         public async Task<Comment?> GetById(int id)
         {

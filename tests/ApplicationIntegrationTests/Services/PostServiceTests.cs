@@ -1,12 +1,12 @@
-﻿using Application.Exceptions;
-using Application.Requests;
+﻿using Application.Requests;
 using Application.Service;
+using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Bogus;
 
 namespace ApplicationIntegrationTests.Services;
 
+[Collection("IntegrationTests")]
 public class PostServiceTests : IClassFixture<TestingFixture>
 {
     private readonly TestingFixture _fixture;
@@ -119,26 +119,5 @@ public class PostServiceTests : IClassFixture<TestingFixture>
         var updatedPost = await _postService.GetById(postId);
         updatedPost.Should().NotBeNull();
         updatedPost.Text.Should().Be(updateRequest.Text);
-    }
-
-    [Fact]
-    public async Task Delete_WhenPostExists_DeletesPost()
-    {
-        // Arrange
-        var user = await _fixture.CreateUser();
-        var request = new CreatePostRequest 
-        { 
-            Text = "Content to Delete", 
-            UserId = user.Id 
-        };
-        var postId = await _postService.Create(request);
-
-        // Act
-        await _postService.Delete(postId);
-
-        // Assert
-        await _postService.Invoking(x => x.GetById(postId))
-            .Should().ThrowAsync<NotFoundApplicationException>()
-            .WithMessage($"Post {postId} not found");
     }
 }

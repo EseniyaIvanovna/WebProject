@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationIntegrationTests.Services;
 
+[Collection("IntegrationTests")]
 public class MessageServiceTests : IClassFixture<TestingFixture>
 {
     private readonly TestingFixture _fixture;
