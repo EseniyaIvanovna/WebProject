@@ -11,7 +11,7 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(ValidationConstants.MaxNameLength).NotNullable()
                 .WithColumn("lastname").AsString(ValidationConstants.MaxLastNameLength).NotNullable()
-                .WithColumn("\"dateOfBirth\"").AsDateTime().NotNullable()
+                .WithColumn("dateOfBirth").AsDateTime().NotNullable()
                 .WithColumn("info").AsString(ValidationConstants.MaxUserInfoLength)
                 .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable();
 
