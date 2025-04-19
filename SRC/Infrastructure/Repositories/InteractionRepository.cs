@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
             return affectedRows > 0;
         }
 
-        public async Task<Interaction> GetById(int id)
+        public async Task<Interaction?> GetById(int id)
         {
             var sql = @"
                 SELECT id, user1Id, user2Id, status

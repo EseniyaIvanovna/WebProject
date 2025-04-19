@@ -4,6 +4,7 @@ using Application.Responses;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Application.Service
@@ -16,6 +17,7 @@ namespace Application.Service
         private readonly IUserService _userService;
         private readonly NpgsqlConnection _connection;
         private readonly IMapper _mapper;
+        private readonly ILogger<PostService> _logger;
 
         public PostService(
             IPostRepository postRepository, 
@@ -23,7 +25,8 @@ namespace Application.Service
             IReactionRepository reactionRepository,
             IUserService userService,
             NpgsqlConnection connection, 
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<PostService> logger)
         {
             _postRepository = postRepository;
             _commentRepository = commentRepository;
@@ -31,6 +34,7 @@ namespace Application.Service
             _userService = userService;
             _connection = connection;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int> Create(CreatePostRequest request)
@@ -41,7 +45,14 @@ namespace Application.Service
                 throw new NotFoundApplicationException($"User {request.UserId} not found");
 
             var post = _mapper.Map<Post>(request);
-            return await _postRepository.Create(post);
+            var postId = await _postRepository.Create(post);
+
+            _logger.LogInformation(
+                "Post created with id {Id} by user {UserId}",
+                postId,
+                request.UserId);
+
+            return postId;
         }
 
         public async Task Delete(int id)
@@ -60,6 +71,10 @@ namespace Application.Service
                 }
 
                 await tran.CommitAsync();
+
+                _logger.LogInformation(
+                    "Post successfully deleted with id {Id} along with its comments and reactions",
+                    id);
             }
             catch
             {
@@ -71,7 +86,13 @@ namespace Application.Service
         public async Task<IEnumerable<PostResponse>> GetAll()
         {
             var posts = await _postRepository.GetAll();
-            return _mapper.Map<IEnumerable<PostResponse>>(posts);
+            var responses = _mapper.Map<IEnumerable<PostResponse>>(posts);
+
+            _logger.LogInformation(
+                "Retrieved {Count} posts in total",
+                responses.Count());
+
+            return responses;
         }
 
         public async Task<PostResponse> GetById(int id)
@@ -80,7 +101,13 @@ namespace Application.Service
             if (post == null)
                 throw new NotFoundApplicationException($"Post {id} not found");
 
-            return _mapper.Map<PostResponse>(post);
+            var response = _mapper.Map<PostResponse>(post);
+
+            _logger.LogInformation(
+                "Post retrieved with id {Id}",
+                id);
+
+            return response;
         }
 
         public async Task Update(UpdatePostRequest request)
@@ -96,6 +123,10 @@ namespace Application.Service
             {
                 throw new EntityUpdateException("Post", request.Id.ToString());
             }
+
+            _logger.LogInformation(
+                "Post updated with id {Id}",
+                request.Id);
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
                 new { UserId = userId });
         }
 
-        public async Task<Message> GetById(int id)
+        public async Task<Message?> GetById(int id)
         {
             var sql = @"
                 SELECT id, senderId, receiverId, text, createdAt
