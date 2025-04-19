@@ -33,7 +33,7 @@ namespace InfrastructureIntegrationTests
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    var connectionString = context.Configuration.GetConnectionString("blog_tests");
+                    var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
 
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("Database connection string is not configured");
