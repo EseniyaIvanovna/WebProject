@@ -21,7 +21,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: quiz_db_integration
+          POSTGRES_DB: PostgresIntegration
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -45,13 +45,13 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Test with Coverage
-        run: dotnet test --no-build --verbosity normal --logger trx --collect:""XPlat Code Coverage"" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage
+        run: dotnet test --no-build --verbosity normal --logger trx --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/coverage
 
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
       - name: Generate Coverage Report
-        run: reportgenerator -reports:""tests/*/TestResults/*/coverage.cobertura.xml"" -targetdir:coverage -reporttypes:HtmlInline,Cobertura,MarkdownSummary
+        run: reportgenerator -reports:"**/TestResults/*/coverage.cobertura.xml" -targetdir:coverage -reporttypes:HtmlInline,Cobertura,MarkdownSummary     
 
       - name: Upload Coverage Report as Artifact
         uses: actions/upload-artifact@v4
