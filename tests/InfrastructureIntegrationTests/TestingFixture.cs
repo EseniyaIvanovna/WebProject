@@ -33,8 +33,7 @@ namespace InfrastructureIntegrationTests
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    var connectionString = context.Configuration.GetConnectionString("blog_tests")
-                        ?? "Host=localhost;Database=testdb;Username=postgres;Password=password";
+                    var connectionString = context.Configuration.GetConnectionString("blog_tests");
 
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("Database connection string is not configured");
