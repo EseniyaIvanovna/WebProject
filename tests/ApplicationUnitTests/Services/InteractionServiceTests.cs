@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Mappings;
 using Application.Requests;
-using Application.Responses;
 using Application.Service;
 using AutoMapper;
 using Bogus;
@@ -43,7 +42,7 @@ namespace ApplicationUnitTests.Services
 
             _loggerMock = new Mock<ILogger<InteractionService>>();
 
-            _interactionService = new InteractionService(_interactionRepositoryMock.Object, _mapper);
+            _interactionService = new InteractionService(_interactionRepositoryMock.Object, _mapper, _loggerMock.Object);
         }
 
         [Fact]

@@ -1,5 +1,4 @@
-﻿using Application.Exceptions;
-using Application.Mappings;
+﻿using Application.Mappings;
 using Application.Requests;
 using Application.Service;
 using AutoMapper;
@@ -61,7 +60,7 @@ namespace ApplicationUnitTests.Services
             _mapper = mappingConfig.CreateMapper();
 
             _loggerMock = new Mock<ILogger<MessageService>>();
-            _messageService = new MessageService(_messageRepository, _mapper);
+            _messageService = new MessageService(_messageRepository, _mapper, _loggerMock.Object);
         }
 
         [Fact]
@@ -78,7 +77,7 @@ namespace ApplicationUnitTests.Services
             var messageRepositoryMock = new Mock<IMessageRepository>();
             messageRepositoryMock.Setup(x => x.GetById(1)).ReturnsAsync(_message);
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
             int messageId = _message.Id;
 
             // Act
@@ -113,7 +112,7 @@ namespace ApplicationUnitTests.Services
             var messageRepositoryMock = new Mock<IMessageRepository>();
             messageRepositoryMock.Setup(x => x.GetById(message.Id)).ReturnsAsync(message);
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
 
             // Act
             var messageDto = await messageService.GetById(messageId);
@@ -134,7 +133,7 @@ namespace ApplicationUnitTests.Services
             var messageRepositoryMock = new Mock<IMessageRepository>();
             messageRepositoryMock.Setup(x => x.GetAll()).ReturnsAsync(new List<Message>());
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
 
             // Act
             var result = await messageService.GetAll();
@@ -169,7 +168,7 @@ namespace ApplicationUnitTests.Services
             var messageRepositoryMock = new Mock<IMessageRepository>();
             messageRepositoryMock.Setup(x => x.Create(It.IsAny<Message>())).ReturnsAsync(1);
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
 
             // Act
             var result = await messageService.Create(request);
@@ -202,7 +201,7 @@ namespace ApplicationUnitTests.Services
             messageRepositoryMock.Setup(x => x.GetById(request.Id)).ReturnsAsync(existingMessage);
             messageRepositoryMock.Setup(x => x.Update(It.IsAny<Message>())).ReturnsAsync(true);
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
 
             // Act
             await messageService.Update(request);
@@ -230,7 +229,7 @@ namespace ApplicationUnitTests.Services
             messageRepositoryMock.Setup(x => x.GetById(messageId)).ReturnsAsync(existingMessage);
             messageRepositoryMock.Setup(x => x.Delete(messageId)).ReturnsAsync(true);
             var messageRepository = messageRepositoryMock.Object;
-            var messageService = new MessageService(messageRepository, _mapper);
+            var messageService = new MessageService(messageRepository, _mapper, _loggerMock.Object);
 
             // Act
             await messageService.Delete(messageId);

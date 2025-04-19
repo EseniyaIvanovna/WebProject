@@ -7,7 +7,7 @@ namespace Application.Requests
     {
         public int PostId { get; set; }
         public int UserId { get; set; }
-        public required string Content { get; set; }
+        public required string? Content { get; set; }
     }
 
     public class CreateCommentRequestValidator : AbstractValidator<CreateCommentRequest>

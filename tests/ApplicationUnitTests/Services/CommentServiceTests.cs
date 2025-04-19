@@ -54,7 +54,7 @@ namespace ApplicationUnitTests.Services
 
             _loggerMock = new Mock<ILogger<CommentService>>();
 
-            _commentService = new CommentService(_commentRepositoryMock.Object, _postServiceMock.Object, _mapper);
+            _commentService = new CommentService(_commentRepositoryMock.Object, _postServiceMock.Object, _mapper, _loggerMock.Object);
         }
 
         [Fact]

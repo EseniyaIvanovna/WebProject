@@ -35,7 +35,7 @@ namespace ApplicationUnitTests.Services
             {
                 Id = 1,
                 UserId = 1,
-                Text = _faker.Lorem.Text().Substring(0, Math.Min(_faker.Lorem.Text().Length, 255)),
+                Text = _faker.Lorem.Text(),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -69,7 +69,9 @@ namespace ApplicationUnitTests.Services
                 _reactionRepositoryMock.Object,
                 _userServiceMock.Object,
                 _connectionMock.Object,
-                _mapper);
+                _mapper,
+                _loggerMock.Object
+                );
         }
 
         [Fact]

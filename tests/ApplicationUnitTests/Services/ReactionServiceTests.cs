@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.Mappings;
 using Application.Requests;
-using Application.Responses;
 using Application.Service;
 using AutoMapper;
 using Bogus;
@@ -60,7 +59,7 @@ namespace ApplicationUnitTests.Services
             _mapper = mappingConfig.CreateMapper();
 
             _loggerMock = new Mock<ILogger<ReactionService>>();
-            _reactionService = new ReactionService(_reactionRepositoryMock.Object, _mapper);
+            _reactionService = new ReactionService(_reactionRepositoryMock.Object, _mapper, _loggerMock.Object);
         }
 
         [Fact]

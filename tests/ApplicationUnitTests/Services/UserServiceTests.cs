@@ -7,6 +7,7 @@ using Bogus;
 using Domain;
 using FluentAssertions;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 
@@ -22,6 +23,7 @@ namespace ApplicationUnitTests.Services
         private readonly Mock<IMessageRepository> _messageRepositoryMock;
         private readonly Mock<NpgsqlConnection> _connectionMock;
         private readonly IMapper _mapper;
+        private readonly Mock<ILogger<UserService>> _loggerMock;
         private readonly UserService _userService;
         private readonly Faker _faker;
         private readonly User _testUser;
@@ -63,6 +65,7 @@ namespace ApplicationUnitTests.Services
             });
             _mapper = mappingConfig.CreateMapper();
 
+            _loggerMock = new Mock<ILogger<UserService>>();
             _userService = new UserService(
                 _userRepositoryMock.Object,
                 _postRepositoryMock.Object,
@@ -71,7 +74,9 @@ namespace ApplicationUnitTests.Services
                 _reactionRepositoryMock.Object,
                 _interactionRepositoryMock.Object,
                 _connectionMock.Object,
-                _mapper);
+                _mapper,
+                _loggerMock.Object
+                );
         }
 
 
