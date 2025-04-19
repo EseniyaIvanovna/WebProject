@@ -51,7 +51,7 @@ namespace Application.Service
             _logger.LogInformation(
                 "User created with id {Id} and username {Username}",
                 userId,
-                request.Username);
+                request.Name);
 
             return userId;
         }

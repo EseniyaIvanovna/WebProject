@@ -27,10 +27,10 @@ namespace Application.Service
             var messageId = await _messageRepository.Create(message);
 
             _logger.LogInformation(
-                "Message created with id {Id} from user {FromUserId} to user {ToUserId}",
+                "Message created with id {Id} from user {SenderId} to user {ReceiverId}",
                 messageId,
-                request.FromUserId,
-                request.ToUserId);
+                request.SenderId,
+                request.ReceiverId);
 
             return messageId;
         }
