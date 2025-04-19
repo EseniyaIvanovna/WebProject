@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             comment.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO comments (postId, userId, content, createdAt)
+                INSERT INTO comments (""postId"", ""userId"", content, ""createdAt"")
                 VALUES (@PostId, @UserId, @Content, @CreatedAt)
                 RETURNING id;
             ";
@@ -46,14 +46,14 @@ namespace Infrastructure.Repositories
         {
             await _connection.ExecuteAsync(
             @"DELETE FROM comments 
-              WHERE postId IN (SELECT id FROM posts WHERE userid = @UserId)",
+              WHERE ""postId"" IN (SELECT id FROM posts WHERE ""userId"" = @UserId)",
             new { UserId = userId });
         }
 
         public async Task<Comment?> GetById(int id)
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, ""postId"", ""userId"", content, ""createdAt""
                 FROM comments
                 WHERE id = @Id;
             ";
@@ -65,9 +65,9 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetByUserId(int userId)
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, ""postId"", ""userId"", content, ""createdAt""
                 FROM comments
-                WHERE userId = @UserId;
+                WHERE ""userId"" = @UserId;
             ";
             var comments = await _connection.QueryAsync<Comment>(sql, new { UserId = userId });
 
@@ -94,7 +94,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetAll()
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, ""postId"", ""userId"", content, ""createdAt""
                 FROM comments;
             ";
 

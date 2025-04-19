@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             post.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO posts (userId, text, createdAt)
+                INSERT INTO posts (""userId"", text, ""createdAt"")
                 VALUES (@UserId, @Text, @CreatedAt)
                 RETURNING id;
             ";
@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Post>> GetAll()
         {
             var sql = @"
-                SELECT id, userId, text, createdAt
+                SELECT id, ""userId"", text, ""createdAt""
                 FROM posts;
             ";
 
@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
         public async Task<Post?> GetById(int id)
         {
             var sql = @"
-                SELECT id, userId, text, createdAt
+                SELECT id, ""userId"", text, ""createdAt""
                 FROM posts
                 WHERE id = @Id;
             ";
