@@ -1,4 +1,5 @@
-﻿using Application.Requests;
+﻿using Application.Exceptions;
+using Application.Requests;
 using Application.Service;
 using Bogus;
 using FluentAssertions;
@@ -119,5 +120,43 @@ public class PostServiceTests : IClassFixture<TestingFixture>
         var updatedPost = await _postService.GetById(postId);
         updatedPost.Should().NotBeNull();
         updatedPost.Text.Should().Be(updateRequest.Text);
+    }
+
+    [Fact]
+    public async Task GetById_WhenPostDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        var nonExistentPostId = 999999;
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundApplicationException>(() => _postService.GetById(nonExistentPostId));
+    }
+
+    [Fact]
+    public async Task Update_WhenPostDoesNotExist_ThrowsException()
+    {
+        // Arrange
+        var updateRequest = new UpdatePostRequest 
+        { 
+            Id = 999999,
+            Text = "Updated Content"
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundApplicationException>(() => _postService.Update(updateRequest));
+    }
+
+    [Fact]
+    public async Task Create_WhenUserIdIsInvalid_ThrowsException()
+    {
+        // Arrange
+        var request = new CreatePostRequest
+        {
+            UserId = 999999,
+            Text = _faker.Lorem.Sentence(10)
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundApplicationException>(() => _postService.Create(request));
     }
 }
