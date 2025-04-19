@@ -29,7 +29,7 @@ namespace InfrastructureIntegrationTests
                 {
                     services.AddInfrastructure();
                     services.AddApplication();
-                    var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
+                    var connectionString = context.Configuration.GetConnectionString("blog_tests");
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("PostgresDBIntegration connection string is empty");
 
