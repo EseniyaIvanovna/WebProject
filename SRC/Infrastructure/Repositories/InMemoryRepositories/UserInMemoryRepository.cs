@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class UserInMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();

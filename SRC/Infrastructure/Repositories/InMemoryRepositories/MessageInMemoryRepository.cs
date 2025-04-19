@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class MessageInMemoryRepository : IMessageRepository
     {
         private readonly List<Message> _messages = new List<Message>();

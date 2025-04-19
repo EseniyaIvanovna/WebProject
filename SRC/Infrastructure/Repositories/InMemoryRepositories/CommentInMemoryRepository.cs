@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class CommentInMemoryRepository : ICommentRepository
     {
         private readonly List<Comment> _comments = new List<Comment>();

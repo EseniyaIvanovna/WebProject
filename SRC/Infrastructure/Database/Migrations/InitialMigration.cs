@@ -17,7 +17,7 @@ namespace Infrastructure.Database.Migrations
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("userId").AsInt32().NotNullable().ForeignKey("users", "id")
+                .WithColumn("\"userId\"").AsInt32().NotNullable().ForeignKey("users", "id")
                 .WithColumn("text").AsString(ValidationConstants.MaxTextContentLength).NotNullable()
                 .WithColumn("createdat").AsDateTime().NotNullable();
 
@@ -52,16 +52,16 @@ namespace Infrastructure.Database.Migrations
                 .Row(new { name = "Jane", lastname = "Smith", dateOfBirth = "2003-10-01", info = "Data Scientist", email = "jane.smith@example.com" });
 
             Insert.IntoTable("posts")
-                .Row(new { userid = 1, text = "First post by John", createdat = DateTime.UtcNow })
-                .Row(new { userid = 2, text = "First post by Jane", createdat = DateTime.UtcNow });
+                .Row(new { userId = 1, text = "First post by John", createdat = DateTime.UtcNow })
+                .Row(new { userId = 2, text = "First post by Jane", createdat = DateTime.UtcNow });
 
             Insert.IntoTable("comments")
-                .Row(new { postId = 1, userid = 2, content = "Nice post, John!", createdat = DateTime.UtcNow })
-                .Row(new { postId = 2, userid = 1, content = "Great job, Jane!", createdat = DateTime.UtcNow });
+                .Row(new { postId = 1, userId = 2, content = "Nice post, John!", createdat = DateTime.UtcNow })
+                .Row(new { postId = 2, userId = 1, content = "Great job, Jane!", createdat = DateTime.UtcNow });
 
             Insert.IntoTable("reactions")
-                .Row(new { userid = 1, postId = 2, type = "Like" })
-                .Row(new { userid = 2, postId = 1, type = "Dislike" });
+                .Row(new { userId = 1, postId = 2, type = "Like" })
+                .Row(new { userId = 2, postId = 1, type = "Dislike" });
 
             Insert.IntoTable("messages")
                 .Row(new { senderId = 1, receiverId = 2, text = "Hi Jane!", createdAt = DateTime.UtcNow })

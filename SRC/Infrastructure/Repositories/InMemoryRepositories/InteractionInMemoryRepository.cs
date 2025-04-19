@@ -1,9 +1,11 @@
 ﻿using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class InteractionInMemoryRepository : IInteractionRepository
     {
         private readonly List<Interaction> _interactions = new List<Interaction>();
