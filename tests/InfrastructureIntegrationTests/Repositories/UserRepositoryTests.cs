@@ -1,5 +1,4 @@
 using Bogus;
-using Domain;
 using FluentAssertions;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +9,12 @@ namespace InfrastructureIntegrationTests.Repositories;
 public class UserRepositoryTests : IClassFixture<TestingFixture>
 {
     private readonly IUserRepository _userRepository;
+    private readonly TestingFixture _fixture;
     private readonly Faker _faker;
 
     public UserRepositoryTests(TestingFixture fixture)
     {
+        _fixture = fixture;
         var scope = fixture.ServiceProvider.CreateScope();
         _userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
         _faker = new Faker();
@@ -23,14 +24,7 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task GetById_WhenUserExists_ReturnsUser()
     {
         // Arrange
-        var user = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user = await _fixture.CreateUser();
         var userId = await _userRepository.Create(user);
 
         // Act
@@ -60,24 +54,10 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task GetAll_WhenUsersExist_ReturnsUsers()
     {
         // Arrange
-        var user1 = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user1 = await _fixture.CreateUser();
         await _userRepository.Create(user1);
 
-        var user2 = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user2 = await _fixture.CreateUser();
         await _userRepository.Create(user2);
 
         // Act
@@ -93,14 +73,7 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task Create_WhenValidUser_CreatesUser()
     {
         // Arrange
-        var user = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user = await _fixture.CreateUser();
 
         // Act
         var userId = await _userRepository.Create(user);
@@ -117,25 +90,11 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task Update_WhenUserExists_UpdatesUser()
     {
         // Arrange
-        var user = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user = await _fixture.CreateUser();
         var userId = await _userRepository.Create(user);
 
-        var updatedUser = new User
-        {
-            Id = userId,
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var updatedUser = await _fixture.CreateUser();
+        updatedUser.Id = userId;
 
         // Act
         var result = await _userRepository.Update(updatedUser);
@@ -152,15 +111,8 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task Update_WhenUserDoesNotExist_ReturnsFalse()
     {
         // Arrange
-        var nonExistentUser = new User
-        {
-            Id = 999999,
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var nonExistentUser = await _fixture.CreateUser();
+        nonExistentUser.Id = 999999;
 
         // Act
         var result = await _userRepository.Update(nonExistentUser);
@@ -173,14 +125,7 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     public async Task Delete_WhenUserExists_DeletesUser()
     {
         // Arrange
-        var user = new User
-        {
-            Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
-            DateOfBirth = _faker.Date.Past(),
-            Info = _faker.Lorem.Sentence(10),
-            Email = _faker.Internet.Email()
-        };
+        var user = await _fixture.CreateUser();
         var userId = await _userRepository.Create(user);
 
         // Act

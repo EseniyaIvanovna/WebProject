@@ -51,21 +51,17 @@ namespace Application.Service
             existingComment.Content = request.Content;
             var result = await _commentRepository.Update(existingComment);
 
-            _logger.LogInformation(
-                "Comment updated with id {Id} with text {Content} by user {UserId} to post {PostId}",
-                request.Id,
-                request.Content,
-                existingComment.UserId,
-                existingComment.PostId);
-
             if (result == false)
             {
                 throw new EntityUpdateException("Comment", request.Id.ToString());
             }
 
             _logger.LogInformation(
-                "Comment successfully updated with id {Id}",
-                request.Id);
+                "Comment updated with id {Id} with text {Content} by user {UserId} to post {PostId}",
+                request.Id,
+                request.Content,
+                existingComment.UserId,
+                existingComment.PostId);
         }
 
         public async Task Delete(int id)

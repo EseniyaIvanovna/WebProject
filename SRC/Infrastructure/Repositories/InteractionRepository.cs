@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(Interaction interaction)
         {
             var sql = @"
-                INSERT INTO interactions (""user1Id"", ""user2Id"", status)
+                INSERT INTO interactions (user1_id, user2_id, status)
                 VALUES (@User1Id, @User2Id, @Status)
                 RETURNING id;
             ";
@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
         public async Task<Interaction?> GetById(int id)
         {
             var sql = @"
-                SELECT id, ""user1Id"", ""user2Id"", status
+                SELECT id, user1_id, user2_id, status
                 FROM interactions
                 WHERE id = @Id;
             ";
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Interaction>> GetByStatus(Status status)
         {
             var sql = @"
-                SELECT id, ""user1Id"", ""user2Id"", status
+                SELECT id, user1_id, user2_id, status
                 FROM interactions
                 WHERE status = @Status;
             ";
@@ -69,8 +69,8 @@ namespace Infrastructure.Repositories
         {
             var sql = @"
                 UPDATE interactions
-                SET ""user1Id"" = @User1Id,
-                    ""user2Id"" = @User2Id,
+                SET user1_id = @User1Id,
+                    user2_id = @User2Id,
                     status = @Status
                 WHERE id = @Id;
             ";
@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Interaction>> GetAll()
         {
             var sql = @"
-                SELECT id, ""user1Id"", ""user2Id"", status
+                SELECT id, user1_id, user2_id, status
                 FROM interactions;
             ";
 
@@ -102,8 +102,8 @@ namespace Infrastructure.Repositories
         {
             var sql = @"SELECT EXISTS(
                 SELECT 1 FROM interactions 
-                WHERE (""user1Id"" = @User1Id AND ""user2Id"" = @User2Id)
-                OR (""user1Id"" = @User2Id AND ""user2Id"" = @User1Id)
+                WHERE (user1_id = @User1Id AND user2_id = @User2Id)
+                OR (user1_id = @User2Id AND user2_id = @User1Id)
             )";
             return await _connection.QuerySingleAsync<bool>(sql, new
             {

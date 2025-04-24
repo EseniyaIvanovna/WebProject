@@ -58,6 +58,8 @@ using (var scope = app.Services.CreateScope())
 // Add PerformanceMiddleware
 app.UseMiddleware<PerformanceMiddleware>();
 
+app.UseSerilogRequestLogging();
+
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();

@@ -50,11 +50,10 @@ namespace ApiUnitTests.Controllers
             var result = await _controller.CreatePost(request);
 
             // Assert
-            result.Should().BeOfType<CreatedResult>()
-                .Which.Location.Should().Be($"/post/{_testPost.Id}");
+            var createdResult = result.Should().BeOfType<CreatedResult>().Subject;
 
-            result.Should().BeOfType<CreatedResult>()
-                .Which.Value.Should().BeEquivalentTo(new { Id = _testPost.Id });
+            createdResult.Location.Should().Be($"/post/{_testPost.Id}");
+            createdResult.Value.Should().BeEquivalentTo(new { Id = _testPost.Id });
 
             _postServiceMock.Verify(x => x.Create(request), Times.Once);
         }

@@ -26,11 +26,7 @@ namespace Application.Service
             var message = _mapper.Map<Message>(request);
             var messageId = await _messageRepository.Create(message);
 
-            _logger.LogInformation(
-                "Message created with id {Id} from user {SenderId} to user {ReceiverId}",
-                messageId,
-                request.SenderId,
-                request.ReceiverId);
+            _logger.LogInformation("CreateMessageRequest: {@Request}", request);
 
             return messageId;
         }
@@ -106,9 +102,7 @@ namespace Application.Service
                 throw new EntityUpdateException("Message", request.Id.ToString());
             }
 
-            _logger.LogInformation(
-                "Message updated with id {Id}",
-                request.Id);
+            _logger.LogInformation("UpdateMessageRequest: {@Request}", request);
         }
     }
 }

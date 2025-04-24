@@ -1,5 +1,6 @@
 ﻿using Api.ExceptionHandler;
 using Application.Exceptions;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
@@ -28,8 +29,8 @@ namespace ApiUnitTests.ExceptionHandler
             var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(StatusCodes.Status200OK, _httpContext.Response.StatusCode); // Default status
+            result.Should().BeFalse("operation was expected to fail or return false");
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status200OK, "200 OK is the expected default status");
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.IsAny<ProblemDetailsContext>()), Times.Never);
         }
 

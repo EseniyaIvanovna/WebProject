@@ -1,7 +1,5 @@
-﻿using Application;
-using Bogus;
+﻿using Bogus;
 using Domain;
-using Domain.Enums;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Processors;
 using Infrastructure;
@@ -28,7 +26,6 @@ namespace InfrastructureIntegrationTests
                 .ConfigureServices((context, services) =>
                 {
                     services.AddInfrastructure();
-                    services.AddApplication();
                     var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("PostgresDBIntegration connection string is empty");
@@ -73,7 +70,6 @@ namespace InfrastructureIntegrationTests
                 TablesToIgnore = ["VersionInfo"]
             });
         }
-
         public async Task<User> CreateUser()
         {
             using var scope = ServiceProvider.CreateScope();
@@ -90,88 +86,6 @@ namespace InfrastructureIntegrationTests
 
             user.Id = await userRepository.Create(user);
             return user;
-        }
-
-        public async Task<Post> CreatePost(int userId)
-        {
-            using var scope = ServiceProvider.CreateScope();
-            var postRepository = scope.ServiceProvider.GetRequiredService<IPostRepository>();
-
-            var post = new Post
-            {
-                UserId = userId,
-                Text = _faker.Lorem.Sentence(10),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            post.Id = await postRepository.Create(post);
-            return post;
-        }
-
-        public async Task<Comment> CreateComment(int userId, int postId)
-        {
-            using var scope = ServiceProvider.CreateScope();
-            var commentRepository = scope.ServiceProvider.GetRequiredService<ICommentRepository>();
-
-            var comment = new Comment
-            {
-                Content = _faker.Lorem.Sentence(10),
-                UserId = userId,
-                PostId = postId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            comment.Id = await commentRepository.Create(comment);
-            return comment;
-        }
-
-        public async Task<Message> CreateMessage(int senderId, int receiverId)
-        {
-            using var scope = ServiceProvider.CreateScope();
-            var messageRepository = scope.ServiceProvider.GetRequiredService<IMessageRepository>();
-
-            var message = new Message
-            {
-                SenderId = senderId,
-                ReceiverId = receiverId,
-                Text = _faker.Lorem.Sentence(10),
-                CreatedAt = DateTime.UtcNow
-            };
-
-            message.Id = await messageRepository.Create(message);
-            return message;
-        }
-
-        public async Task<Reaction> CreateReaction(int userId, int postId)
-        {
-            using var scope = ServiceProvider.CreateScope();
-            var reactionRepository = scope.ServiceProvider.GetRequiredService<IReactionRepository>();
-
-            var reaction = new Reaction
-            {
-                Type = ReactionType.Like,
-                UserId = userId,
-                PostId = postId
-            };
-
-            reaction.Id = await reactionRepository.Create(reaction);
-            return reaction;
-        }
-
-        public async Task<Interaction> CreateInteraction(int user1Id, int user2Id)
-        {
-            using var scope = ServiceProvider.CreateScope();
-            var interactionRepository = scope.ServiceProvider.GetRequiredService<IInteractionRepository>();
-
-            var interaction = new Interaction
-            {
-                User1Id = user1Id,
-                User2Id = user2Id,
-                Status = Status.Friend
-            };
-
-            interaction.Id = await interactionRepository.Create(interaction);
-            return interaction;
         }
 
         public async Task DisposeAsync()

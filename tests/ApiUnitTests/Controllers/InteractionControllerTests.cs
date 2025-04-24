@@ -70,7 +70,10 @@ namespace ApiUnitTests.Controllers
                 .ThrowsAsync(new Exception("Test exception"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _controller.CreateInteraction(request));
+            await FluentActions
+                .Invoking(() => _controller.CreateInteraction(request))
+                .Should().ThrowAsync<Exception>()
+                .WithMessage("Test exception");
         }
 
         [Fact]
