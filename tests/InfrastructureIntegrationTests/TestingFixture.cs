@@ -26,7 +26,7 @@ namespace InfrastructureIntegrationTests
                 .ConfigureServices((context, services) =>
                 {
                     services.AddInfrastructure();
-                    var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
+                    var connectionString = context.Configuration.GetConnectionString("PostgresIntegration");
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("PostgresDBIntegration connection string is empty");
 

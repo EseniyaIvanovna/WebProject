@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\SRC\Application\Application.csproj" />
     <ProjectReference Include="..\..\SRC\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\SRC\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\ApplicationIntegrationTests\ApplicationIntegrationTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
