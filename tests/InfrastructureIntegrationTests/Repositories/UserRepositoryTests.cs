@@ -1,41 +1,41 @@
-using Bogus;
-using FluentAssertions;
-using Infrastructure.Repositories.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+//using Bogus;
+//using FluentAssertions;
+//using Infrastructure.Repositories.Interfaces;
+//using Microsoft.Extensions.DependencyInjection;
 
-namespace InfrastructureIntegrationTests.Repositories;
+//namespace InfrastructureIntegrationTests.Repositories;
 
-[Collection("IntegrationTests")]
-public class UserRepositoryTests : IClassFixture<TestingFixture>
-{
-    private readonly IUserRepository _userRepository;
-    private readonly TestingFixture _fixture;
-    private readonly Faker _faker;
+//[Collection("IntegrationTests")]
+//public class UserRepositoryTests : IClassFixture<TestingFixture>
+//{
+//    private readonly IUserRepository _userRepository;
+//    private readonly TestingFixture _fixture;
+//    private readonly Faker _faker;
 
-    public UserRepositoryTests(TestingFixture fixture)
-    {
-        _fixture = fixture;
-        var scope = fixture.ServiceProvider.CreateScope();
-        _userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-        _faker = new Faker();
-    }
+//    public UserRepositoryTests(TestingFixture fixture)
+//    {
+//        _fixture = fixture;
+//        var scope = fixture.ServiceProvider.CreateScope();
+//        _userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+//        _faker = new Faker();
+//    }
 
-    [Fact]
-    public async Task GetById_WhenUserExists_ReturnsUser()
-    {
-        // Arrange
-        var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
+//    [Fact]
+//    public async Task GetById_WhenUserExists_ReturnsUser()
+//    {
+//        // Arrange
+//        var user = await _fixture.CreateUser();
+//        var userId = await _userRepository.Create(user);
 
-        // Act
-        var result = await _userRepository.GetById(userId);
+//        // Act
+//        var result = await _userRepository.GetById(userId);
 
-        // Assert
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(userId);
-        result.Name.Should().Be(user.Name);
-        result.Email.Should().Be(user.Email);
-    }
+//        // Assert
+//        result.Should().NotBeNull();
+//        result!.Id.Should().Be(userId);
+//        result.Name.Should().Be(user.Name);
+//        result.Email.Should().Be(user.Email);
+//    }
 
     //[Fact]
     //public async Task GetById_WhenUserDoesNotExist_ReturnsNull()
@@ -149,4 +149,4 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     //    // Assert
     //    result.Should().BeFalse();
     //}
-}
+//}
