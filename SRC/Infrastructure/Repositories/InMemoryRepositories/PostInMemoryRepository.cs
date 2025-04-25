@@ -95,5 +95,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         {
             throw new NotImplementedException();
         }
+
+        Task<IEnumerable<Post>> IPostRepository.GetByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

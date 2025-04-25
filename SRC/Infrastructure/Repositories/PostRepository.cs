@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
         public async Task<Post?> GetById(int id)
         {
             var sql = @"
-                SELECT id, user_id, text, ""created_at""
+                SELECT id, user_id, text, created_at
                 FROM posts
                 WHERE id = @Id;
             ";
@@ -87,6 +87,14 @@ namespace Infrastructure.Repositories
             });
 
             return affectedRows > 0;
+        }
+        public async Task<IEnumerable<Post>> GetByUserId(int userId)
+        {
+            var sql = @"SELECT id, user_id, text, ""created_at""
+                FROM posts WHERE user_id = @UserId";
+            var posts = await _connection.QueryAsync<Post>(sql, new { UserId = userId });
+
+            return posts;
         }
     }
 }

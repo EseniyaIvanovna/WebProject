@@ -1,7 +1,6 @@
 ﻿using Application.Requests;
 using Application.Service;
 using FluentAssertions;
-using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApplicationIntegrationTests.Services;
@@ -11,17 +10,12 @@ public class UserServiceTests : IClassFixture<TestingFixture>
 {
     private readonly TestingFixture _fixture;
     private readonly IUserService _userService;
-    private readonly ICommentRepository _commentRepository;
-    private readonly IPostRepository _postRepository;
-    
-
+  
     public UserServiceTests(TestingFixture fixture)
     {
         _fixture = fixture;
         var scope = fixture.ServiceProvider.CreateScope();
-        _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-        _commentRepository = scope.ServiceProvider.GetRequiredService<ICommentRepository>();
-        _postRepository = scope.ServiceProvider.GetRequiredService<IPostRepository>();
+        _userService = scope.ServiceProvider.GetRequiredService<IUserService>();        
     }
 
     [Fact]

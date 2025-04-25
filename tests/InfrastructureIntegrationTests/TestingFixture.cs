@@ -1,4 +1,5 @@
-﻿using Bogus;
+﻿using Application;
+using Bogus;
 using Domain;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Processors;
@@ -26,9 +27,11 @@ namespace InfrastructureIntegrationTests
                 .ConfigureServices((context, services) =>
                 {
                     services.AddInfrastructure();
-                    var connectionString = context.Configuration.GetConnectionString("PostgresIntegration");
+                    services.AddApplication();
+
+                    var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
                     if (string.IsNullOrWhiteSpace(connectionString))
-                        throw new ApplicationException("PostgresDBIntegration connection string is empty");
+                        throw new ApplicationException("PostgresIntegration connection string is empty");
 
                     services.AddSingleton(_ => new NpgsqlDataSourceBuilder(connectionString).Build());
 
