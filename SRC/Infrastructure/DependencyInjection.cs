@@ -33,7 +33,7 @@ namespace Infrastructure
                 return dataSource.CreateConnection();
             });
 
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb.AddPostgres()

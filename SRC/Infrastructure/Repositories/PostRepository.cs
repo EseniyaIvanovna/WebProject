@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             post.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO posts (user_id, text, ""created_at"")
+                INSERT INTO posts (user_id, text, created_at)
                 VALUES (@UserId, @Text, @CreatedAt)
                 RETURNING id;
             ";
