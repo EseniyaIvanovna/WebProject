@@ -32,6 +32,8 @@ namespace Infrastructure
                 return dataSource.CreateConnection();
             });
 
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
             services.AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb.AddPostgres()
                     .WithGlobalConnectionString("PostgresDB")
