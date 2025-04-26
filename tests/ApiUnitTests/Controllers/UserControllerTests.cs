@@ -108,7 +108,7 @@ namespace ApiUnitTests.Controllers
                 LastName = _testUser.LastName,
                 DateOfBirth = _testUser.DateOfBirth,
                 Info = _testUser.Info,
-                Email = _testUser.Email
+                Email = "qwerty@mail.ru"
             };
 
             _userServiceMock.Setup(x => x.Add(request))
@@ -154,7 +154,7 @@ namespace ApiUnitTests.Controllers
                 LastName = _testUser.LastName,
                 DateOfBirth = _testUser.DateOfBirth,
                 Info = _testUser.Info,
-                Email = _testUser.Email
+                Email = "_testUser@mail.ru"
             };
 
             // Act

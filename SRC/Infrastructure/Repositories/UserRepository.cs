@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Domain;
+using Infrastructure.Database.TypeMappings;
 using Infrastructure.Repositories.Interfaces;
 using Npgsql;
 
@@ -17,12 +18,12 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(User user)
         {
             var sql = @"
-                INSERT INTO users (name, last_name, date_of_birth, info, email)
-                VALUES (@Name, @LastName, @DateOfBirth, @Info, @Email)
+                INSERT INTO users (name, last_name, date_of_birth, info, email, password_hash, role)
+                VALUES (@Name, @LastName, @DateOfBirth, @Info, @Email, @PasswordHash, @Role::user_role)
                 RETURNING id;
             ";
 
-            var userId = await _connection.QuerySingleAsync<int>(sql, user);
+            var userId = await _connection.QuerySingleAsync<int>(sql, user.AsDapperParams());
 
             return userId;
         }
@@ -38,7 +39,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<User>> GetAll()
         {
             var sql = @"
-                SELECT id, name, last_name, date_of_birth, info, email
+                SELECT id, name, last_name, date_of_birth, info, email, password_hash, role
                 FROM users;
             ";
 
@@ -49,7 +50,7 @@ namespace Infrastructure.Repositories
         public async Task<User?> GetById(int id)
         {
             var sql = @"
-                SELECT id, name, last_name, date_of_birth, info, email
+                SELECT id, name, last_name, date_of_birth, info, email, role
                 FROM users
                 WHERE id = @Id;
             ";
@@ -66,21 +67,21 @@ namespace Infrastructure.Repositories
                     last_name = @LastName,
                     date_of_birth=@DateOfBirth,
                     info = @Info,
-                    email = @Email
+                    email = @Email,
+                    password_hash=@PasswordHash,
+                    role = @Role::user_role
                 WHERE id = @Id;
             ";
 
-            var affectedRows = await _connection.ExecuteAsync(sql, new
-            {
-                user.Name,
-                user.LastName,
-                user.DateOfBirth,
-                user.Info,
-                user.Email,
-                user.Id
-            });
+            var affectedRows = await _connection.QuerySingleAsync<int>(sql, user.AsDapperParams());
 
             return affectedRows > 0;
+        }
+        public async Task<User?> ReadByEmail(string email)
+        {
+            const string query = "SELECT id, name, last_name, date_of_birth, info, email, password_hash, role" +
+                " FROM users WHERE email = @Email";
+            return await _connection.QuerySingleOrDefaultAsync<User>(query, new { Email = email });
         }
     }
 }
