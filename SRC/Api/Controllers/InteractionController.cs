@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,7 +2,7 @@
 using Application.Responses;
 using Domain.Enums;
 
-namespace Application.Service
+namespace Application.Service.Interfaces
 {
     public interface IInteractionService
     {

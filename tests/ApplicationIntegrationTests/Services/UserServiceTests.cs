@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 

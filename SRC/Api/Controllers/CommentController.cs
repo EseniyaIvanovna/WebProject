@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

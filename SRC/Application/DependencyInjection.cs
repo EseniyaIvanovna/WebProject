@@ -1,5 +1,7 @@
 ﻿using Application.Mappings;
 using Application.Service;
+using Application.Service.Interfaces;
+using Application.Services.AttachmentService;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,8 @@ namespace Application
             services.AddScoped<IReactionService, ReactionService>();
             services.AddScoped<IInteractionService, InteractionService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddTransient<IAttachmentService, AttachmentService>();
+
 
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();

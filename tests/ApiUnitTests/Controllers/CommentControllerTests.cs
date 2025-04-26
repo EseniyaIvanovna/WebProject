@@ -3,7 +3,7 @@ using Application.Exceptions;
 using Application.Mappings;
 using Application.Requests;
 using Application.Responses;
-using Application.Service;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Bogus;
 using Domain;
