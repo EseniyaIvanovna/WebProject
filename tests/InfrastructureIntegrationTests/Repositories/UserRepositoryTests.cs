@@ -28,7 +28,7 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
         //var userId = await _userRepository.Create(user);
 
         // Act
-        var result = await _userRepository.GetById(userId);
+        var result = await _userRepository.GetById(user.Id);
 
         // Assert
         result.Should().NotBeNull();
