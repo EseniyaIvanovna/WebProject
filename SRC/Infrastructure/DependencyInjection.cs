@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Runner;
+﻿using Dapper;
+using FluentMigrator.Runner;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +32,8 @@ namespace Infrastructure
                 var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
                 return dataSource.CreateConnection();
             });
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb.AddPostgres()

@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class UserInMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();
@@ -43,7 +45,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(_users.AsEnumerable());
         }
 
+#pragma warning disable CS8613 // Допустимость значения NULL для ссылочных типов в возвращаемом типе не совпадает с явно реализованным членом.
         public Task<User> GetById(int Id)
+#pragma warning restore CS8613 // Допустимость значения NULL для ссылочных типов в возвращаемом типе не совпадает с явно реализованным членом.
         {
             var user = _users.First(u => u.Id == Id);
             return Task.FromResult(user);

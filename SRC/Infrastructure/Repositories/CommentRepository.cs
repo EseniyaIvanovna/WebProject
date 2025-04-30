@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             comment.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO comments (postId, userId, content, createdAt)
+                INSERT INTO comments (post_id, user_id, content, created_at)
                 VALUES (@PostId, @UserId, @Content, @CreatedAt)
                 RETURNING id;
             ";
@@ -42,25 +42,32 @@ namespace Infrastructure.Repositories
 
             return affectedRows > 0;
         }
+        public async Task DeleteByPostOwnerId(int userId)
+        {
+            await _connection.ExecuteAsync(
+            @"DELETE FROM comments 
+              WHERE post_id IN (SELECT id FROM posts WHERE user_id = @UserId)",
+            new { UserId = userId });
+        }
 
-        public async Task<Comment> GetById(int id)
+        public async Task<Comment?> GetById(int id)
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, post_id, user_id, content, created_at
                 FROM comments
                 WHERE id = @Id;
             ";
 
-            var comment = await _connection.QuerySingleAsync<Comment>(sql, new { Id = id });
+            var comment = await _connection.QuerySingleOrDefaultAsync<Comment>(sql, new { Id = id });
             return comment;
         }
 
         public async Task<IEnumerable<Comment>> GetByUserId(int userId)
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, post_id, user_id, content, created_at
                 FROM comments
-                WHERE userId = @UserId;
+                WHERE user_id = @UserId;
             ";
             var comments = await _connection.QueryAsync<Comment>(sql, new { UserId = userId });
 
@@ -87,7 +94,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Comment>> GetAll()
         {
             var sql = @"
-                SELECT id, postId, userId, content, createdAt
+                SELECT id, post_id, user_id, content, created_at
                 FROM comments;
             ";
 

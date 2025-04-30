@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class PostInMemoryRepository : IPostRepository
     {
         private readonly List<Post> _posts;
@@ -61,10 +63,12 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(_posts.AsEnumerable());
         }
 
-        public Task<Post> GetById(int Id)
+        public Task<Post?> GetById(int Id)
         {
             var post = _posts.First(p => p.Id == Id);
+#pragma warning disable CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
             return Task.FromResult(post);
+#pragma warning restore CS8619 // Допустимость значения NULL для ссылочных типов в значении не соответствует целевому типу.
         }
 
         public Task<bool> Update(Post post)
@@ -88,6 +92,11 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         }
 
         Task IPostRepository.DeleteByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<Post>> IPostRepository.GetByUserId(int userId)
         {
             throw new NotImplementedException();
         }

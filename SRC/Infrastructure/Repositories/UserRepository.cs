@@ -17,12 +17,12 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(User user)
         {
             var sql = @"
-                INSERT INTO users (name, lastname, dateOfBirth, info, email)
+                INSERT INTO users (name, last_name, date_of_birth, info, email)
                 VALUES (@Name, @LastName, @DateOfBirth, @Info, @Email)
                 RETURNING id;
             ";
 
-            var userId = await _connection.QuerySingleAsync(sql, user);
+            var userId = await _connection.QuerySingleAsync<int>(sql, user);
 
             return userId;
         }
@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<User>> GetAll()
         {
             var sql = @"
-                SELECT id, name, lastname, dateOfBirth, info, email
+                SELECT id, name, last_name, date_of_birth, info, email
                 FROM users;
             ";
 
@@ -46,15 +46,15 @@ namespace Infrastructure.Repositories
             return users;
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User?> GetById(int id)
         {
             var sql = @"
-                SELECT id, name, lastname, dateOfBirth, info, email
+                SELECT id, name, last_name, date_of_birth, info, email
                 FROM users
                 WHERE id = @Id;
             ";
 
-            var user = await _connection.QuerySingleAsync<User>(sql, new { Id = id });
+            var user = await _connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
             return user;
         }
 
@@ -63,8 +63,8 @@ namespace Infrastructure.Repositories
             var sql = @"
                 UPDATE users
                 SET name = @Name,
-                    lastname = @LastName,
-                    dateOfBirth = @DateOfBirth,
+                    last_name = @LastName,
+                    date_of_birth=@DateOfBirth,
                     info = @Info,
                     email = @Email
                 WHERE id = @Id;

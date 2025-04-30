@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Service
 {
@@ -12,11 +13,13 @@ namespace Application.Service
     {
         private readonly IInteractionRepository _interactionRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<InteractionService> _logger;
 
-        public InteractionService(IInteractionRepository interactionRepository, IMapper mapper)
+        public InteractionService(IInteractionRepository interactionRepository, IMapper mapper, ILogger<InteractionService> logger)
         {
             _interactionRepository = interactionRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int> Create(CreateInteractionRequest request)
@@ -25,7 +28,15 @@ namespace Application.Service
                 throw new ConflictApplicationException("Interaction between these users already exists");
 
             var interaction = _mapper.Map<Interaction>(request);
-            return await _interactionRepository.Create(interaction);
+            var interactionId = await _interactionRepository.Create(interaction);
+
+            _logger.LogInformation(
+                "Interaction created with id {Id} between users {User1Id} and {User2Id}",
+                interactionId,
+                request.User1Id,
+                request.User2Id);
+
+            return interactionId;
         }
 
         public async Task Delete(int id)
@@ -39,6 +50,10 @@ namespace Application.Service
             {
                 throw new EntityDeleteException("Interaction", id.ToString());
             }
+
+            _logger.LogInformation(
+                "Interaction successfully deleted with id {Id}",
+                id);
         }
 
         public async Task<InteractionResponse> GetById(int id)
@@ -46,19 +61,39 @@ namespace Application.Service
             var interaction = await _interactionRepository.GetById(id);
             if (interaction == null)
                 throw new NotFoundApplicationException($"Interaction {id} not found");
-            return _mapper.Map<InteractionResponse>(interaction);
+
+            var response = _mapper.Map<InteractionResponse>(interaction);
+
+            _logger.LogInformation(
+                "Interaction retrieved with id {Id}",
+                id);
+
+            return response;
         }
         
         public async Task<IEnumerable<InteractionResponse>> GetAll()
         {
             var interactions = await _interactionRepository.GetAll();
-            return _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
+            var responses = _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} interactions in total",
+                responses.Count());
+
+            return responses;
         }
        
         public async Task<IEnumerable<InteractionResponse>> GetByStatus(Status status)
         {
             var interactions = await _interactionRepository.GetByStatus(status);
-            return _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
+            var responses = _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} interactions with status {Status}",
+                responses.Count(),
+                status);
+
+            return responses;
         }
        
         public async Task Update(UpdateInteractionRequest request)
@@ -74,6 +109,11 @@ namespace Application.Service
             {
                 throw new EntityUpdateException("Interaction", request.Id.ToString());
             }
+
+            _logger.LogInformation(
+                "Interaction updated with id {Id} to status {Status}",
+                request.Id,
+                request.Status);
         }
     }
 }

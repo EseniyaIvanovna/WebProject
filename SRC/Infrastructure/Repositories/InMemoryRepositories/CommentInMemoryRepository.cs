@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Infrastructure.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Infrastructure.Repositories.InMemoryRepositories
 {
+    [ExcludeFromCodeCoverage]
     public class CommentInMemoryRepository : ICommentRepository
     {
         private readonly List<Comment> _comments = new List<Comment>();
@@ -17,49 +19,48 @@ namespace Infrastructure.Repositories.InMemoryRepositories
 
         public Task<int> Create(Comment comment)
         {
-            var existingComment = _comments.FirstOrDefault(c => c.Id == comment.Id);
+            var existingComment = _comments.FirstOrDefault(m => m.Id == comment.Id);
             if (existingComment != null)
             {
                 throw new InvalidOperationException("A comment with the same ID already exists.");
             }
             _comments.Add(comment);
-            return Task.FromResult(comment.Id); 
+            return Task.FromResult(comment.Id);
         }
 
-        public Task Delete(int id)
+        public Task<bool> Delete(int id)
         {
-            var comment = _comments.FirstOrDefault(c => c.Id == id);
-
-            if (comment == null) 
+            var comment = _comments.FirstOrDefault(m => m.Id == id);
+            if (comment == null)
+            {
                 return Task.FromResult(false);
-            
+            }
+
             _comments.Remove(comment);
             return Task.FromResult(true);
         }
 
-        public Task<Comment> GetById(int id)
+        public Task<Comment?> GetById(int id)
         {
-            var comment = _comments.First(c => c.Id == id);
-           
+            var comment = _comments.FirstOrDefault(m => m.Id == id);
             return Task.FromResult(comment);
         }
 
         public Task<IEnumerable<Comment>> GetByUserId(int userId)
         {
-            var comments = _comments.Where(c => c.UserId == userId);
+            var comments = _comments.Where(m => m.UserId == userId);
             return Task.FromResult(comments);
         }
 
-        public Task Update(Comment comment)
+        public Task<bool> Update(Comment comment)
         {
-            if (comment == null) 
+            if (comment == null)
                 throw new ArgumentNullException(nameof(comment));
-           
-            var existingComment = _comments.FirstOrDefault(c => c.Id == comment.Id);
 
-            if (existingComment == null) 
-                return Task.FromResult(false);            
-            
+            var existingComment = _comments.FirstOrDefault(m => m.Id == comment.Id);
+            if (existingComment == null)
+                return Task.FromResult(false);
+
             existingComment.Content = comment.Content;
             existingComment.UserId = comment.UserId;
             existingComment.PostId = comment.PostId;
@@ -93,12 +94,7 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.CompletedTask;
         }
 
-        Task<bool> ICommentRepository.Update(Comment comment)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> ICommentRepository.Delete(int id)
+        Task ICommentRepository.DeleteByPostOwnerId(int userId)
         {
             throw new NotImplementedException();
         }

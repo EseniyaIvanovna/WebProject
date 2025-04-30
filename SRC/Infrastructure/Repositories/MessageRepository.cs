@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             message.CreatedAt = DateTime.UtcNow;
 
             var sql = @"
-                INSERT INTO messages (senderId, receiverId, text, createdAt)
+                INSERT INTO messages (sender_id, receiver_id, text, created_at)
                 VALUES (@SenderId, @ReceiverId, @Text, @CreatedAt)
                 RETURNING id
             ";
@@ -49,21 +49,21 @@ namespace Infrastructure.Repositories
                 new { UserId = userId });
         }
 
-        public async Task<Message> GetById(int id)
+        public async Task<Message?> GetById(int id)
         {
             var sql = @"
-                SELECT id, senderId, receiverId, text, createdAt
+                SELECT id, sender_id, receiver_id, text, created_at
                 FROM messages
                 WHERE id = @Id;
             ";
-            var message = await _connection.QuerySingleAsync<Message>(sql, new { Id = id });
+            var message = await _connection.QuerySingleOrDefaultAsync<Message>(sql, new { Id = id });
 
             return message;
         }
 
         public async Task<IEnumerable<Message>> GetByUserId(int userId)
         {
-            var sql = "SELECT id, senderId, receiverId, text, createdAt FROM messages WHERE senderId = @UserId OR receiverId = @UserId";
+            var sql = @"SELECT id, sender_id, receiver_id, text, created_at FROM messages WHERE sender_id = @UserId OR receiver_id = @UserId";
             var messages = await _connection.QueryAsync<Message>(sql, new { UserId = userId });
 
             return messages;
@@ -89,7 +89,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Message>> GetAll()
         {
             var sql = @"
-                SELECT id, senderId, receiverId, text, createdAt
+                SELECT id, sender_id, receiver_id, text, created_at
                 FROM messages;
             ";
 
