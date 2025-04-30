@@ -22,7 +22,6 @@ namespace Application.Mappings
             CreateMap<User, UserResponse>();
 
             CreateMap<RegistrationRequest, User>();
-            CreateMap<User, RegistrationRequest>();
 
             CreateMap<CreateReactionRequest, Reaction>();
             CreateMap<UpdateReactionRequest, Reaction>();

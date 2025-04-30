@@ -91,17 +91,16 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
 
         var updatedUser = await _fixture.CreateUser();
-        updatedUser.Id = userId;
+        updatedUser.Id = user.Id;
 
         // Act
         var result = await _userRepository.Update(updatedUser);
 
         // Assert
         result.Should().BeTrue();
-        var retrievedUser = await _userRepository.GetById(userId);
+        var retrievedUser = await _userRepository.GetById(user.Id);
         retrievedUser.Should().NotBeNull();
         retrievedUser!.Name.Should().Be(updatedUser.Name);
         retrievedUser.Email.Should().Be(updatedUser.Email);

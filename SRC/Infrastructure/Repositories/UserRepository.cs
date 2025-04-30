@@ -65,15 +65,27 @@ namespace Infrastructure.Repositories
                 UPDATE users
                 SET name = @Name,
                     last_name = @LastName,
-                    date_of_birth=@DateOfBirth,
+                    date_of_birth = @DateOfBirth,
                     info = @Info,
                     email = @Email,
-                    password_hash=@PasswordHash,
+                    password_hash = @PasswordHash,
                     role = @Role::user_role
                 WHERE id = @Id;
             ";
 
-            var affectedRows = await _connection.QuerySingleAsync<int>(sql, user.AsDapperParams());
+            //var affectedRows = await _connection.QuerySingleOrDefaultAsync<int>(sql, user.AsDapperParams());
+
+            var affectedRows = await _connection.ExecuteAsync(sql, new
+            {
+                user.Name,
+                user.LastName,
+                user.DateOfBirth,
+                user.Info,
+                user.Email,
+                user.PasswordHash,
+                Role = user.Role.ToString(),
+                user.Id
+            });
 
             return affectedRows > 0;
         }

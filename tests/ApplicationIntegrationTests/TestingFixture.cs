@@ -1,5 +1,4 @@
 ﻿using Application;
-using Application.Services;
 using Bogus;
 using Domain;
 using FluentMigrator.Runner;
@@ -20,7 +19,6 @@ namespace ApplicationIntegrationTests
     {
         private readonly Faker _faker;
         private Respawner _respawner = null!;
-        private readonly IPasswordHasher _passwordHasher;
 
         public TestingFixture()
         {
@@ -87,7 +85,6 @@ namespace ApplicationIntegrationTests
                 DateOfBirth = _faker.Date.Past(),
                 Info = _faker.Lorem.Sentence(10),
                 Email = _faker.Internet.Email(),
-                PasswordHash = _passwordHasher.HashPassword(_faker.Internet.Password())
             };
 
             user.Id = await userRepository.Create(user);

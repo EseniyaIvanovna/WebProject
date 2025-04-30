@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase
@@ -24,7 +23,7 @@ public class UserController : ControllerBase
         var user = await _userService.GetById(id);
         return Ok(user);
     }
-
+    
     [HttpGet("userInfo")]
     public async Task<IActionResult> GetUserInfo()
     {
@@ -43,7 +42,8 @@ public class UserController : ControllerBase
         var users = await _userService.GetAll();
         return Ok(users);
     }
-    
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
@@ -57,7 +57,8 @@ public class UserController : ControllerBase
         await _userService.Update(request);
         return NoContent();
     }
-    
+
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     public async Task<IActionResult> DeleteUser(int id)
     {

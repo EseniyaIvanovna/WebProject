@@ -106,6 +106,12 @@ builder.Services.AddRateLimiter(options =>
         limiterOptions.Window = TimeSpan.FromMinutes(1); // 1-minute window
         limiterOptions.PermitLimit = 5; // Max 5 login attempts per minute
     });
+
+    options.AddFixedWindowLimiter("register", limiterOptions =>
+    {
+        limiterOptions.Window = TimeSpan.FromMinutes(10); 
+        limiterOptions.PermitLimit = 3; //Max 3 login attempts per 10 minute
+    });
 });
 
 var app = builder.Build();
