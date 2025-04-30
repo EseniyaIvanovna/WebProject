@@ -92,8 +92,8 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
         // Arrange
         var user = await _fixture.CreateUser();
 
-        var updatedUser = await _fixture.CreateUser();
-        updatedUser.Id = user.Id;
+        var updatedUser = user;
+        updatedUser.Info="updated info";
 
         // Act
         var result = await _userRepository.Update(updatedUser);
@@ -125,14 +125,14 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
+        //var userId = await _userRepository.Create(user);
 
         // Act
-        var result = await _userRepository.Delete(userId);
+        var result = await _userRepository.Delete(user.Id);
 
         // Assert
         result.Should().BeTrue();
-        var deletedUser = await _userRepository.GetById(userId);
+        var deletedUser = await _userRepository.GetById(user.Id);
         deletedUser.Should().BeNull();
     }
 
