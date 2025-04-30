@@ -10,7 +10,7 @@ namespace Application.Requests
         public DateTime DateOfBirth { get; set; }
         public string? Info { get; set; }
         public string? Email { get; set; }
-        public required string Password { get; set; }
+        public  string Password { get; set; }
     }
 
     public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
