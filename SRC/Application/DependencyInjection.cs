@@ -20,7 +20,7 @@ namespace Application
             services.AddScoped<IInteractionService, InteractionService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddTransient<IAuthService, AuthService>();
-            services.AddTransient<IPasswordHasher, BCryptHasher>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
 
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();

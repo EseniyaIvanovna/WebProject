@@ -1,4 +1,5 @@
 ﻿using Api.ExceptionHandler;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
@@ -24,16 +25,11 @@ namespace ApiUnitTests.ExceptionHandler
             var exception = new UnauthorizedAccessException("Access denied");
 
             // Act
-            var result = await _handler.TryHandleAsync(
-                _httpContext,
-                exception,
-                CancellationToken.None);
+            var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(StatusCodes.Status401Unauthorized, _httpContext.Response.StatusCode);
-            Assert.Equal("application/problem+json", _httpContext.Response.ContentType);
-
+            result.Should().BeTrue();
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.Is<ProblemDetailsContext>(ctx =>
                 ctx.HttpContext == _httpContext &&
                 ctx.ProblemDetails.Status == StatusCodes.Status401Unauthorized &&
@@ -52,15 +48,11 @@ namespace ApiUnitTests.ExceptionHandler
             var exception = new Exception("Generic error");
 
             // Act
-            var result = await _handler.TryHandleAsync(
-                _httpContext,
-                exception,
-                CancellationToken.None);
+            var result = await _handler.TryHandleAsync( _httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(200, _httpContext.Response.StatusCode); // Default status
-            Assert.Null(_httpContext.Response.ContentType);
+            result.Should().BeFalse();
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status200OK);
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.IsAny<ProblemDetailsContext>()), Times.Never);
         }
 

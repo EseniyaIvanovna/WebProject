@@ -68,6 +68,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
 builder.Services.AddExceptionHandler<DatabaseExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<UnauthorizedExceptionHandler>();
 
 
 builder.Services.AddInfrastructure();
