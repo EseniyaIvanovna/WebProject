@@ -37,16 +37,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-options.SwaggerDoc("v1", new OpenApiInfo { Title = "Network API", Version = "v1" });
-
-options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-{
-    Description = "Authorization: Bearer {token}",
-    Name = "Authorization",
-    In = ParameterLocation.Header,
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer"
-});
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Network API", Version = "v1" });
+    
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Authorization: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
      {

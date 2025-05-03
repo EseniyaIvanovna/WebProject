@@ -157,6 +157,8 @@ namespace ApiUnitTests.Controllers
                 Email = "_testUser@mail.ru"
             };
 
+
+
             // Act
             var result = await _controller.UpdateUser(request);
 

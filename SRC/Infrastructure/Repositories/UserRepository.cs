@@ -73,26 +73,14 @@ namespace Infrastructure.Repositories
                 WHERE id = @Id;
             ";
 
-            //var affectedRows = await _connection.QuerySingleOrDefaultAsync<int>(sql, user.AsDapperParams());
-
-            var affectedRows = await _connection.ExecuteAsync(sql, new
-            {
-                user.Name,
-                user.LastName,
-                user.DateOfBirth,
-                user.Info,
-                user.Email,
-                user.PasswordHash,
-                Role = user.Role.ToString(),
-                user.Id
-            });
+            var affectedRows = await _connection.ExecuteAsync(sql, user.AsDapperParams());
 
             return affectedRows > 0;
         }
+
         public async Task<User?> ReadByEmail(string email)
         {
-            const string query = "SELECT id, name, last_name, date_of_birth, info, email, password_hash, role" +
-                " FROM users WHERE email = @Email";
+            const string query = @"SELECT id, name, last_name, date_of_birth, info, email, password_hash, role FROM users WHERE email = @Email";
             return await _connection.QuerySingleOrDefaultAsync<User>(query, new { Email = email });
         }
     }

@@ -13,14 +13,8 @@ using System.Text;
 
 namespace Application.Service
 {
-    public class AuthService(IConfiguration configuration,
-        IMapper mapper,
-        IUserRepository userRepository,
-        IPasswordHasher hasher
-        )
-        : IAuthService
+    public class AuthService(IConfiguration configuration, IMapper mapper, IUserRepository userRepository, IPasswordHasher hasher) : IAuthService
     {
-
         public async Task<int> Register(RegistrationRequest request)
         {
             var user = mapper.Map<User>(request);
@@ -31,6 +25,7 @@ namespace Application.Service
 
             return userId;
         }
+
         public async Task<LoginResponse> Login(LoginRequest request)
         {
             var user = await userRepository.ReadByEmail(request.Email);
@@ -76,6 +71,5 @@ namespace Application.Service
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
     }
 }

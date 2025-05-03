@@ -25,7 +25,6 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        //var userId = await _userRepository.Create(user);
 
         // Act
         var result = await _userRepository.GetById(user.Id);
@@ -55,10 +54,8 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user1 = await _fixture.CreateUser();
-        //await _userRepository.Create(user1);
 
         var user2 = await _fixture.CreateUser();
-        //await _userRepository.Create(user2);
 
         // Act
         var users = (await _userRepository.GetAll()).ToList();
@@ -74,9 +71,6 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-
-        // Act
-        //var userId = await _userRepository.Create(user);
 
         // Assert
         user.Id.Should().BeGreaterThan(0);
@@ -125,7 +119,6 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        //var userId = await _userRepository.Create(user);
 
         // Act
         var result = await _userRepository.Delete(user.Id);

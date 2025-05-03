@@ -13,8 +13,7 @@ namespace Api.Controllers
     {
         [EnableRateLimiting("register")]
         [HttpPost("register")]
-        public async Task<IActionResult> Register(
-            [FromBody] RegistrationRequest request)
+        public async Task<IActionResult> Register([FromBody] RegistrationRequest request)
         {
             await authService.Register(request);
             return Created();
@@ -22,12 +21,10 @@ namespace Api.Controllers
 
         [EnableRateLimiting("login")]
         [HttpPost("login")]
-        public async Task<IActionResult> Login(
-            [FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var response = await authService.Login(request);
             return Ok(response);
         }
-
     }
 }
