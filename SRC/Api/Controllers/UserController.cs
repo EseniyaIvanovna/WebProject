@@ -55,12 +55,12 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
     {
-        //var currentUserId = User.GetUserId();
+        var currentUserId = User.GetUserId();
 
-        //if (!User.IsInRole("Admin") && currentUserId.Value != request.Id)
-        //{
-        //    throw new UnauthorizedAccessException();
-        //}
+        if (!User.IsInRole("Admin") && currentUserId.Value != request.Id)
+        {
+            throw new UnauthorizedAccessException();
+        }
 
         await _userService.Update(request);
         return NoContent();

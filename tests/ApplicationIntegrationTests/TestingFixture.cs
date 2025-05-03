@@ -98,7 +98,7 @@ namespace ApplicationIntegrationTests
 
             var post = new Post
             {
-                UserId = userId,
+                UserId = userId,                
                 Text = _faker.Lorem.Sentence(10),
                 CreatedAt = DateTime.UtcNow
             };
