@@ -57,7 +57,7 @@ public class UserController : ControllerBase
     {
         var currentUserId = User.GetUserId();
 
-        if (!User.IsInRole("Admin") && currentUserId.Value != request.Id)
+        if (!User.IsInRole("Admin") && (currentUserId==null || currentUserId.Value != request.Id))
         {
             throw new UnauthorizedAccessException();
         }
