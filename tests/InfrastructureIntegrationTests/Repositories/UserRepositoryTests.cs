@@ -25,14 +25,13 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
 
         // Act
-        var result = await _userRepository.GetById(userId);
+        var result = await _userRepository.GetById(user.Id);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Id.Should().Be(userId);
+        result!.Id.Should().Be(user.Id);
         result.Name.Should().Be(user.Name);
         result.Email.Should().Be(user.Email);
     }
@@ -55,10 +54,8 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user1 = await _fixture.CreateUser();
-        await _userRepository.Create(user1);
 
         var user2 = await _fixture.CreateUser();
-        await _userRepository.Create(user2);
 
         // Act
         var users = (await _userRepository.GetAll()).ToList();
@@ -75,12 +72,9 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
         // Arrange
         var user = await _fixture.CreateUser();
 
-        // Act
-        var userId = await _userRepository.Create(user);
-
         // Assert
-        userId.Should().BeGreaterThan(0);
-        var createdUser = await _userRepository.GetById(userId);
+        user.Id.Should().BeGreaterThan(0);
+        var createdUser = await _userRepository.GetById(user.Id);
         createdUser.Should().NotBeNull();
         createdUser!.Name.Should().Be(user.Name);
         createdUser.Email.Should().Be(user.Email);
@@ -91,17 +85,16 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
 
-        var updatedUser = await _fixture.CreateUser();
-        updatedUser.Id = userId;
+        var updatedUser = user;
+        updatedUser.Info="updated info";
 
         // Act
         var result = await _userRepository.Update(updatedUser);
 
         // Assert
         result.Should().BeTrue();
-        var retrievedUser = await _userRepository.GetById(userId);
+        var retrievedUser = await _userRepository.GetById(user.Id);
         retrievedUser.Should().NotBeNull();
         retrievedUser!.Name.Should().Be(updatedUser.Name);
         retrievedUser.Email.Should().Be(updatedUser.Email);
@@ -126,14 +119,13 @@ public class UserRepositoryTests : IClassFixture<TestingFixture>
     {
         // Arrange
         var user = await _fixture.CreateUser();
-        var userId = await _userRepository.Create(user);
 
         // Act
-        var result = await _userRepository.Delete(userId);
+        var result = await _userRepository.Delete(user.Id);
 
         // Assert
         result.Should().BeTrue();
-        var deletedUser = await _userRepository.GetById(userId);
+        var deletedUser = await _userRepository.GetById(user.Id);
         deletedUser.Should().BeNull();
     }
 

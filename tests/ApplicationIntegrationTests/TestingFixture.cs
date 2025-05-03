@@ -84,7 +84,7 @@ namespace ApplicationIntegrationTests
                 LastName = _faker.Name.LastName(),
                 DateOfBirth = _faker.Date.Past(),
                 Info = _faker.Lorem.Sentence(10),
-                Email = _faker.Internet.Email()
+                Email = _faker.Internet.Email(),
             };
 
             user.Id = await userRepository.Create(user);
@@ -98,7 +98,7 @@ namespace ApplicationIntegrationTests
 
             var post = new Post
             {
-                UserId = userId,
+                UserId = userId,                
                 Text = _faker.Lorem.Sentence(10),
                 CreatedAt = DateTime.UtcNow
             };

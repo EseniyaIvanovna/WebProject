@@ -1,5 +1,4 @@
-﻿using Dapper;
-using FluentMigrator.Runner;
+﻿using FluentMigrator.Runner;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;

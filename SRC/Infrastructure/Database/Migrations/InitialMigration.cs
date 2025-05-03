@@ -13,7 +13,7 @@ namespace Infrastructure.Database.Migrations
                 .WithColumn("last_name").AsString(ValidationConstants.MaxLastNameLength).NotNullable()
                 .WithColumn("date_of_birth").AsDateTime().NotNullable()
                 .WithColumn("info").AsString(ValidationConstants.MaxUserInfoLength)
-                .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable();
+                .WithColumn("email").AsString(ValidationConstants.MaxEmailLength).NotNullable().Unique();
 
             Create.Table("posts")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
@@ -48,8 +48,8 @@ namespace Infrastructure.Database.Migrations
                .WithColumn("status").AsString().NotNullable();
 
             Insert.IntoTable("users")
-                .Row(new { name = "John", last_name = "Doe", date_of_birth = "2000-01-01", info = "Software Engineer", email = "john.doe@example.com" })
-                .Row(new { name = "Jane", last_name = "Smith", date_of_birth = "2003-10-01", info = "Data Scientist", email = "jane.smith@example.com" });
+                .Row(new { name = "John", last_name = "Doe", date_of_birth = "2000-01-01", info = "Software Engineer", email = "john1.doe@example.com" })
+                .Row(new { name = "Jane", last_name = "Smith", date_of_birth = "2003-10-01", info = "Data Scientist", email = "jane1.smith@example.com" });
 
             Insert.IntoTable("posts")
                 .Row(new { user_id = 1, text = "First post by John", created_at = DateTime.UtcNow })

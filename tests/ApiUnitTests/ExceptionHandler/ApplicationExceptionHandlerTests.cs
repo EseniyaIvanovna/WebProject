@@ -44,8 +44,8 @@ namespace ApiUnitTests.ExceptionHandler
             var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(StatusCodes.Status404NotFound, _httpContext.Response.StatusCode);
+            result.Should().BeTrue();
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status404NotFound);
         }
     }
 }

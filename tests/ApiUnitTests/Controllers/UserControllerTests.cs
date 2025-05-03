@@ -5,8 +5,10 @@ using Application.Responses;
 using Application.Service;
 using Bogus;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Security.Claims;
 
 namespace ApiUnitTests.Controllers
 {
@@ -108,7 +110,7 @@ namespace ApiUnitTests.Controllers
                 LastName = _testUser.LastName,
                 DateOfBirth = _testUser.DateOfBirth,
                 Info = _testUser.Info,
-                Email = _testUser.Email
+                Email = "qwerty@mail.ru"
             };
 
             _userServiceMock.Setup(x => x.Add(request))
@@ -150,12 +152,22 @@ namespace ApiUnitTests.Controllers
             var request = new UpdateUserRequest
             {
                 Id = _testUser.Id,
-                Name = _testUser.Name,
+                Name = "Updated Name",
                 LastName = _testUser.LastName,
                 DateOfBirth = _testUser.DateOfBirth,
                 Info = _testUser.Info,
-                Email = _testUser.Email
+                Email = "_testUser@mail.ru"
             };
+
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _testUser.Id.ToString()), }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
+            _userServiceMock.Setup(x => x.Update(request))
+                   .Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.UpdateUser(request);
@@ -169,11 +181,21 @@ namespace ApiUnitTests.Controllers
         public async Task UpdateUser_NonExistingUser_ShouldThrowNotFoundApplicationException()
         {
             // Arrange
+            var currentUserId = 1;
             var request = new UpdateUserRequest
             {
+                Id = currentUserId,
                 Name = "Bad",
                 LastName = "Request"
-            }; 
+            };
+
+            var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, currentUserId.ToString()), }));
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = userClaims }
+            };
+
             _userServiceMock.Setup(x => x.Update(request))
                 .ThrowsAsync(new NotFoundApplicationException($"User {request.Id} not found"));
 

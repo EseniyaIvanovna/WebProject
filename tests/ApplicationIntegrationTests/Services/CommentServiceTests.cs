@@ -83,11 +83,11 @@ public class CommentServiceTests : IClassFixture<TestingFixture>
         // Arrange
         var user = await _fixture.CreateUser();
         var post1 = await _fixture.CreatePost(user.Id);
-        var request1 = new CreateCommentRequest 
-        { 
-            Content = "Comment 1", 
-            UserId = user.Id, 
-            PostId = post1.Id 
+        var request1 = new CreateCommentRequest
+        {
+            Content = "Comment 1",
+            UserId = user.Id,
+            PostId = post1.Id
         };
         await _commentService.Create(request1);
 
