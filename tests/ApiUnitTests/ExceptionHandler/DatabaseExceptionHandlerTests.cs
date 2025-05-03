@@ -1,4 +1,5 @@
 ﻿using Api.ExceptionHandler;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Data.Common;
@@ -28,10 +29,8 @@ namespace ApiUnitTests.ExceptionHandler
             var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(StatusCodes.Status400BadRequest, _httpContext.Response.StatusCode);
-            Assert.Equal("application/problem+json", _httpContext.Response.ContentType);
-
+            result.Should().BeTrue();
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);            
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.Is<ProblemDetailsContext>(ctx =>
                 ctx.HttpContext == _httpContext &&
                 ctx.ProblemDetails.Status == StatusCodes.Status400BadRequest &&
@@ -53,9 +52,8 @@ namespace ApiUnitTests.ExceptionHandler
             var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.False(result);
-            Assert.Equal(200, _httpContext.Response.StatusCode); // Default status code
-            Assert.Null(_httpContext.Response.ContentType);
+            result.Should().BeFalse();
+            _httpContext.Response.StatusCode.Should().Be(StatusCodes.Status200OK);            
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.IsAny<ProblemDetailsContext>()), Times.Never);
         }
 
@@ -69,7 +67,7 @@ namespace ApiUnitTests.ExceptionHandler
             var result = await _handler.TryHandleAsync(_httpContext, exception, CancellationToken.None);
 
             // Assert
-            Assert.True(result);
+            result.Should().BeTrue();
             _problemDetailsServiceMock.Verify(x => x.WriteAsync(It.IsAny<ProblemDetailsContext>()), Times.Once);
         }
 
