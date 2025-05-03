@@ -19,7 +19,7 @@ namespace ApplicationIntegrationTests.Services
         public void VerifyPassword_NullStoredHash_ShouldReturnFalse(string password)
         {
             // Act
-            var result = _passwordHasher.VerifyPassword("password", null);
+            var result = _passwordHasher.VerifyPassword("password", password);
 
             // Assert
             result.Should().BeFalse();
