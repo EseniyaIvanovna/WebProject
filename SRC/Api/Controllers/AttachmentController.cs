@@ -22,19 +22,12 @@ public class AttachmentsController(IAttachmentService attachmentService)
     [HttpGet("{id}/download")]
     public async Task<IActionResult> Download(int id)
     {
-        try
-        {
-            var file = await attachmentService.GetMetadataAsync(id);
-            if (file == null)
-                return NotFound();
-
-            var bytes = await attachmentService.GetFileContentAsync(id);
-            return File(bytes, file.ContentType, file.FileName);
-        }
-        catch (FileNotFoundException)
-        {
+        var file = await attachmentService.GetMetadataAsync(id);
+        if (file == null)
             return NotFound();
-        }
+
+        var bytes = await attachmentService.GetFileContentAsync(id);
+        return File(bytes, file.ContentType, file.FileName);
     }
 
     [HttpGet("{id}/meta")]
@@ -50,15 +43,8 @@ public class AttachmentsController(IAttachmentService attachmentService)
     [HttpGet("{id}/link")]
     public async Task<IActionResult> GetLink(int id)
     {
-        try
-        {
-            var link = await attachmentService.GetPublicLinkAsync(id);
+         var link = await attachmentService.GetPublicLinkAsync(id);
             return Ok(new { url = link });
-        }
-        catch (FileNotFoundException)
-        {
-            return NotFound();
-        }
     }
 
     [HttpDelete("{id}")]
