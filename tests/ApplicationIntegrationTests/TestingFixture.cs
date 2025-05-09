@@ -5,9 +5,11 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Processors;
 using Infrastructure;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Moq;
 using Npgsql;
 using Respawn;
 using System.Reflection;
@@ -28,6 +30,9 @@ namespace ApplicationIntegrationTests
                 {
                     services.AddInfrastructure();
                     services.AddApplication();
+                    var mockEnv = new Mock<IWebHostEnvironment>();
+                    mockEnv.Setup(m => m.ContentRootPath).Returns(Path.Combine(Directory.GetCurrentDirectory(), "TestStorage"));
+                    services.AddSingleton(mockEnv.Object);
                     var connectionString = context.Configuration.GetConnectionString("PostgresDBIntegration");
                     if (string.IsNullOrWhiteSpace(connectionString))
                         throw new ApplicationException("PostgresDBIntegration connection string is empty");

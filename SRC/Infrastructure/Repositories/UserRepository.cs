@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
         public async Task<int> Create(User user)
         {
             var sql = @"
-                INSERT INTO users (name, last_name, date_of_birth, info, email, password_hash, role)
+                INSERT INTO users (name, last_name, date_of_birth, info, email, password_hash, role, photo_attachment_id)
                 VALUES (@Name, @LastName, @DateOfBirth, @Info, @Email, @PasswordHash, @Role::user_role, @PhotoAttachmentId)
                 RETURNING id;
             ";
