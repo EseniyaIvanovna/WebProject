@@ -36,7 +36,7 @@ namespace Application.Service
             IMapper mapper,
             ILogger<UserService> logger,
             IPasswordHasher passwordHasher,
-             IAttachmentService attachmentService)
+            IAttachmentService attachmentService)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -56,9 +56,9 @@ namespace Application.Service
             var user = new User()
             {
                 Name = request.Name,
-                LastName=request.LastName,
-                Info=request.Info,
-                DateOfBirth=request.DateOfBirth,
+                LastName = request.LastName,
+                Info = request.Info,
+                DateOfBirth = request.DateOfBirth,
                 Email = request.Email,
                 PasswordHash = _passwordHasher.HashPassword(request.Password),
                 Role = UserRoles.User,
@@ -136,7 +136,6 @@ namespace Application.Service
                     .GetPublicLinkAsync(response.PhotoAttachmentId.Value);
                 response.PhotoAttachmentUrl = attachmentUrl;
             }
-
 
             _logger.LogInformation(
                 "User retrieved with id {Id}",
