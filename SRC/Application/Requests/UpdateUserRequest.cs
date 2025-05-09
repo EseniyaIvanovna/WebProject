@@ -11,6 +11,9 @@ namespace Application.Requests
         public DateTime DateOfBirth { get; set; }
         public string? Info { get; set; }
         public string? Email { get; set; }
+        public string? Password { get; set; }
+        public int? PhotoAttachmentId { get; set; }
+        public string? PhotoAttachmentUrl { get; set; }
     }
 
     public class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
@@ -39,6 +42,11 @@ namespace Application.Requests
             RuleFor(x => x.Email)
                 .MaximumLength(ValidationConstants.MaxEmailLength).WithMessage("Email has length more then 50")
                 .EmailAddress().WithMessage("It does not look like email");
+
+            RuleFor(r => r.Password)
+               .NotEmpty().WithMessage("Пароль обязателен")
+               .MinimumLength(8).WithMessage("Пароль должен содержать минимум 8 символов")
+               .MaximumLength(32).WithMessage("Пароль не должен превышать 32 символа");
         }
     }
 }

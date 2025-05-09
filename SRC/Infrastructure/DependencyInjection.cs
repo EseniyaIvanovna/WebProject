@@ -1,5 +1,4 @@
-﻿using Dapper;
-using FluentMigrator.Runner;
+﻿using FluentMigrator.Runner;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +18,7 @@ namespace Infrastructure
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IReactionRepository, ReactionRepository>();
             services.AddScoped<IInteractionRepository, InteractionRepository>();
+            services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
             services.AddSingleton(sp =>
             {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Services.FileStorageService;
+namespace Application.Service.FileStorageService;
 
 public class FileStorageService(IWebHostEnvironment environment) : IFileStorageService
 {

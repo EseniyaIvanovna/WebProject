@@ -10,9 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\SRC\Api\appsettings.json" Link="appsettings.json">
+    <AdditionalFiles Include="..\..\SRC\Api\appsettings.Development.json" Link="appsettings.Development.json" />
+    <AdditionalFiles Include="..\..\SRC\Api\appsettings.json" Link="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </AdditionalFiles>
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,12 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="IntegrationTestsCollection.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
 </Project>

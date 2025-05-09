@@ -70,5 +70,9 @@ namespace Infrastructure.Repositories.InMemoryRepositories
             return Task.FromResult(true);
         }
 
+        Task<User?> IUserRepository.ReadByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

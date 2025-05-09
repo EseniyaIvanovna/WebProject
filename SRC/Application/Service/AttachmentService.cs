@@ -3,7 +3,7 @@ using Domain.Entities;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Services.AttachmentService;
+namespace Application.Service.AttachmentService;
 
 public class AttachmentService(
     IAttachmentRepository repository,

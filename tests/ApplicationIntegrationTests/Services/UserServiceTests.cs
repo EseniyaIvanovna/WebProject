@@ -28,7 +28,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "Doe",
             DateOfBirth = DateTime.Now.AddYears(-20),
             Info = "Test info 1",
-            Email = "john@example.com"
+            Email = "john@example.com",
+            Password="12345678"
         };
         await _userService.Add(request1);
 
@@ -38,7 +39,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "Smith",
             DateOfBirth = DateTime.Now.AddYears(-25),
             Info = "Test info 2",
-            Email = "jane@example.com"
+            Email = "jane@example.com",
+            Password = "12345678"
         };
         await _userService.Add(request2);
 
@@ -59,7 +61,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "User",
             DateOfBirth = DateTime.Now.AddYears(-30),
             Info = "Test info",
-            Email = "test@example.com"
+            Email = "test@example.com",
+            Password = "12345678"
         };
         var userId = await _userService.Add(request);
 
@@ -86,7 +89,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "User",
             DateOfBirth = DateTime.Now.AddYears(-22),
             Info = "New user info",
-            Email = "new@example.com"
+            Email = "new@example.com",
+            Password= "123456789"
         };
 
         // Act
@@ -113,7 +117,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "User",
             DateOfBirth = DateTime.Now.AddYears(-25),
             Info = "Original info",
-            Email = "original@example.com"
+            Email = "original@mail.com",
+            Password = "12345678"
         };
         var userId = await _userService.Add(createRequest);
 
@@ -124,7 +129,8 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             LastName = "User",
             DateOfBirth = DateTime.Now.AddYears(-26),
             Info = "Updated info",
-            Email = "updated@example.com"
+            Email = "updated@example.com",
+            Password = "12345678"
         };
 
         // Act
