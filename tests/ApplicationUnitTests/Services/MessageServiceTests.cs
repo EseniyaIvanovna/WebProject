@@ -1,6 +1,7 @@
 ﻿using Application.Mappings;
 using Application.Requests;
 using Application.Service;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Bogus;
 using Domain;

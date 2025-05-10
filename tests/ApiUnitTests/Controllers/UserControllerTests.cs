@@ -2,7 +2,7 @@
 using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
-using Application.Service;
+using Application.Service.Interfaces;
 using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;

@@ -11,6 +11,8 @@ namespace Application.Requests
         public string? Info { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public int? PhotoAttachmentId { get; set; }
+        public string? PhotoAttachmentUrl { get; set; }
     }
 
     public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>

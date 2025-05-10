@@ -1,6 +1,6 @@
 ﻿using Api.Controllers;
 using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Bogus;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

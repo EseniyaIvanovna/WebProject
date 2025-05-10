@@ -9,6 +9,8 @@
         public int Age => CalculateAge(DateOfBirth);
         public required string Info { get; set; }
         public required string Email { get; set; }
+        public int? PhotoAttachmentId { get; set; }
+        public string? PhotoAttachmentUrl { get; set; }
 
         private static int CalculateAge(DateTime dateOfBirth)
         {

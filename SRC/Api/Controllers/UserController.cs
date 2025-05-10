@@ -1,6 +1,6 @@
 using Api.Extensions;
 using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

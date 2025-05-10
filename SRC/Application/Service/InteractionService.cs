@@ -1,6 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Domain;
 using Domain.Enums;

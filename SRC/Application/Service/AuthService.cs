@@ -1,6 +1,6 @@
 ﻿using Application.Requests;
 using Application.Responses;
-using Application.Services;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Domain;
 using Domain.Enums;

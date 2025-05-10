@@ -11,6 +11,7 @@ namespace Domain
         public required string? Info { get; set; }
         public required string? Email { get; set; }
         public string? PasswordHash { get; set; }
+        public int? PhotoAttachmentId { get; set; }
         public UserRoles Role { get; set; }
     }
 }
