@@ -110,6 +110,18 @@ namespace Application.Service
             return response;
         }
 
+        public async Task<IEnumerable<PostResponse>> GetByUserId(int id)
+        {
+            var posts = await _postRepository.GetByUserId(id);
+            var responses = _mapper.Map<IEnumerable<PostResponse>>(posts);
+
+            _logger.LogInformation(
+                "Retrieved {Count} posts in total",
+                responses.Count());
+
+            return responses;
+        }
+
         public async Task Update(UpdatePostRequest request)
         {
             var existingPost = await _postRepository.GetById(request.Id);

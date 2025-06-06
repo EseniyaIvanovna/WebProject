@@ -29,6 +29,13 @@ public class PostController : ControllerBase
         return Ok(post);
     }
 
+    [HttpGet("byUser {id}")]
+    public async Task<IActionResult> GetByUserId(int id)
+    {
+        var posts = await _postService.GetByUserId(id);
+        return Ok(posts);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAllPosts()
     {
