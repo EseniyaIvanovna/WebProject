@@ -47,7 +47,7 @@ namespace Application.Service
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.GivenName, user.Name ?? string.Empty),
                 new Claim(ClaimTypes.Surname, user.LastName ?? string.Empty),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString() ?? nameof (UserRoles.User)),
                 new Claim(ClaimTypes.DateOfBirth, user.DateOfBirth.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
            }, "HttponlyAuth");

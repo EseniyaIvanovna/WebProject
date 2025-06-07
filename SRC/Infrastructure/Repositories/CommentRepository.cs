@@ -74,6 +74,18 @@ namespace Infrastructure.Repositories
             return comments;
         }
 
+        public async Task<IEnumerable<Comment>> GetByPostId(int postId)
+        {
+            var sql = @"
+                SELECT id, post_id, user_id, content, created_at
+                FROM comments
+                WHERE post_id = @PostId;
+            ";
+            var comments = await _connection.QueryAsync<Comment>(sql, new { PostId = postId });
+
+            return comments;
+        }
+
         public async Task<bool> Update(Comment comment)
         {
             var sql = @"

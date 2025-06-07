@@ -35,6 +35,12 @@ public class CommentController : ControllerBase
         var comments = await _commentService.GetByUserId(userId);
         return Ok(comments);
     }
+    [HttpGet("ByPost/{postId}")]
+    public async Task<IActionResult> GetCommentsByPostId(int postId)
+    {
+        var comments = await _commentService.GetByPostId(postId);
+        return Ok(comments);
+    }
 
     [HttpPut]
     public async Task<IActionResult> UpdateComment([FromBody] UpdateCommentRequest request)

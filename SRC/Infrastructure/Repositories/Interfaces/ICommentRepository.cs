@@ -5,6 +5,7 @@ namespace Infrastructure.Repositories.Interfaces
     public interface ICommentRepository
     {
         public Task<IEnumerable<Comment>> GetByUserId(int id);
+        public Task<IEnumerable<Comment>> GetByPostId(int id);
         public Task<Comment?> GetById(int Id);
         public Task<int> Create(Comment comment);
         public Task<bool> Update(Comment comment);
