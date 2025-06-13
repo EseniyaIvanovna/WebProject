@@ -82,7 +82,7 @@ builder.Services.AddAuthentication("HttponlyAuth")
     {
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SameSite = SameSiteMode.None;
         options.Cookie.Name = "auth_token";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     });
@@ -108,7 +108,7 @@ builder.Services.AddCors(
     {
         options.AddPolicy("AllowLocalhost", policy =>
         {
-            policy.WithOrigins("localhost", "http://localhost:3000")
+            policy.WithOrigins("localhost", "http://localhost:3000", "https://localhost:3000")
             .AllowAnyMethod()
             .AllowCredentials()
             .AllowAnyHeader();

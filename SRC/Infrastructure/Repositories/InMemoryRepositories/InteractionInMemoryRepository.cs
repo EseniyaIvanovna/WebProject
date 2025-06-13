@@ -86,5 +86,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         {
             throw new NotImplementedException();
         }
+
+        Task<IEnumerable<Interaction>> IInteractionRepository.GetByUserId(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
         public async Task<User?> GetById(int id)
         {
             var sql = @"
-                SELECT id, name, last_name, date_of_birth, info, email, role
+                SELECT id, name, last_name, date_of_birth, info, email, role, password_hash, photo_attachment_id
                 FROM users
                 WHERE id = @Id;
             ";

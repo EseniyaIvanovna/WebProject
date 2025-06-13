@@ -155,7 +155,8 @@ namespace Application.Service
             existingUser.Info = request.Info;
             existingUser.DateOfBirth = request.DateOfBirth;
             existingUser.Email = request.Email;
-            existingUser.PasswordHash = _passwordHasher.HashPassword(request.Password);
+            existingUser.PhotoAttachmentId = request.PhotoAttachmentId;
+
 
             var result = await _userRepository.Update(existingUser);
             if(result == false)

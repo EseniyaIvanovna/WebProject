@@ -96,7 +96,20 @@ namespace Application.Service
 
             return responses;
         }
-       
+
+        public async Task<IEnumerable<InteractionResponse>> GetByUserId(int id)
+        {
+            var interactions = await _interactionRepository.GetByUserId(id);
+            var responses = _mapper.Map<IEnumerable<InteractionResponse>>(interactions);
+
+            _logger.LogInformation(
+                "Retrieved {Count} interactions from user {id}",
+                responses.Count(),
+                id);
+
+            return responses;
+        }
+
         public async Task Update(UpdateInteractionRequest request)
         {
             var existingInteraction = await _interactionRepository.GetById(request.Id);

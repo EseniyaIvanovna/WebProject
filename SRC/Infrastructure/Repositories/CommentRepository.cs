@@ -116,14 +116,14 @@ namespace Infrastructure.Repositories
 
         public async Task DeleteByPostId(int postId)
         {
-            var sql = "DELETE FROM comments WHERE postId = @PostId";
+            var sql = "DELETE FROM comments WHERE post_id = @PostId";
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
         public async Task DeleteByUserId(int userId)
         {
             await _connection.ExecuteAsync(
-                "DELETE FROM comments WHERE userId = @UserId",
+                "DELETE FROM comments WHERE user_id = @UserId",
                 new { UserId = userId });
         }
     }

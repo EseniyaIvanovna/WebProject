@@ -57,6 +57,11 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
+            if (_connection.State != System.Data.ConnectionState.Open)
+            {
+                await _connection.OpenAsync();
+            }
+
             await using var tran = await _connection.BeginTransactionAsync();
 
             try

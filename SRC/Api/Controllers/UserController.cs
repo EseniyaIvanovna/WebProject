@@ -23,7 +23,7 @@ public class UserController : ControllerBase
         var user = await _userService.GetById(id);
         return Ok(user);
     }
-    
+
     [HttpGet("userInfo")]
     public async Task<IActionResult> GetUserInfo()
     {
@@ -32,7 +32,13 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
+
         var user = await _userService.GetById(userId.Value);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
         return Ok(user);
     }
 
