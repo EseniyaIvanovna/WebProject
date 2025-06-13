@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -27,6 +27,13 @@ public class PostController : ControllerBase
     {
         var post = await _postService.GetById(id);
         return Ok(post);
+    }
+
+    [HttpGet("byUser{id}")]
+    public async Task<IActionResult> GetByUserId(int id)
+    {
+        var posts = await _postService.GetByUserId(id);
+        return Ok(posts);
     }
 
     [HttpGet]

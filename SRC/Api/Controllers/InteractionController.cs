@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +36,14 @@ public class InteractionController : ControllerBase
         var interactions = await _interactionService.GetByStatus(status);
         return Ok(interactions);
     }
-    
+
+    [HttpGet("ByUserId/{id}")]
+    public async Task<IActionResult> GetInteractionsByUserId(int id)
+    {
+        var interactions = await _interactionService.GetByUserId(id);
+        return Ok(interactions);
+    }
+
     [HttpPut]
     public async Task<IActionResult> UpdateInteraction([FromBody] UpdateInteractionRequest request)
     {

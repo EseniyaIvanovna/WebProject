@@ -1,6 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -56,6 +57,11 @@ namespace Application.Service
 
         public async Task Delete(int id)
         {
+            if (_connection.State != System.Data.ConnectionState.Open)
+            {
+                await _connection.OpenAsync();
+            }
+
             await using var tran = await _connection.BeginTransactionAsync();
 
             try
@@ -107,6 +113,18 @@ namespace Application.Service
                 id);
 
             return response;
+        }
+
+        public async Task<IEnumerable<PostResponse>> GetByUserId(int id)
+        {
+            var posts = await _postRepository.GetByUserId(id);
+            var responses = _mapper.Map<IEnumerable<PostResponse>>(posts);
+
+            _logger.LogInformation(
+                "Retrieved {Count} posts in total",
+                responses.Count());
+
+            return responses;
         }
 
         public async Task Update(UpdatePostRequest request)

@@ -65,6 +65,18 @@ namespace Infrastructure.Repositories
             return interactions;
         }
 
+        public async Task<IEnumerable<Interaction>> GetByUserId(int id)
+        {
+            var sql = @"
+                SELECT id, user1_id, user2_id, status
+                FROM interactions
+                WHERE user1_id = @Id OR user2_id = @Id;
+            ";
+
+            var interactions = await _connection.QueryAsync<Interaction>(sql, new { Id = id});
+            return interactions;
+        }
+
         public async Task<bool> Update(Interaction interaction)
         {
             var sql = @"

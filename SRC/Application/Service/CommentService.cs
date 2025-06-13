@@ -1,6 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Domain;
 using Infrastructure.Repositories.Interfaces;
@@ -108,7 +109,19 @@ namespace Application.Service
 
             return responses;
         }
-   
+        public async Task<IEnumerable<CommentResponse>> GetByPostId(int postId)
+        {
+            var comments = await _commentRepository.GetByPostId(postId);
+            var responses = _mapper.Map<IEnumerable<CommentResponse>>(comments);
+
+            _logger.LogInformation(
+                "Retrieved {Count} comments for post {PostId}",
+                responses.Count(),
+                postId);
+
+            return responses;
+        }
+
         public async Task<IEnumerable<CommentResponse>> GetAll()
         {
             var comments = await _commentRepository.GetAll();

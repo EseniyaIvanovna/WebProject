@@ -74,6 +74,18 @@ namespace Infrastructure.Repositories
             return comments;
         }
 
+        public async Task<IEnumerable<Comment>> GetByPostId(int postId)
+        {
+            var sql = @"
+                SELECT id, post_id, user_id, content, created_at
+                FROM comments
+                WHERE post_id = @PostId;
+            ";
+            var comments = await _connection.QueryAsync<Comment>(sql, new { PostId = postId });
+
+            return comments;
+        }
+
         public async Task<bool> Update(Comment comment)
         {
             var sql = @"
@@ -104,14 +116,14 @@ namespace Infrastructure.Repositories
 
         public async Task DeleteByPostId(int postId)
         {
-            var sql = "DELETE FROM comments WHERE postId = @PostId";
+            var sql = "DELETE FROM comments WHERE post_id = @PostId";
             await _connection.ExecuteAsync(sql, new { PostId = postId });
         }
 
         public async Task DeleteByUserId(int userId)
         {
             await _connection.ExecuteAsync(
-                "DELETE FROM comments WHERE userId = @UserId",
+                "DELETE FROM comments WHERE user_id = @UserId",
                 new { UserId = userId });
         }
     }

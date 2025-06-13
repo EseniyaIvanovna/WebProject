@@ -1,5 +1,5 @@
 ﻿using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -33,6 +33,12 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetCommentsByUserId(int userId)
     {
         var comments = await _commentService.GetByUserId(userId);
+        return Ok(comments);
+    }
+    [HttpGet("ByPost/{postId}")]
+    public async Task<IActionResult> GetCommentsByPostId(int postId)
+    {
+        var comments = await _commentService.GetByPostId(postId);
         return Ok(comments);
     }
 

@@ -1,7 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.Requests;
 using Application.Responses;
-using Application.Services;
+using Application.Service.Interfaces;
 using AutoMapper;
 using Domain;
 using Domain.Enums;
@@ -23,6 +23,7 @@ namespace Application.Service
         private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IAttachmentService _attachmentService;
 
         public UserService(
             IUserRepository userRepository, 
@@ -34,7 +35,8 @@ namespace Application.Service
             NpgsqlConnection connection, 
             IMapper mapper,
             ILogger<UserService> logger,
-            IPasswordHasher passwordHasher)
+            IPasswordHasher passwordHasher,
+            IAttachmentService attachmentService)
         {
             _userRepository = userRepository;
             _postRepository = postRepository;
@@ -46,6 +48,7 @@ namespace Application.Service
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
+            _attachmentService = attachmentService;
         }
 
         public async Task<int> Add(CreateUserRequest request)
@@ -53,12 +56,13 @@ namespace Application.Service
             var user = new User()
             {
                 Name = request.Name,
-                LastName=request.LastName,
-                Info=request.Info,
-                DateOfBirth=request.DateOfBirth,
+                LastName = request.LastName,
+                Info = request.Info,
+                DateOfBirth = request.DateOfBirth,
                 Email = request.Email,
                 PasswordHash = _passwordHasher.HashPassword(request.Password),
-                Role = UserRoles.User
+                Role = UserRoles.User,
+                PhotoAttachmentId = request.PhotoAttachmentId
             };
 
             var userId = await _userRepository.Create(user);
@@ -126,6 +130,13 @@ namespace Application.Service
 
             var response = _mapper.Map<UserResponse>(user);
 
+            if (response.PhotoAttachmentId.HasValue)
+            {
+                var attachmentUrl = await _attachmentService
+                    .GetPublicLinkAsync(response.PhotoAttachmentId.Value);
+                response.PhotoAttachmentUrl = attachmentUrl;
+            }
+
             _logger.LogInformation(
                 "User retrieved with id {Id}",
                 id);
@@ -144,7 +155,8 @@ namespace Application.Service
             existingUser.Info = request.Info;
             existingUser.DateOfBirth = request.DateOfBirth;
             existingUser.Email = request.Email;
-            existingUser.PasswordHash = _passwordHasher.HashPassword(request.Password);
+            existingUser.PhotoAttachmentId = request.PhotoAttachmentId;
+
 
             var result = await _userRepository.Update(existingUser);
             if(result == false)

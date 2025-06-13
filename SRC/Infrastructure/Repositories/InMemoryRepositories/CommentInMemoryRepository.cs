@@ -98,5 +98,10 @@ namespace Infrastructure.Repositories.InMemoryRepositories
         {
             throw new NotImplementedException();
         }
+
+        Task<IEnumerable<Comment>> ICommentRepository.GetByPostId(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

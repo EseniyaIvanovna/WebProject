@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Service;
+using Application.Service.Interfaces;
 using FluentAssertions;
 
 namespace ApplicationIntegrationTests.Services

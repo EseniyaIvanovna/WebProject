@@ -1,4 +1,6 @@
-﻿namespace Application.Services
+﻿using Application.Service.Interfaces;
+
+namespace Application.Service
 {
     public class PasswordHasher : IPasswordHasher
     {

@@ -1,6 +1,6 @@
 using Application.Exceptions;
 using Application.Requests;
-using Application.Service;
+using Application.Service.Interfaces;
 using Domain.Enums;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

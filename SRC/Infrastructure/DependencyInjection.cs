@@ -18,6 +18,7 @@ namespace Infrastructure
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IReactionRepository, ReactionRepository>();
             services.AddScoped<IInteractionRepository, InteractionRepository>();
+            services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
             services.AddSingleton(sp =>
             {
