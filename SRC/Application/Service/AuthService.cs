@@ -4,12 +4,11 @@ using AutoMapper;
 using Domain;
 using Domain.Enums;
 using Infrastructure.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace Application.Service
 {
-    public class AuthService(IConfiguration configuration, IMapper mapper, IUserRepository userRepository, IPasswordHasher hasher) : IAuthService
+    public class AuthService( IMapper mapper, IUserRepository userRepository, IPasswordHasher hasher) : IAuthService
     {
         public async Task<ClaimsPrincipal> Register(RegistrationRequest request)
         {

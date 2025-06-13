@@ -130,7 +130,6 @@ public class UserServiceTests : IClassFixture<TestingFixture>
             DateOfBirth = DateTime.Now.AddYears(-26),
             Info = "Updated info",
             Email = "updated@example.com",
-            Password = "12345678"
         };
 
         // Act
