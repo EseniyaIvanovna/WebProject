@@ -109,6 +109,7 @@ namespace Application.Service
 
             return responses;
         }
+
         public async Task<IEnumerable<CommentResponse>> GetByPostId(int postId)
         {
             var comments = await _commentRepository.GetByPostId(postId);
