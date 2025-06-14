@@ -29,7 +29,7 @@ services:
       - my-network
 
   my-frontend:
-    image: ghcr.io/EseniyaIvanovna/frontWebProject:latest
+    image: ghcr.io/eseniyalvanovna/my-backend:latest
     restart: always
     ports:
       - "80:80"
