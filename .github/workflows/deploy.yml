@@ -19,9 +19,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to GHCR
-        run: |
-          LOWERCASE_USER=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${LOWERCASE_USER} --password-
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u eseniyalvanovna --password-stdin
 
       - name: Build Docker image
         run: docker build -t ghcr.io/eseniyalvanovna/my-backend:latest .
