@@ -16,7 +16,7 @@ services:
       - my-network
 
   my-backend:
-    image: ghcr.io/EseniyaIvanovna/my-backend:latest
+    image: ghcr.io/eseniyalvanovna/my-backend:latest
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
