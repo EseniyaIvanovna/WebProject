@@ -16,7 +16,7 @@ services:
       - my-network
 
   my-backend:
-    image: ghcr.io/eseniyalvanovna/my-backend:latest
+    image: ghcr.io/eseniyaivanovna/my-backend:latest
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -29,7 +29,7 @@ services:
       - my-network
 
   my-frontend:
-    image: ghcr.io/eseniyalvanovna/my-backend:latest
+    image: ghcr.io/eseniyaivanovna/my-frontend:latest
     restart: always
     ports:
       - "80:80"
